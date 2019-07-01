@@ -89,6 +89,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6787748464824688425}
   - component: {fileID: 4686502200840896141}
+  - component: {fileID: 6903956646356869597}
   m_Layer: 0
   m_Name: pfTile
   m_TagString: Untagged
@@ -123,3 +124,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 713d05995116f38429fda3417e654641, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  nI: 0
+  nJ: 0
+  colour: {fileID: 6903956646356869597}
+--- !u!114 &6903956646356869597
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5898482401421885875}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8db20ca9f61f8c543b35290ccb2a2f08, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  col: 0
+  tile: {fileID: 4686502200840896141}
+  rendBackground: {fileID: 6273138618207442897}

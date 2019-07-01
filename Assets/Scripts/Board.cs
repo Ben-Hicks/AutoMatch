@@ -39,8 +39,24 @@ public class Board : Singleton<Board> {
         }
     }
 
+    public void InitColours() {
+    
+        for(int i=0; i<nWidth; i++) {
+            for(int j=0; j<nHeight; j++) {
+                
+                if((i+j)%2 == 0) {
+                    //if this is a valid tile
+                    lstTiles[i][j].colour.SetColour((Colour.Col)Random.Range(1, Colour.NUMCOLOURS));
+                }
+
+            }
+        }
+
+    }
+
     public override void Init() {
         InitTiles();
+        InitColours();
     }
 
     // Update is called once per frame

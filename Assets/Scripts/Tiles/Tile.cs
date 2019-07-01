@@ -9,11 +9,15 @@ public class Tile : MonoBehaviour {
     public const float fTileDistHorz = 0.75f;
     public const float fTileDistVert = 0.43333f;
 
-    public const float fTileGapHorz = 0.1f;
+    public const float fTileGapHorz = 0.14f;
     public const float fTileGapVert = 0.1f;
 
     public int nI;
     public int nJ;
+
+    public Colour colour;
+    public Direction.Dir dirTowardCenter;
+    
 
     public void Init(int i, int j) {
         pos = new Position() {
@@ -25,6 +29,7 @@ public class Tile : MonoBehaviour {
         nJ = j;
 
         PositionTile();
+
     }
 
     public void PositionTile() {
@@ -36,6 +41,8 @@ public class Tile : MonoBehaviour {
 
     // Start is called before the first frame update
     void Start() {
+
+        
 
     }
 
