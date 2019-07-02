@@ -7,6 +7,11 @@ public class Position {
     public int i;
     public int j;
 
+    public Position(int _i = 0, int _j = 0) {
+        i = _i;
+        j = _j;
+    }
+
     public Position PosInDir(Direction.Dir dir, int dist = 1) {
         switch (dir) {
             case Direction.Dir.D:

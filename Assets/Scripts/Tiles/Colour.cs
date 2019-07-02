@@ -20,6 +20,11 @@ public class Colour : MonoBehaviour {
         return col == other.col;
     }
 
+    public void SetNextColour() {
+
+        if ((int)col == NUMCOLOURS - 1) SetColour((Col)1);
+        else SetColour(col + 1);
+    }
 
     public void DisplayColour() {
 
