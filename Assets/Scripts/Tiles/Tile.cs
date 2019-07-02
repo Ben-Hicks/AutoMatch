@@ -17,6 +17,7 @@ public class Tile : MonoBehaviour {
 
     public Colour colour;
     public Direction.Dir dirTowardCenter;
+    public Direction.Dir dirCascadeFrom;
     
 
     public void Init(int i, int j) {
@@ -32,10 +33,16 @@ public class Tile : MonoBehaviour {
 
     }
 
+    public void SetDirTowardCenter(Direction.Dir _dirTowardCenter) {
+        dirTowardCenter = _dirTowardCenter;
+        dirCascadeFrom = Direction.Negate(dirTowardCenter);
+        //colour.SetColour((Colour.Col)(dirTowardCenter - 1));
+    }
+
     public void PositionTile() {
 
         this.transform.localPosition = new Vector2(pos.i * fTileDistHorz + (pos.i - 1) * fTileGapHorz,
-                                                   pos.j * fTileDistVert + (pos.j - 1) * fTileGapVert);
+                                                  -(pos.j * fTileDistVert + (pos.j - 1) * fTileGapVert));
 
     }
 

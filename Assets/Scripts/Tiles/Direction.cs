@@ -4,7 +4,8 @@ using UnityEngine;
 
 public static class Direction {
 
-    public enum Dir {NONE, UL, U, UR, DL, D, DR };
+    public const int NUMDIRECTIONS = 6;
+    public enum Dir {NONE, UR, U, UL, DL, D, DR };
 
     public static Dir Negate(Dir d) {
         switch (d) {
@@ -34,6 +35,11 @@ public static class Direction {
                 return Dir.DR;
 
         }
+    }
+
+    public static void Advance(ref Dir d) {
+        if (d == Dir.DR) d = Dir.UR;
+        else d++;
     }
 
 
