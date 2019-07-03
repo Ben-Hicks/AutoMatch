@@ -27,10 +27,14 @@ public class Colour : MonoBehaviour {
     }
 
     public void DisplayColour() {
+        DisplayColour(col);
+    }
+
+    public void DisplayColour(Colour.Col _col) {
 
         Color colToSet;
 
-        switch (col) {
+        switch (_col) {
             case Col.WILD:
                 colToSet = Color.gray;
                 break;

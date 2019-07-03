@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Board : Singleton<Board> {
 
+    public const int MINMATCHLENGTH = 3;
+
     public int nWidth;
     public int nHeight;
 
@@ -11,13 +13,139 @@ public class Board : Singleton<Board> {
     public Position posPlayer;
 
     public GameObject pfTile;
-    
+
+    public bool bStartWithMatches;
 
     public List<List<Tile>> lstTiles;
+
+    public List<Position> lstTopTwoEdges;
+    public List<Position> lstTopLeftEdges;
+    public List<Position> lstTopRightEdges;
+
+    public List<Position> lstFlaggedToClear;
+
+    public Board() {
+        lstTopLeftEdges = new List<Position>();
+        lstTopTwoEdges = new List<Position>();
+        lstTopRightEdges = new List<Position>();
+    }
 
     public Tile At(Position pos) {
         return lstTiles[pos.i][pos.j];
     }
+
+    public void FlagMatchesInDir(Position posStart, Direction.Dir dir) {
+        
+        Position curPos = posStart;
+
+        while (ValidTile(curPos)) {
+
+            //Check the MatchingLength of the current tile
+            int nMatchLength = GetMatchingLength(curPos, dir);
+
+            //If the match is long enough
+            if(nMatchLength >= MINMATCHLENGTH) {
+
+                //Then flag each tile along this match
+                for(int i=0; i < nMatchLength; i++) {
+                    //We won't set it's clear flag yet, since we don't know its cascade distance
+                    At(curPos.PosInDir(dir, i)).SetDebugText("Flagged");
+                    lstFlaggedToClear.Add(curPos.PosInDir(dir, i));
+                }
+            }
+
+            //Advance past this current match
+            curPos = curPos.PosInDir(dir, nMatchLength);
+
+        }
+
+    }
+
+
+    public void SetCascadeDist(Position pos) {
+
+        Direction.Dir dirTowardCenter = At(pos).dirTowardCenter;
+        Direction.Dir dirCascadeFrom = At(pos).dirCascadeFrom;
+        
+        int nCascadeTowardCenter = 1;
+
+        Position posClosestToCenter = pos;
+
+        while (true) {
+            Position posToCheck = pos.PosInDir(dirTowardCenter, nCascadeTowardCenter);
+
+            if(At(posToCheck).clearFlag.bClear == false || At(posToCheck).dirTowardCenter != dirTowardCenter) {
+                //If we've gone as far in this dirction as possible (with cleared tiles and tiles that face the same way)
+
+                //Reduce by one since we couldn't actually extend in this direction
+                nCascadeTowardCenter--;
+                break;
+            } else {
+                posClosestToCenter = posToCheck;
+                nCascadeTowardCenter++;
+            }
+        }
+
+        int nCascadeAwayFromCenter = 1;
+
+        while (true) {
+            Position posToCheck = pos.PosInDir(dirCascadeFrom, nCascadeAwayFromCenter);
+
+            if (ValidTile(posToCheck) == false || At(posToCheck).clearFlag.bClear == false) {
+                //If we've gone as far in this dirction as possible (with cleared tiles and tiles that actually exist
+                nCascadeAwayFromCenter--;
+                break;
+            } else {
+                nCascadeAwayFromCenter++;
+            }
+        }
+
+        int nCascadeDist = 1 + nCascadeTowardCenter + nCascadeAwayFromCenter;
+
+        //Now that we've found the closest tile to the center, and the length of the same-direction cascade, we can let each tile
+        // in the match know how long its cascade is
+        for(int i=0; i<nCascadeDist; i++) {
+            At(posClosestToCenter.PosInDir(dirCascadeFrom, i)).clearFlag = new Tile.ClearFlag() { bClear = true, nCascadeDist = nCascadeDist };
+            At(posClosestToCenter.PosInDir(dirCascadeFrom, i)).SetDebugText(nCascadeDist.ToString());
+        }
+
+    }
+
+
+    public void SetAllCascadeDists() {
+
+        //Look through each tile that we've flagged for clearing
+        foreach (Position pos in lstFlaggedToClear) {
+            //If we've already handled this position in another match's update, then we don't need to handle it again
+            if (At(pos).clearFlag.bClear == true) continue;
+
+            SetCascadeDist(pos);
+        }
+
+    }
+
+
+    public void FlagMatches() {
+
+        lstFlaggedToClear = new List<Position>();
+
+        foreach (Position posStart in lstTopTwoEdges) {
+            FlagMatchesInDir(posStart, Direction.Dir.D);
+        }
+
+        foreach (Position posStart in lstTopLeftEdges) {
+            FlagMatchesInDir(posStart, Direction.Dir.DR);
+        }
+
+        foreach (Position posStart in lstTopRightEdges) {
+            FlagMatchesInDir(posStart, Direction.Dir.DL);
+        }
+
+        //Once each matched position has been flagged and pushed into our stack, we can then go about figuring out the cascading distance for cleared pieces
+        SetAllCascadeDists();
+    }
+
+
 
     public int GetMatchingLength(Position posStart, Direction.Dir dir) {
 
@@ -65,6 +193,21 @@ public class Board : Singleton<Board> {
                     GameObject goTile = Instantiate(pfTile, this.transform);
                     lstTiles[i].Add(goTile.GetComponent<Tile>());
                     lstTiles[i][j].Init(i, j);
+
+                    //Save references to the top and side edges
+                    if(j == 0) {
+                        lstTopLeftEdges.Add(lstTiles[i][j].pos);
+                        lstTopRightEdges.Add(lstTiles[i][j].pos);
+                        lstTopTwoEdges.Add(lstTiles[i][j].pos);
+                    }else if(j == 1) {
+                        lstTopTwoEdges.Add(lstTiles[i][j].pos);
+                    }else if(i == 0) {
+                        lstTopLeftEdges.Add(lstTiles[i][j].pos);
+                    }else if(i == nWidth - 1) {
+                        lstTopRightEdges.Add(lstTiles[i][j].pos);
+                    }
+
+
                 } else {
                     //No tile should exist at this i,j so we'll just put a dummy null value
                     lstTiles[i].Add(null);
@@ -94,23 +237,26 @@ public class Board : Singleton<Board> {
                     Colour.Col colRand = (Colour.Col)Random.Range(1, Colour.NUMCOLOURS);
                     lstTiles[i][j].colour.SetColour(colRand);
 
-                    for (int iColourAttempts=0; iColourAttempts < 4; iColourAttempts++) {
-                        
+                    if(bStartWithMatches == false) {
+                        //if we don't want to start with matches, then we'll have to find a colour that won't form a match
+                        for (int iColourAttempts = 0; iColourAttempts < 4; iColourAttempts++) {
 
-                        //but we need to check the matches to the left and above to ensure that we're not picking a colour that would form a match of three
 
-                        if (GetMatchingLength(new Position(i, j), Direction.Dir.U) >= 3) {
-                            Debug.Log("Would have had a match of three above, so skipping");
-                        } else if (GetMatchingLength(new Position(i, j), Direction.Dir.UL) >= 3) {
-                            Debug.Log("Would have had a match of three to the left and above, so skipping");
-                        } else if (GetMatchingLength(new Position(i, j), Direction.Dir.DL) >= 3) {
-                            Debug.Log("Would have had a match of three to the left and below, so skipping");
-                        } else {
-                            Debug.Log("Breaking after " + iColourAttempts + " attempts");
-                            break;
+                            //but we need to check the matches to the left and above to ensure that we're not picking a colour that would form a match of three
+
+                            if (GetMatchingLength(new Position(i, j), Direction.Dir.U) >= 3) {
+                                Debug.Log("Would have had a match of three above, so skipping");
+                            } else if (GetMatchingLength(new Position(i, j), Direction.Dir.UL) >= 3) {
+                                Debug.Log("Would have had a match of three to the left and above, so skipping");
+                            } else if (GetMatchingLength(new Position(i, j), Direction.Dir.DL) >= 3) {
+                                Debug.Log("Would have had a match of three to the left and below, so skipping");
+                            } else {
+                                Debug.Log("Breaking after " + iColourAttempts + " attempts");
+                                break;
+                            }
+                            //If we haven't broken, then we should advance our colour in the hopes the next colour won't have a match
+                            lstTiles[i][j].colour.SetNextColour();
                         }
-                        //If we haven't broken, then we should advance our colour in the hopes the next colour won't have a match
-                        lstTiles[i][j].colour.SetNextColour();
                     }
                 }
 
@@ -221,7 +367,11 @@ public class Board : Singleton<Board> {
 
        //InitPlayerTile();
         InitCascadeDirections();
+
+        FlagMatches();
     }
+
+
 
     // Update is called once per frame
     void Update() {

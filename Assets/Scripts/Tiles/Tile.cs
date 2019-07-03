@@ -18,6 +18,16 @@ public class Tile : MonoBehaviour {
     public Colour colour;
     public Direction.Dir dirTowardCenter;
     public Direction.Dir dirCascadeFrom;
+
+    public TextMesh txtmeshDebug;
+
+
+    public struct ClearFlag {
+        public bool bClear;
+        public int nCascadeDist;
+    }
+
+    public ClearFlag clearFlag;
     
 
     public void Init(int i, int j) {
@@ -36,7 +46,7 @@ public class Tile : MonoBehaviour {
     public void SetDirTowardCenter(Direction.Dir _dirTowardCenter) {
         dirTowardCenter = _dirTowardCenter;
         dirCascadeFrom = Direction.Negate(dirTowardCenter);
-        //colour.SetColour((Colour.Col)(dirTowardCenter - 1));
+        colour.DisplayColour((Colour.Col)(dirTowardCenter - 1));
     }
 
     public void PositionTile() {
@@ -44,6 +54,12 @@ public class Tile : MonoBehaviour {
         this.transform.localPosition = new Vector2(pos.i * fTileDistHorz + (pos.i - 1) * fTileGapHorz,
                                                   -(pos.j * fTileDistVert + (pos.j - 1) * fTileGapVert));
 
+    }
+
+    public void SetDebugText(string s) {
+        if (txtmeshDebug == null) txtmeshDebug = GetComponent<TextMesh>();
+
+        txtmeshDebug.text = s;
     }
 
     // Start is called before the first frame update
