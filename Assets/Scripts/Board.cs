@@ -22,7 +22,7 @@ public class Board : Singleton<Board> {
     public List<Position> lstTopLeftEdges;
     public List<Position> lstTopRightEdges;
 
-    public List<Position> lstFlaggedToClear;
+    public List<Tile> lstFlaggedToClear;
 
     public Board() {
         lstTopLeftEdges = new List<Position>();
@@ -33,6 +33,51 @@ public class Board : Singleton<Board> {
     public Tile At(Position pos) {
         return lstTiles[pos.i][pos.j];
     }
+
+    public void CleanupMatches() {
+        FlagMatches();
+        CascadeAllTiles();
+    }
+
+    public void CascadeTile(Tile tile) {
+
+        while (true) {
+            Position posNext = tile.pos.PosInDir(tile.dirCascadeFrom);
+
+            //If we've reached the edge of the board, we can stop swapping
+            if (ValidTile(posNext) == false) {
+                Debug.Log("Stopping since " + posNext.i + "," + posNext.j + " isn't in the board");
+                break;
+            } else if (At(posNext).deletionStatus == Tile.DELETIONSTATUS.DELETED) {
+
+                Debug.Log("Stopping since " + posNext.i + "," + posNext.j + " can't be swapped into since it's deleted");
+                break;
+            } else if (At(posNext).deletionStatus == Tile.DELETIONSTATUS.FLAGGED) {
+
+                Debug.Log("Yielding to " + posNext + " since it's flagged and it's further away from the center than we are");
+                CascadeTile(At(posNext));
+            } else {
+                SwapTile(tile, tile.dirCascadeFrom);
+            }
+
+        }
+
+
+        tile.deletionStatus = Tile.DELETIONSTATUS.DELETED;
+
+    }
+
+    public void CascadeAllTiles() {
+
+        foreach(Tile tileToCascade in lstFlaggedToClear) {
+            if (tileToCascade.deletionStatus == Tile.DELETIONSTATUS.DELETED) continue;
+            CascadeTile(tileToCascade);
+        }
+        
+        //Empty the list
+        lstFlaggedToClear.Clear();
+    }
+
 
     public void FlagMatchesInDir(Position posStart, Direction.Dir dir) {
         
@@ -48,9 +93,10 @@ public class Board : Singleton<Board> {
 
                 //Then flag each tile along this match
                 for(int i=0; i < nMatchLength; i++) {
-                    //We won't set it's clear flag yet, since we don't know its cascade distance
-                    At(curPos.PosInDir(dir, i)).SetDebugText("Flagged");
-                    lstFlaggedToClear.Add(curPos.PosInDir(dir, i));
+
+
+                    At(curPos.PosInDir(dir, i)).FlagClear();
+                    lstFlaggedToClear.Add(At(curPos.PosInDir(dir, i)));
                 }
             }
 
@@ -58,76 +104,12 @@ public class Board : Singleton<Board> {
             curPos = curPos.PosInDir(dir, nMatchLength);
 
         }
-
-    }
-
-
-    public void SetCascadeDist(Position pos) {
-
-        Direction.Dir dirTowardCenter = At(pos).dirTowardCenter;
-        Direction.Dir dirCascadeFrom = At(pos).dirCascadeFrom;
-        
-        int nCascadeTowardCenter = 1;
-
-        Position posClosestToCenter = pos;
-
-        while (true) {
-            Position posToCheck = pos.PosInDir(dirTowardCenter, nCascadeTowardCenter);
-
-            if(At(posToCheck).clearFlag.bClear == false || At(posToCheck).dirTowardCenter != dirTowardCenter) {
-                //If we've gone as far in this dirction as possible (with cleared tiles and tiles that face the same way)
-
-                //Reduce by one since we couldn't actually extend in this direction
-                nCascadeTowardCenter--;
-                break;
-            } else {
-                posClosestToCenter = posToCheck;
-                nCascadeTowardCenter++;
-            }
-        }
-
-        int nCascadeAwayFromCenter = 1;
-
-        while (true) {
-            Position posToCheck = pos.PosInDir(dirCascadeFrom, nCascadeAwayFromCenter);
-
-            if (ValidTile(posToCheck) == false || At(posToCheck).clearFlag.bClear == false) {
-                //If we've gone as far in this dirction as possible (with cleared tiles and tiles that actually exist
-                nCascadeAwayFromCenter--;
-                break;
-            } else {
-                nCascadeAwayFromCenter++;
-            }
-        }
-
-        int nCascadeDist = 1 + nCascadeTowardCenter + nCascadeAwayFromCenter;
-
-        //Now that we've found the closest tile to the center, and the length of the same-direction cascade, we can let each tile
-        // in the match know how long its cascade is
-        for(int i=0; i<nCascadeDist; i++) {
-            At(posClosestToCenter.PosInDir(dirCascadeFrom, i)).clearFlag = new Tile.ClearFlag() { bClear = true, nCascadeDist = nCascadeDist };
-            At(posClosestToCenter.PosInDir(dirCascadeFrom, i)).SetDebugText(nCascadeDist.ToString());
-        }
-
-    }
-
-
-    public void SetAllCascadeDists() {
-
-        //Look through each tile that we've flagged for clearing
-        foreach (Position pos in lstFlaggedToClear) {
-            //If we've already handled this position in another match's update, then we don't need to handle it again
-            if (At(pos).clearFlag.bClear == true) continue;
-
-            SetCascadeDist(pos);
-        }
-
     }
 
 
     public void FlagMatches() {
 
-        lstFlaggedToClear = new List<Position>();
+        lstFlaggedToClear = new List<Tile>();
 
         foreach (Position posStart in lstTopTwoEdges) {
             FlagMatchesInDir(posStart, Direction.Dir.D);
@@ -141,8 +123,32 @@ public class Board : Singleton<Board> {
             FlagMatchesInDir(posStart, Direction.Dir.DL);
         }
 
-        //Once each matched position has been flagged and pushed into our stack, we can then go about figuring out the cascading distance for cleared pieces
-        SetAllCascadeDists();
+    }
+
+    public void SwapTile(Tile tile, Direction.Dir dir, int nDist) {
+        //Just perform nDist individual swaps
+        for (int i=0; i<nDist; i++) {
+            SwapTile(tile, dir);
+        }
+    }
+
+    public void SwapTile(Tile tile, Direction.Dir dir) {
+
+        Position thisPos = tile.pos;
+        Position otherPos = tile.pos.PosInDir(dir);
+
+        if(ValidTile(otherPos) == false) {
+            Debug.LogError("Can't swap with an invalid tile");
+        }
+
+        //Swap the passed tile and the target tile as they are stored in the grid of tiles
+        lstTiles[tile.pos.i][tile.pos.j] = At(otherPos);
+        lstTiles[otherPos.i][otherPos.j] = tile;
+
+        //We need to fix up the swapped tiles to ensure their positions accurately represent their new position
+        At(thisPos).SetPositon(thisPos);
+        At(otherPos).SetPositon(otherPos);
+
     }
 
 
@@ -369,6 +375,7 @@ public class Board : Singleton<Board> {
         InitCascadeDirections();
 
         FlagMatches();
+        //CleanupMatches();
     }
 
 
@@ -376,5 +383,84 @@ public class Board : Singleton<Board> {
     // Update is called once per frame
     void Update() {
 
+        if (Input.GetKeyDown(KeyCode.O)) {
+            Debug.Log("Swapping 0,0 down");
+            Position posToSwap = new Position();
+            SwapTile(At(posToSwap), Direction.Dir.D);
+
+            Debug.Log("After swapping, " + posToSwap + " has stored position " + At(posToSwap).pos);
+        }
+        if (Input.GetKeyDown(KeyCode.P)) {
+            Debug.Log("Calling cascade tiles");
+            CascadeAllTiles();
+        }
+
     }
 }
+
+
+
+
+/*  Code graveyard
+ * 
+ * public void SetCascadeDist(Position pos) {
+
+        Direction.Dir dirTowardCenter = At(pos).dirTowardCenter;
+        Direction.Dir dirCascadeFrom = At(pos).dirCascadeFrom;
+        
+        int nCascadeTowardCenter = 1;
+
+        Position posClosestToCenter = pos;
+
+        while (true) {
+            Position posToCheck = pos.PosInDir(dirTowardCenter, nCascadeTowardCenter);
+
+            if(At(posToCheck).clearFlag.bClear == false || At(posToCheck).dirTowardCenter != dirTowardCenter) {
+                //If we've gone as far in this dirction as possible (with cleared tiles and tiles that face the same way)
+
+                //Reduce by one since we couldn't actually extend in this direction
+                nCascadeTowardCenter--;
+                break;
+            } else {
+                posClosestToCenter = posToCheck;
+                nCascadeTowardCenter++;
+            }
+        }
+
+        int nCascadeAwayFromCenter = 1;
+
+        while (true) {
+            Position posToCheck = pos.PosInDir(dirCascadeFrom, nCascadeAwayFromCenter);
+
+            if (ValidTile(posToCheck) == false || At(posToCheck).clearFlag.bClear == false) {
+                //If we've gone as far in this dirction as possible (with cleared tiles and tiles that actually exist
+                nCascadeAwayFromCenter--;
+                break;
+            } else {
+                nCascadeAwayFromCenter++;
+            }
+        }
+
+        int nCascadeDist = 1 + nCascadeTowardCenter + nCascadeAwayFromCenter;
+
+        //Now that we've found the closest tile to the center, and the length of the same-direction cascade, we can let each tile
+        // in the match know how long its cascade is
+        for(int i=0; i<nCascadeDist; i++) {
+            At(posClosestToCenter.PosInDir(dirCascadeFrom, i)).clearFlag = new Tile.ClearFlag() { bClear = true, nCascadeDist = nCascadeDist };
+            At(posClosestToCenter.PosInDir(dirCascadeFrom, i)).SetDebugText(nCascadeDist.ToString());
+        }
+
+    }
+
+
+    public void SetAllCascadeDists() {
+
+        //Look through each tile that we've flagged for clearing
+        foreach (Position pos in lstFlaggedToClear) {
+            //If we've already handled this position in another match's update, then we don't need to handle it again
+            if (At(pos).clearFlag.bClear == true) continue;
+
+            SetCascadeDist(pos);
+        }
+
+    }*/

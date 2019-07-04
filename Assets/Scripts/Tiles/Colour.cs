@@ -12,6 +12,7 @@ public class Colour : MonoBehaviour {
 
     public SpriteRenderer rendBackground;
 
+
     public bool CanMatch(Colour other) {
         if(col == Col.WILD || other.col == Col.WILD) {
             return true;

@@ -12,6 +12,15 @@ public class Position {
         j = _j;
     }
 
+    public Position(Position _other) {
+        i = _other.i;
+        j = _other.j;
+    }
+
+    public override string ToString() {
+        return "(" + i + "," + j + ")";
+    }
+
     public Position PosInDir(Direction.Dir dir, int dist = 1) {
         switch (dir) {
             case Direction.Dir.D:
