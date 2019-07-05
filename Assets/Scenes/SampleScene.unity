@@ -294,7 +294,17 @@ PrefabInstance:
     - target: {fileID: 3929126062738639436, guid: c0eb92f8ef94a054e87a897195efe60c,
         type: 3}
       propertyPath: fCascadeTime
-      value: 10
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 3929126062738639436, guid: c0eb92f8ef94a054e87a897195efe60c,
+        type: 3}
+      propertyPath: fDelayBetweenClears
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3929126062738639436, guid: c0eb92f8ef94a054e87a897195efe60c,
+        type: 3}
+      propertyPath: fDelayBeforeCascade
+      value: 0.3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c0eb92f8ef94a054e87a897195efe60c, type: 3}

@@ -9,6 +9,9 @@ public class Board : Singleton<Board> {
     public int nWidth;
     public int nHeight;
     public float fCascadeTime;
+    public float fDelayBeforeCascade;
+
+    public float fDelayBetweenClears;
 
     public Position posCenter;
     public Position posPlayer;
@@ -51,7 +54,7 @@ public class Board : Singleton<Board> {
             //Initially ensure that our starting matches all get cleaned up
             yield return CleanupMatches();
 
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(fDelayBetweenClears);
 
             //An example of waiting for an input and halting progress on other things
             /*while (true) {
@@ -448,7 +451,15 @@ public class Board : Singleton<Board> {
         while (true) {
             //Now that we know which tiles need to move, let's figure out where their positions should be at this point in time
             float fElapsedTime = Time.timeSinceLevelLoad - fTimeStart;
-            float fProgress = Mathf.Min(1f, fElapsedTime / fCascadeTime);
+
+            float fProgress;
+
+            if(fElapsedTime <= fDelayBeforeCascade) {
+                fProgress = 0f;
+            } else {
+                fProgress = Mathf.Min(1f, (fElapsedTime - fDelayBeforeCascade) / (fCascadeTime - fDelayBeforeCascade));
+            }
+            
 
             foreach (Tile tile in lstMovingTiles) {
                 tile.transform.localPosition = Vector2.Lerp(tile.v2StartLocation, tile.v2GoalLocation, fProgress);
