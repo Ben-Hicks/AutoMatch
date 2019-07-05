@@ -43,6 +43,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 429065a48b8e85349b076535cb8aeced, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nWidth: 10
-  nHeight: 6
+  nWidth: 25
+  nHeight: 33
+  fCascadeTime: 10
   pfTile: {fileID: 5898482401421885875, guid: 7b838e777d9b5e546baeedaf11c16347, type: 3}
+  bStartWithMatches: 1
+  lstAllTiles: []
+  lstFlaggedToClear: []

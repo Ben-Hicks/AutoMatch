@@ -17,6 +17,10 @@ public class Position {
         j = _other.j;
     }
 
+    public bool IsEqual(Position other) {
+        return i == other.i && j == other.j;
+    }
+
     public override string ToString() {
         return "(" + i + "," + j + ")";
     }

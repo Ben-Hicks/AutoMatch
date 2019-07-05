@@ -8,6 +8,7 @@ public class Board : Singleton<Board> {
 
     public int nWidth;
     public int nHeight;
+    public float fCascadeTime;
 
     public Position posCenter;
     public Position posPlayer;
@@ -18,6 +19,7 @@ public class Board : Singleton<Board> {
 
     public List<List<Tile>> lstTiles;
 
+    public List<Tile> lstAllTiles;
     public List<Position> lstTopTwoEdges;
     public List<Position> lstTopLeftEdges;
     public List<Position> lstTopRightEdges;
@@ -34,9 +36,52 @@ public class Board : Singleton<Board> {
         return lstTiles[pos.i][pos.j];
     }
 
-    public void CleanupMatches() {
+    public void SnapshotStablePositions() {
+        //After everything has calmed down and tiles are in their fixed positions, then we can 
+        // record this stable positions
+
+        foreach (Tile tile in lstAllTiles) {
+            tile.SaveStablePos();
+        }
+    }
+
+    IEnumerator GameLoop() {
+
+        while (true) {
+            //Initially ensure that our starting matches all get cleaned up
+            yield return CleanupMatches();
+
+            yield return new WaitForSeconds(1f);
+
+            //An example of waiting for an input and halting progress on other things
+            /*while (true) {
+                //For now, wait until the P key is pressed
+                if (Input.GetKeyDown(KeyCode.P)) {
+                    Debug.Log("Pressed P");
+                    break;
+                }
+
+                yield return null;
+
+            }*/
+
+        }
+    }
+
+    public IEnumerator CleanupMatches() {
+        Debug.Log("Started CleanupMatches");
         FlagMatches();
         CascadeAllTiles();
+
+        GenerateColoursForDeleted();
+        SetAllStablePosForDeleted();
+
+        yield return AnimateMovingTiles();
+        Debug.Log("After AnimateMovingTiles");
+        SnapshotStablePositions();
+
+        //Once everything's cleaned up, we can clear out our list of flagged tiles
+        lstFlaggedToClear.Clear();
     }
 
     public void CascadeTile(Tile tile) {
@@ -46,15 +91,15 @@ public class Board : Singleton<Board> {
 
             //If we've reached the edge of the board, we can stop swapping
             if (ValidTile(posNext) == false) {
-                Debug.Log("Stopping since " + posNext.i + "," + posNext.j + " isn't in the board");
+                //Debug.Log("Stopping since " + posNext.i + "," + posNext.j + " isn't in the board");
                 break;
             } else if (At(posNext).deletionStatus == Tile.DELETIONSTATUS.DELETED) {
 
-                Debug.Log("Stopping since " + posNext.i + "," + posNext.j + " can't be swapped into since it's deleted");
+                //Debug.Log("Stopping since " + posNext.i + "," + posNext.j + " can't be swapped into since it's deleted");
                 break;
             } else if (At(posNext).deletionStatus == Tile.DELETIONSTATUS.FLAGGED) {
 
-                Debug.Log("Yielding to " + posNext + " since it's flagged and it's further away from the center than we are");
+                //Debug.Log("Yielding to " + posNext + " since it's flagged and it's further away from the center than we are");
                 CascadeTile(At(posNext));
             } else {
                 SwapTile(tile, tile.dirCascadeFrom);
@@ -69,18 +114,16 @@ public class Board : Singleton<Board> {
 
     public void CascadeAllTiles() {
 
-        foreach(Tile tileToCascade in lstFlaggedToClear) {
+        foreach (Tile tileToCascade in lstFlaggedToClear) {
             if (tileToCascade.deletionStatus == Tile.DELETIONSTATUS.DELETED) continue;
             CascadeTile(tileToCascade);
         }
         
-        //Empty the list
-        lstFlaggedToClear.Clear();
     }
 
 
     public void FlagMatchesInDir(Position posStart, Direction.Dir dir) {
-        
+
         Position curPos = posStart;
 
         while (ValidTile(curPos)) {
@@ -89,10 +132,10 @@ public class Board : Singleton<Board> {
             int nMatchLength = GetMatchingLength(curPos, dir);
 
             //If the match is long enough
-            if(nMatchLength >= MINMATCHLENGTH) {
+            if (nMatchLength >= MINMATCHLENGTH) {
 
                 //Then flag each tile along this match
-                for(int i=0; i < nMatchLength; i++) {
+                for (int i = 0; i < nMatchLength; i++) {
 
 
                     At(curPos.PosInDir(dir, i)).FlagClear();
@@ -127,7 +170,7 @@ public class Board : Singleton<Board> {
 
     public void SwapTile(Tile tile, Direction.Dir dir, int nDist) {
         //Just perform nDist individual swaps
-        for (int i=0; i<nDist; i++) {
+        for (int i = 0; i < nDist; i++) {
             SwapTile(tile, dir);
         }
     }
@@ -137,7 +180,7 @@ public class Board : Singleton<Board> {
         Position thisPos = tile.pos;
         Position otherPos = tile.pos.PosInDir(dir);
 
-        if(ValidTile(otherPos) == false) {
+        if (ValidTile(otherPos) == false) {
             Debug.LogError("Can't swap with an invalid tile");
         }
 
@@ -149,6 +192,8 @@ public class Board : Singleton<Board> {
         At(thisPos).SetPositon(thisPos);
         At(otherPos).SetPositon(otherPos);
 
+        At(thisPos).SetDebugText(At(thisPos).posLastStable.ToString());
+        At(otherPos).SetDebugText(At(otherPos).posLastStable.ToString());
     }
 
 
@@ -160,10 +205,10 @@ public class Board : Singleton<Board> {
 
         //As long as the next tile exists
         while (ValidTile(posCur)) {
-            
+
             //Ensure that every currently matched tile also matches with the new current tile
-            for(int i=0; i< nMatchLength; i++) {
-                if(At(posCur).colour.CanMatch(At(posStart.PosInDir(dir, i)).colour) == false) {
+            for (int i = 0; i < nMatchLength; i++) {
+                if (At(posCur).colour.CanMatch(At(posStart.PosInDir(dir, i)).colour) == false) {
                     //If one of our previously matched tiles doesn't match with this new tile, then we have reached the end of this chain
                     return nMatchLength;
                 }
@@ -188,28 +233,30 @@ public class Board : Singleton<Board> {
         lstTiles = new List<List<Tile>>(nWidth);
         posCenter = new Position() { i = (nWidth - 1) / 2, j = (nHeight - 1) / 2 };
 
-        for (int i=0; i<nWidth; i++) {
+        for (int i = 0; i < nWidth; i++) {
 
             lstTiles.Add(new List<Tile>(nHeight));
 
-            for(int j=0; j<nHeight; j++) {
+            for (int j = 0; j < nHeight; j++) {
 
                 //only placing tiles in locations where the i and j coords have the same parity
-                if((i+j)%2 == 0) {
+                if ((i + j) % 2 == 0) {
                     GameObject goTile = Instantiate(pfTile, this.transform);
                     lstTiles[i].Add(goTile.GetComponent<Tile>());
                     lstTiles[i][j].Init(i, j);
 
+                    lstAllTiles.Add(lstTiles[i][j]);
+
                     //Save references to the top and side edges
-                    if(j == 0) {
+                    if (j == 0) {
                         lstTopLeftEdges.Add(lstTiles[i][j].pos);
                         lstTopRightEdges.Add(lstTiles[i][j].pos);
                         lstTopTwoEdges.Add(lstTiles[i][j].pos);
-                    }else if(j == 1) {
+                    } else if (j == 1) {
                         lstTopTwoEdges.Add(lstTiles[i][j].pos);
-                    }else if(i == 0) {
+                    } else if (i == 0) {
                         lstTopLeftEdges.Add(lstTiles[i][j].pos);
-                    }else if(i == nWidth - 1) {
+                    } else if (i == nWidth - 1) {
                         lstTopRightEdges.Add(lstTiles[i][j].pos);
                     }
 
@@ -228,22 +275,21 @@ public class Board : Singleton<Board> {
         return ValidTile(pos.i, pos.j);
     }
     public bool ValidTile(int i, int j) {
-        return (i+j)%2 == 0 && i >= 0 && i < nWidth && j >= 0 && j < nHeight;
+        return (i + j) % 2 == 0 && i >= 0 && i < nWidth && j >= 0 && j < nHeight;
     }
 
     public void InitColours() {
-    
-        for(int i=0; i<nWidth; i++) {
-            for(int j=0; j<nHeight; j++) {
-                
-                if((i+j)%2 == 0) {
+
+        for (int i = 0; i < nWidth; i++) {
+            for (int j = 0; j < nHeight; j++) {
+
+                if ((i + j) % 2 == 0) {
                     //if this is a valid tile then we can fill it
 
                     //Initially, we can pick a random colour
-                    Colour.Col colRand = (Colour.Col)Random.Range(1, Colour.NUMCOLOURS);
-                    lstTiles[i][j].colour.SetColour(colRand);
+                    lstTiles[i][j].SetRandomColour();
 
-                    if(bStartWithMatches == false) {
+                    if (bStartWithMatches == false) {
                         //if we don't want to start with matches, then we'll have to find a colour that won't form a match
                         for (int iColourAttempts = 0; iColourAttempts < 4; iColourAttempts++) {
 
@@ -320,15 +366,15 @@ public class Board : Singleton<Board> {
         Direction.Dir dirCascadeCur = Direction.Dir.U;
         Direction.Dir curDir = Direction.Dir.UR;
 
-        for (int iDir=0; iDir < Direction.NUMDIRECTIONS; iDir++) {
-            for (int i=0; i<dist; i++) {
+        for (int iDir = 0; iDir < Direction.NUMDIRECTIONS; iDir++) {
+            for (int i = 0; i < dist; i++) {
 
-                if(dist%2 == 0 && i == dist / 2) {
+                if (dist % 2 == 0 && i == dist / 2) {
                     //if we are halfway through an odd lengthed segment (if you include the following endpoint)
                     //then we can switch our cascade direction
 
                     Direction.Advance(ref dirCascadeCur);
-                } else if(dist%2 == 1 && i == (dist+1)/2) {
+                } else if (dist % 2 == 1 && i == (dist + 1) / 2) {
                     //if we are halfway through an even lengthed segment (if you include the following endpoint)
                     //then we can switch advance our cascade direction
 
@@ -343,16 +389,16 @@ public class Board : Singleton<Board> {
                 posCur = posCur.PosInDir(curDir);
 
             }
-            
+
 
             Direction.Advance(ref curDir);
 
-            if(dist == 1) {
+            if (dist == 1) {
                 Direction.Advance(ref dirCascadeCur);
             }
 
         }
-        
+
     }
 
 
@@ -360,7 +406,7 @@ public class Board : Singleton<Board> {
 
         At(posCenter).dirTowardCenter = Direction.Dir.NONE;
 
-        for(int i=1; i<nHeight; i++) {
+        for (int i = 1; i < nHeight; i++) {
             InitCascadeDirectionsRing(i);
         }
 
@@ -371,96 +417,140 @@ public class Board : Singleton<Board> {
         InitTiles();
         InitColours();
 
-       //InitPlayerTile();
+        //InitPlayerTile();
         InitCascadeDirections();
 
-        FlagMatches();
-        //CleanupMatches();
+        Debug.Log("Starting gameloop");
+        StartCoroutine(GameLoop());
     }
 
+    public IEnumerator AnimateMovingTiles() {
+        //Call the coroutine and wait until it finishes to return ourselves
+        Debug.Log("Starting Coroutine");
+        yield return coroutineAnimateMovingTiles();
+    }
 
+    public IEnumerator coroutineAnimateMovingTiles() {
+        Debug.Log("Starting AnimateMovingTiles");
+
+        List<Tile> lstMovingTiles = new List<Tile>();
+        foreach (Tile tile in lstAllTiles) {
+            if(tile.pos.IsEqual(tile.posLastStable) == false) {
+                //If the tile has moved since its last stable snapshot, then we'll need to animate it
+                lstMovingTiles.Add(tile);
+                tile.v2StartLocation = Tile.GetBoardLocation(tile.posLastStable);
+                tile.v2GoalLocation = Tile.GetBoardLocation(tile.pos);
+            }
+        }
+
+        float fTimeStart = Time.timeSinceLevelLoad;
+
+        while (true) {
+            //Now that we know which tiles need to move, let's figure out where their positions should be at this point in time
+            float fElapsedTime = Time.timeSinceLevelLoad - fTimeStart;
+            float fProgress = Mathf.Min(1f, fElapsedTime / fCascadeTime);
+
+            foreach (Tile tile in lstMovingTiles) {
+                tile.transform.localPosition = Vector2.Lerp(tile.v2StartLocation, tile.v2GoalLocation, fProgress);
+            }
+
+            //If our progress is complete, we can stop moving
+            if (fProgress == 1f) {
+                break;
+
+            } else {
+                //If we're not complete, we should yield for a frame 
+                Debug.Log("yielding in AnimateMovingTiles");
+                yield return null;
+            }
+        }
+
+    }
 
     // Update is called once per frame
-    void Update() {
-
-        if (Input.GetKeyDown(KeyCode.O)) {
-            Debug.Log("Swapping 0,0 down");
-            Position posToSwap = new Position();
-            SwapTile(At(posToSwap), Direction.Dir.D);
-
-            Debug.Log("After swapping, " + posToSwap + " has stored position " + At(posToSwap).pos);
-        }
+    public void Update() {
         if (Input.GetKeyDown(KeyCode.P)) {
-            Debug.Log("Calling cascade tiles");
-            CascadeAllTiles();
+            Debug.Log("Calling CleanupMatches");
+            CleanupMatches();
         }
 
     }
-}
 
 
+    public void SetStablePosForDeleted(Tile tile) {
 
+        Direction.Dir dirTowardCenter = tile.dirTowardCenter;
+        Direction.Dir dirCascadeFrom = tile.dirCascadeFrom;
 
-/*  Code graveyard
- * 
- * public void SetCascadeDist(Position pos) {
+        int nDeletedDistTowardCenter = 1;
 
-        Direction.Dir dirTowardCenter = At(pos).dirTowardCenter;
-        Direction.Dir dirCascadeFrom = At(pos).dirCascadeFrom;
-        
-        int nCascadeTowardCenter = 1;
-
-        Position posClosestToCenter = pos;
+        Position posClosestToCenter = tile.pos;
 
         while (true) {
-            Position posToCheck = pos.PosInDir(dirTowardCenter, nCascadeTowardCenter);
+            Position posToCheck = tile.pos.PosInDir(dirTowardCenter, nDeletedDistTowardCenter);
 
-            if(At(posToCheck).clearFlag.bClear == false || At(posToCheck).dirTowardCenter != dirTowardCenter) {
-                //If we've gone as far in this dirction as possible (with cleared tiles and tiles that face the same way)
+            if (At(posToCheck).deletionStatus == Tile.DELETIONSTATUS.DELETED && At(posToCheck).dirTowardCenter == dirTowardCenter) {
+                //If the next tile in this direction is also deleted, and is part of the same cascade direction as us
+
+                posClosestToCenter = posToCheck;
+                nDeletedDistTowardCenter++;
+            } else {
 
                 //Reduce by one since we couldn't actually extend in this direction
-                nCascadeTowardCenter--;
+                nDeletedDistTowardCenter--;
                 break;
-            } else {
-                posClosestToCenter = posToCheck;
-                nCascadeTowardCenter++;
             }
         }
 
-        int nCascadeAwayFromCenter = 1;
+        int nDeletedDistAwayFromCenter = 1;
 
         while (true) {
-            Position posToCheck = pos.PosInDir(dirCascadeFrom, nCascadeAwayFromCenter);
+            Position posToCheck = tile.pos.PosInDir(dirCascadeFrom, nDeletedDistAwayFromCenter);
 
-            if (ValidTile(posToCheck) == false || At(posToCheck).clearFlag.bClear == false) {
-                //If we've gone as far in this dirction as possible (with cleared tiles and tiles that actually exist
-                nCascadeAwayFromCenter--;
-                break;
+            if (ValidTile(posToCheck)){
+                Debug.Assert(At(posToCheck).deletionStatus == Tile.DELETIONSTATUS.DELETED);
+                //If the next outward tile exists, and is also deleted
+                nDeletedDistAwayFromCenter++;
+
             } else {
-                nCascadeAwayFromCenter++;
-            }
+                //If we've gone as far in this dirction as possible (until the edge of the screen)
+                nDeletedDistAwayFromCenter--;
+                break;
+            } 
         }
 
-        int nCascadeDist = 1 + nCascadeTowardCenter + nCascadeAwayFromCenter;
+        int nDeletedDist = 1 + nDeletedDistTowardCenter + nDeletedDistAwayFromCenter;
 
-        //Now that we've found the closest tile to the center, and the length of the same-direction cascade, we can let each tile
-        // in the match know how long its cascade is
-        for(int i=0; i<nCascadeDist; i++) {
-            At(posClosestToCenter.PosInDir(dirCascadeFrom, i)).clearFlag = new Tile.ClearFlag() { bClear = true, nCascadeDist = nCascadeDist };
-            At(posClosestToCenter.PosInDir(dirCascadeFrom, i)).SetDebugText(nCascadeDist.ToString());
+        //Now that we've found the closest tile to the center, and the length of the same-direction deletions, we can let each tile
+        // in the match know how long its deletion sequence is, and set it's stable pos appropriately
+        for (int i = 0; i < nDeletedDist; i++) {
+            At(posClosestToCenter.PosInDir(dirCascadeFrom, i)).posLastStable = posClosestToCenter.PosInDir(dirCascadeFrom, i + nDeletedDist);
+            At(posClosestToCenter.PosInDir(dirCascadeFrom, i)).deletionStatus = Tile.DELETIONSTATUS.ACTIVE;
+            At(posClosestToCenter.PosInDir(dirCascadeFrom, i)).SetDebugText(At(posClosestToCenter.PosInDir(dirCascadeFrom, i)).posLastStable.ToString());
         }
 
     }
 
 
-    public void SetAllCascadeDists() {
+    public void GenerateColoursForDeleted() {
 
-        //Look through each tile that we've flagged for clearing
-        foreach (Position pos in lstFlaggedToClear) {
-            //If we've already handled this position in another match's update, then we don't need to handle it again
-            if (At(pos).clearFlag.bClear == true) continue;
-
-            SetCascadeDist(pos);
+        foreach(Tile tile in lstFlaggedToClear) {
+            tile.SetRandomColour();
         }
 
-    }*/
+    }
+
+
+    public void SetAllStablePosForDeleted() {
+
+        //Look through each tile that we've flagged for clearing
+        foreach (Tile tile in lstFlaggedToClear) {
+            //If we've already handled this position in another tile's run, then we don't need to handle it again
+            if (At(tile.pos).deletionStatus == Tile.DELETIONSTATUS.ACTIVE) continue;
+
+            SetStablePosForDeleted(tile);
+        }
+
+    }
+
+}
