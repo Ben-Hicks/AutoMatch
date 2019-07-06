@@ -225,10 +225,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 713d05995116f38429fda3417e654641, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  v2StartLocation: {x: 0, y: 0}
+  v2GoalLocation: {x: 0, y: 0}
   dirTowardCenter: 0
   dirCascadeFrom: 0
   nI: 0
   nJ: 0
+  bCannotBeCleared: 0
   colour: {fileID: 6903956646356869597}
   txtDebug: {fileID: 0}
   deletionStatus: 0

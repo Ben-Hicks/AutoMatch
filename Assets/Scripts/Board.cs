@@ -8,6 +8,7 @@ public class Board : Singleton<Board> {
 
     public float fDelayBeforeCascade;
     public float fMatchAnimTime;
+    public float fTileClearSwellSize;
 
     public int nWidth;
     public int nHeight;
@@ -46,11 +47,12 @@ public class Board : Singleton<Board> {
 
         CascadeAllTiles();
 
+        yield return AnimateMatchedTiles();
+
         GenerateColoursForDeleted();
         SetAllStablePosForDeleted();
 
-        Debug.Log("before animatematchedtiles");
-        yield return AnimateMatchedTiles();
+        
 
         yield return AnimateMovingTiles();
 
@@ -417,22 +419,23 @@ public class Board : Singleton<Board> {
 
 
 
-    public IEnumerable AnimateMatchedTiles() {
-        Debug.Log("in function call");
+    public IEnumerator AnimateMatchedTiles() {
+        
 
         float fTimeStart = Time.timeSinceLevelLoad;
 
         while (true) {
-            Debug.Log("in while loop");
 
             float fElapsedTime = Time.timeSinceLevelLoad - fTimeStart;
             float fProgress = Mathf.Min(1f, fElapsedTime / fMatchAnimTime);
 
-            Vector2 v2NewScale = Vector2.Lerp(new Vector2(1.1f, 1.1f), new Vector2(0f, 0f), 0.5f * Mathf.Cos(Mathf.PI * (fProgress - 0.15f)) + 0.45f);
+            Vector3 v3NewScale = Vector3.Lerp(new Vector3(0f, 0f, 0f), new Vector3(fTileClearSwellSize, fTileClearSwellSize, fTileClearSwellSize),
+                0.5f * Mathf.Cos(Mathf.PI * (fProgress - 0.15f)) + 0.45f);
+            Debug.Log("fProgress is " + fProgress + "  v3scale is " + v3NewScale);
 
             foreach (Tile tile in lstFlaggedToClear) {
 
-                tile.transform.localScale = v2NewScale;
+                tile.transform.localScale = v3NewScale;
                 
             }
 
@@ -441,15 +444,14 @@ public class Board : Singleton<Board> {
                 break;
             } else {
                 //If we're not complete, we should yield for a frame
-                Debug.Log("yielding");
                 yield return null;
             }
         }
+        
     }
 
 
     public IEnumerator AnimateMovingTiles() {
-        Debug.Log("In animatemoving tiles");
 
         List<Tile> lstMovingTiles = new List<Tile>();
         foreach (Tile tile in lstAllTiles) {
@@ -488,7 +490,7 @@ public class Board : Singleton<Board> {
         foreach(Tile tile in lstMovingTiles) {
             tile.SaveStablePos();
         }
-
+        
     }
 
     // Update is called once per frame
@@ -556,6 +558,7 @@ public class Board : Singleton<Board> {
 
         foreach(Tile tile in lstFlaggedToClear) {
             tile.SetRandomColour();
+            tile.transform.localScale = new Vector3(1f, 1f, 1f);
         }
 
     }
