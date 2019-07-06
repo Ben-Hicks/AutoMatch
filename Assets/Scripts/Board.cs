@@ -7,11 +7,12 @@ public class Board : Singleton<Board> {
     public const int MINMATCHLENGTH = 3;
 
     public float fDelayBeforeCascade;
+    public float fMatchAnimTime;
 
     public int nWidth;
     public int nHeight;
     public float fCascadeTime;
-    
+
     public Position posCenter;
     public Tile tilePlayer;
 
@@ -39,18 +40,18 @@ public class Board : Singleton<Board> {
     }
 
 
-   
+
 
     public IEnumerator CleanupMatches() {
-        Debug.Log("Started CleanupMatches");
-        
+
         CascadeAllTiles();
 
         GenerateColoursForDeleted();
         SetAllStablePosForDeleted();
 
+        yield return AnimateMatchedTiles();
+
         yield return AnimateMovingTiles();
-        Debug.Log("After AnimateMovingTiles");
 
         //Once everything's cleaned up, we can clear out our list of flagged tiles
         lstFlaggedToClear.Clear();
@@ -90,7 +91,7 @@ public class Board : Singleton<Board> {
             if (tileToCascade.deletionStatus == Tile.DELETIONSTATUS.DELETED) continue;
             CascadeTile(tileToCascade);
         }
-        
+
     }
 
 
@@ -103,10 +104,6 @@ public class Board : Singleton<Board> {
             //Check the MatchingLength of the current tile
             int nMatchLength = GetMatchingLength(curPos, dir);
 
-            if (At(curPos).colour.col == Colour.Col.WILD) {
-                Debug.Log("We found a wild tile with match length " + nMatchLength + " in direction " + dir);
-            }
-
             //If the match is long enough
             if (nMatchLength >= MINMATCHLENGTH) {
 
@@ -116,7 +113,7 @@ public class Board : Singleton<Board> {
                     if (At(curPos.PosInDir(dir, i)).deletionStatus == Tile.DELETIONSTATUS.FLAGGED) {
                         //If this tile was already flagged, we don't need to flag it again
 
-                    } else { 
+                    } else {
                         //Otherwise we flag it
                         At(curPos.PosInDir(dir, i)).FlagClear();
 
@@ -155,7 +152,7 @@ public class Board : Singleton<Board> {
             FlagMatchesInDir(posStart, Direction.Dir.DL);
         }
 
-        return lstFlaggedToClear.Count; 
+        return lstFlaggedToClear.Count;
 
     }
 
@@ -417,12 +414,37 @@ public class Board : Singleton<Board> {
         StartCoroutine(GameController.Get().GameLoop());
     }
 
-    public IEnumerator AnimateMovingTiles() {
-        //Call the coroutine and wait until it finishes to return ourselves
-        yield return coroutineAnimateMovingTiles();
+
+
+    public IEnumerable AnimateMatchedTiles() {
+
+        float fTimeStart = Time.timeSinceLevelLoad;
+
+        while (true) {
+
+            float fElapsedTime = Time.timeSinceLevelLoad - fTimeStart;
+            float fProgress = Mathf.Min(1f, fElapsedTime / fMatchAnimTime);
+
+            Vector2 v2NewScale = Vector2.Lerp(new Vector2(1.1f, 1.1f), new Vector2(0f, 0f), 0.5f * Mathf.Cos(Mathf.PI * (fProgress - 0.1f)) + 0.5f);
+
+            foreach (Tile tile in lstFlaggedToClear) {
+
+                tile.transform.localScale = v2NewScale;
+                
+            }
+
+            //If our progress is complete, we can stop moving
+            if (fProgress == 1f) {
+                break;
+            } else {
+                //If we're not complete, we should yield for a frame
+                yield return null;
+            }
+        }
     }
 
-    public IEnumerator coroutineAnimateMovingTiles() {
+
+    public IEnumerator AnimateMovingTiles() {
 
         List<Tile> lstMovingTiles = new List<Tile>();
         foreach (Tile tile in lstAllTiles) {
