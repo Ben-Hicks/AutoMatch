@@ -49,6 +49,7 @@ public class Board : Singleton<Board> {
         GenerateColoursForDeleted();
         SetAllStablePosForDeleted();
 
+        Debug.Log("before animatematchedtiles");
         yield return AnimateMatchedTiles();
 
         yield return AnimateMovingTiles();
@@ -417,15 +418,17 @@ public class Board : Singleton<Board> {
 
 
     public IEnumerable AnimateMatchedTiles() {
+        Debug.Log("in function call");
 
         float fTimeStart = Time.timeSinceLevelLoad;
 
         while (true) {
+            Debug.Log("in while loop");
 
             float fElapsedTime = Time.timeSinceLevelLoad - fTimeStart;
             float fProgress = Mathf.Min(1f, fElapsedTime / fMatchAnimTime);
 
-            Vector2 v2NewScale = Vector2.Lerp(new Vector2(1.1f, 1.1f), new Vector2(0f, 0f), 0.5f * Mathf.Cos(Mathf.PI * (fProgress - 0.1f)) + 0.5f);
+            Vector2 v2NewScale = Vector2.Lerp(new Vector2(1.1f, 1.1f), new Vector2(0f, 0f), 0.5f * Mathf.Cos(Mathf.PI * (fProgress - 0.15f)) + 0.45f);
 
             foreach (Tile tile in lstFlaggedToClear) {
 
@@ -438,6 +441,7 @@ public class Board : Singleton<Board> {
                 break;
             } else {
                 //If we're not complete, we should yield for a frame
+                Debug.Log("yielding");
                 yield return null;
             }
         }
@@ -445,6 +449,7 @@ public class Board : Singleton<Board> {
 
 
     public IEnumerator AnimateMovingTiles() {
+        Debug.Log("In animatemoving tiles");
 
         List<Tile> lstMovingTiles = new List<Tile>();
         foreach (Tile tile in lstAllTiles) {
