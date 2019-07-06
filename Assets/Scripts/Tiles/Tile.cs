@@ -23,6 +23,8 @@ public class Tile : MonoBehaviour {
     public int nI;
     public int nJ;
 
+    public bool bCannotBeCleared;
+
     public Colour colour;
     public Text txtDebug;
 
@@ -69,12 +71,13 @@ public class Tile : MonoBehaviour {
 
     public void FlagClear() {
 
-        SetDebugText("Flagged");
         //TODO:: Have triggers like bombs or static-unclearable tiles
 
         //TODO:: Also add collecting mana/xp/whatever when cleared
 
-        deletionStatus = DELETIONSTATUS.FLAGGED;
+        if (bCannotBeCleared == false) {
+            deletionStatus = DELETIONSTATUS.FLAGGED;
+        } 
     }
 
     public void SetDebugText(string s) {

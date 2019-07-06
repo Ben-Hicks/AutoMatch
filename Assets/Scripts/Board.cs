@@ -6,15 +6,14 @@ public class Board : Singleton<Board> {
 
     public const int MINMATCHLENGTH = 3;
 
+    public float fDelayBeforeCascade;
+
     public int nWidth;
     public int nHeight;
     public float fCascadeTime;
-    public float fDelayBeforeCascade;
-
-    public float fDelayBetweenClears;
-
+    
     public Position posCenter;
-    public Position posPlayer;
+    public Tile tilePlayer;
 
     public GameObject pfTile;
 
@@ -39,41 +38,12 @@ public class Board : Singleton<Board> {
         return lstTiles[pos.i][pos.j];
     }
 
-    public void SnapshotStablePositions() {
-        //After everything has calmed down and tiles are in their fixed positions, then we can 
-        // record this stable positions
 
-        foreach (Tile tile in lstAllTiles) {
-            tile.SaveStablePos();
-        }
-    }
-
-    IEnumerator GameLoop() {
-
-        while (true) {
-            //Initially ensure that our starting matches all get cleaned up
-            yield return CleanupMatches();
-
-            yield return new WaitForSeconds(fDelayBetweenClears);
-
-            //An example of waiting for an input and halting progress on other things
-            /*while (true) {
-                //For now, wait until the P key is pressed
-                if (Input.GetKeyDown(KeyCode.P)) {
-                    Debug.Log("Pressed P");
-                    break;
-                }
-
-                yield return null;
-
-            }*/
-
-        }
-    }
+   
 
     public IEnumerator CleanupMatches() {
         Debug.Log("Started CleanupMatches");
-        FlagMatches();
+        
         CascadeAllTiles();
 
         GenerateColoursForDeleted();
@@ -81,7 +51,6 @@ public class Board : Singleton<Board> {
 
         yield return AnimateMovingTiles();
         Debug.Log("After AnimateMovingTiles");
-        SnapshotStablePositions();
 
         //Once everything's cleaned up, we can clear out our list of flagged tiles
         lstFlaggedToClear.Clear();
@@ -134,26 +103,43 @@ public class Board : Singleton<Board> {
             //Check the MatchingLength of the current tile
             int nMatchLength = GetMatchingLength(curPos, dir);
 
+            if (At(curPos).colour.col == Colour.Col.WILD) {
+                Debug.Log("We found a wild tile with match length " + nMatchLength + " in direction " + dir);
+            }
+
             //If the match is long enough
             if (nMatchLength >= MINMATCHLENGTH) {
 
                 //Then flag each tile along this match
                 for (int i = 0; i < nMatchLength; i++) {
 
+                    if (At(curPos.PosInDir(dir, i)).deletionStatus == Tile.DELETIONSTATUS.FLAGGED) {
+                        //If this tile was already flagged, we don't need to flag it again
 
-                    At(curPos.PosInDir(dir, i)).FlagClear();
-                    lstFlaggedToClear.Add(At(curPos.PosInDir(dir, i)));
+                    } else { 
+                        //Otherwise we flag it
+                        At(curPos.PosInDir(dir, i)).FlagClear();
+
+                        //If the tile was indeed flagged, then we can add it to our list of tiles to be cleared out
+                        if (At(curPos.PosInDir(dir, i)).deletionStatus == Tile.DELETIONSTATUS.FLAGGED) {
+                            lstFlaggedToClear.Add(At(curPos.PosInDir(dir, i)));
+
+                        }
+                    }
                 }
+
             }
 
-            //Advance past this current match
-            curPos = curPos.PosInDir(dir, nMatchLength);
+            //Advance to the next tile and check for matches there
+            // NOTE - we can't jump ahead by the matching length of this tile since it could involve wild matches that would be needed
+            //        for future overlapping matches
+            curPos = curPos.PosInDir(dir);
 
         }
     }
 
 
-    public void FlagMatches() {
+    public int FlagMatches() {
 
         lstFlaggedToClear = new List<Tile>();
 
@@ -168,6 +154,8 @@ public class Board : Singleton<Board> {
         foreach (Position posStart in lstTopRightEdges) {
             FlagMatchesInDir(posStart, Direction.Dir.DL);
         }
+
+        return lstFlaggedToClear.Count; 
 
     }
 
@@ -185,6 +173,7 @@ public class Board : Singleton<Board> {
 
         if (ValidTile(otherPos) == false) {
             Debug.LogError("Can't swap with an invalid tile");
+            return;
         }
 
         //Swap the passed tile and the target tile as they are stored in the grid of tiles
@@ -323,8 +312,9 @@ public class Board : Singleton<Board> {
     public void InitPlayerTile() {
         Debug.Assert(nWidth % 2 == 1 && nHeight % 2 == 1);
 
-        posPlayer = posCenter;
-        At(posPlayer).colour.SetColour(Colour.Col.WILD);
+        tilePlayer = At(posCenter);
+        tilePlayer.colour.SetColour(Colour.Col.WILD);
+        tilePlayer.bCannotBeCleared = true;
 
         //Todo - fill with stuff to set up the player
     }
@@ -420,21 +410,19 @@ public class Board : Singleton<Board> {
         InitTiles();
         InitColours();
 
-        //InitPlayerTile();
+        InitPlayerTile();
         InitCascadeDirections();
 
         Debug.Log("Starting gameloop");
-        StartCoroutine(GameLoop());
+        StartCoroutine(GameController.Get().GameLoop());
     }
 
     public IEnumerator AnimateMovingTiles() {
         //Call the coroutine and wait until it finishes to return ourselves
-        Debug.Log("Starting Coroutine");
         yield return coroutineAnimateMovingTiles();
     }
 
     public IEnumerator coroutineAnimateMovingTiles() {
-        Debug.Log("Starting AnimateMovingTiles");
 
         List<Tile> lstMovingTiles = new List<Tile>();
         foreach (Tile tile in lstAllTiles) {
@@ -452,17 +440,11 @@ public class Board : Singleton<Board> {
             //Now that we know which tiles need to move, let's figure out where their positions should be at this point in time
             float fElapsedTime = Time.timeSinceLevelLoad - fTimeStart;
 
-            float fProgress;
-
-            if(fElapsedTime <= fDelayBeforeCascade) {
-                fProgress = 0f;
-            } else {
-                fProgress = Mathf.Min(1f, (fElapsedTime - fDelayBeforeCascade) / (fCascadeTime - fDelayBeforeCascade));
-            }
+            float fProgress = Mathf.Min(1f, fElapsedTime / fCascadeTime);
             
 
             foreach (Tile tile in lstMovingTiles) {
-                tile.transform.localPosition = Vector2.Lerp(tile.v2StartLocation, tile.v2GoalLocation, fProgress);
+                tile.transform.localPosition = Library.LerpSmoothIn(tile.v2StartLocation, tile.v2GoalLocation, fProgress);
             }
 
             //If our progress is complete, we can stop moving
@@ -471,20 +453,20 @@ public class Board : Singleton<Board> {
 
             } else {
                 //If we're not complete, we should yield for a frame 
-                Debug.Log("yielding in AnimateMovingTiles");
                 yield return null;
             }
+        }
+
+        //Once we've finished moving everything, we can update the stable positions for each tile we've moved
+        foreach(Tile tile in lstMovingTiles) {
+            tile.SaveStablePos();
         }
 
     }
 
     // Update is called once per frame
     public void Update() {
-        if (Input.GetKeyDown(KeyCode.P)) {
-            Debug.Log("Calling CleanupMatches");
-            CleanupMatches();
-        }
-
+        
     }
 
 
