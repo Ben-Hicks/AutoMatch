@@ -7,7 +7,7 @@ public abstract class AbilitySelector : MonoBehaviour {
     public Entity owner;
 
 
-    public abstract IEnumerator UseAbility();
+    public abstract IEnumerator SelectAndUseAbility();
 
 
 }

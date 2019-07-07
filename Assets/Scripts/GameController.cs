@@ -4,12 +4,41 @@ using UnityEngine;
 
 public class GameController : Singleton<GameController> {
 
-    
+    public Queue<Entity> queueEntities;
+    public HashSet<Entity> setActiveEntities; //keep a set of all active entities so that we can ignore inactive ones
 
     public float fDelayBetweenClears;
 
     public override void Init() {
-        
+        queueEntities = new Queue<Entity>();
+        setActiveEntities = new HashSet<Entity>();
+    }
+
+    public void RegisterEntity(Entity entity) {
+
+        queueEntities.Enqueue(entity);
+        setActiveEntities.Add(entity);
+
+    }
+
+    public void UnregisterEntiy(Entity entity) {
+
+        setActiveEntities.Remove(entity);
+
+    }
+
+    public Entity GetNextActingEntity() {
+
+        Entity entityNext = queueEntities.Dequeue();
+        if (setActiveEntities.Contains(entityNext)) {
+            //If the entity at the beginning of the queue exists, we should re-add it to the end of the queue, then return it
+            queueEntities.Enqueue(entityNext);
+            return entityNext;
+        } else {
+            //If the entity that was at the beginning was already unregistered, we shouldn't re-add it to the back of the queue
+            //and should instead recurse to see if the next entity is active
+            return GetNextActingEntity();
+        }
     }
 
     //TODO:: Consider if this can be initialized by this class rather than the board, but in a way that 
@@ -33,45 +62,7 @@ public class GameController : Singleton<GameController> {
                 
             }
 
-
-            while (true) {
-
-                Direction.Dir dirToMove = Direction.Dir.NONE;
-
-                if (Input.GetKeyDown(KeyCode.Q)) {
-                    dirToMove = Direction.Dir.UL;
-                } else if (Input.GetKeyDown(KeyCode.W)) {
-                    dirToMove = Direction.Dir.U;
-                } else if (Input.GetKeyDown(KeyCode.E)) {
-                    dirToMove = Direction.Dir.UR;
-                } else if (Input.GetKeyDown(KeyCode.A)) {
-                    dirToMove = Direction.Dir.DL;
-                } else if (Input.GetKeyDown(KeyCode.S)) {
-                    dirToMove = Direction.Dir.D;
-                } else if (Input.GetKeyDown(KeyCode.D)) {
-                    dirToMove = Direction.Dir.DR;
-                }
-
-                if (dirToMove != Direction.Dir.NONE) {
-                    Board.Get().SwapTile(Board.Get().tilePlayer, dirToMove);
-                    yield return Board.Get().AnimateMovingTiles();
-                    break;
-                } else {
-                    yield return null;
-                }
-            }
-
-            //An example of waiting for an input and halting progress on other things
-            /*while (true) {
-                //For now, wait until the P key is pressed
-                if (Input.GetKeyDown(KeyCode.P)) {
-                    Debug.Log("Pressed P");
-                    break;
-                }
-
-                yield return null;
-
-            }*/
+            yield return GetNextActingEntity().abilityselector.SelectAndUseAbility();
 
         }
     }
