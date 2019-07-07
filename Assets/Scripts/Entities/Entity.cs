@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Entity : MonoBehaviour {
 
-    public List<string> lstActions;//TO UPDATE
+    public List<Ability> lstActions;//TO UPDATE
     public int nMaxHealth;
     public int nCurHealth;
 

@@ -2,17 +2,24 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Ability {
+public abstract class Ability {
+
+    public Entity owner;
+
+    public Tile tileTarget;
 
 
+    //TODO cost
 
-    // Start is called before the first frame update
-    void Start() {
+    public abstract bool CanTarget(Tile _tileTarget);
 
+    public void SetTarget(Tile _tileTarget) {
+        tileTarget = _tileTarget;
     }
 
-    // Update is called once per frame
-    void Update() {
+    public abstract bool CanUse();
 
-    }
+    public abstract void PayCost();
+
+    public abstract IEnumerator ExecuteAbility();
 }

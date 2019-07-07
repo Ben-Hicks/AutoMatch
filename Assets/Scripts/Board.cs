@@ -188,6 +188,12 @@ public class Board : Singleton<Board> {
         At(otherPos).SetDebugText(At(otherPos).posLastStable.ToString());
     }
 
+    public void SwapTile(Tile tile, Tile other) {
+
+
+
+    }
+
 
 
     public int GetMatchingLength(Position posStart, Direction.Dir dir) {
@@ -431,7 +437,6 @@ public class Board : Singleton<Board> {
 
             Vector3 v3NewScale = Vector3.Lerp(new Vector3(0f, 0f, 0f), new Vector3(fTileClearSwellSize, fTileClearSwellSize, fTileClearSwellSize),
                 0.5f * Mathf.Cos(Mathf.PI * (fProgress - 0.15f)) + 0.45f);
-            Debug.Log("fProgress is " + fProgress + "  v3scale is " + v3NewScale);
 
             foreach (Tile tile in lstFlaggedToClear) {
 

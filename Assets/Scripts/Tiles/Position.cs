@@ -54,4 +54,18 @@ public class Position {
         }
     }
 
+    public Direction.Dir GetAdjacentDir(Position posEnd) {
+
+        if (PosInDir(Direction.Dir.D) == posEnd) return Direction.Dir.D;
+        if (PosInDir(Direction.Dir.DL) == posEnd) return Direction.Dir.DL;
+        if (PosInDir(Direction.Dir.DR) == posEnd) return Direction.Dir.DR;
+        if (PosInDir(Direction.Dir.U) == posEnd) return Direction.Dir.U;
+        if (PosInDir(Direction.Dir.UL) == posEnd) return Direction.Dir.UL;
+        if (PosInDir(Direction.Dir.UR) == posEnd) return Direction.Dir.UR;
+
+        //if none of the above directions worked we'll just return null
+        return Direction.Dir.NONE;
+
+    }
+
 }

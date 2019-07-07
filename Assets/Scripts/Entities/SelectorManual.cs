@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class SelectorManual : AbilitySelector {
 
-
+    public override IEnumerator UseAbility() {
+        throw new System.NotImplementedException();
+    }
 
     // Start is called before the first frame update
     void Start() { 
