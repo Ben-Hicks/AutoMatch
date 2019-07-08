@@ -9,6 +9,8 @@ public class GameController : Singleton<GameController> {
 
     public float fDelayBetweenClears;
 
+    public EntHero entHero;
+
     public override void Init() {
         queueEntities = new Queue<Entity>();
         setActiveEntities = new HashSet<Entity>();

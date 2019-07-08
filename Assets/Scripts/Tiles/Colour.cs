@@ -8,10 +8,8 @@ public class Colour : MonoBehaviour {
     public enum Col { WILD, BLUE, RED, GREEN, GOLD, PURPLE, CYAN, BLACK };
 
     public Col col;
-    public Tile tile;
 
     public SpriteRenderer rendBackground;
-
 
     public bool CanMatch(Colour other) {
         if(col == Col.WILD || other.col == Col.WILD) {
@@ -23,8 +21,13 @@ public class Colour : MonoBehaviour {
 
     public void SetNextColour() {
 
-        if ((int)col == NUMCOLOURS - 1) SetColour((Col)1);
-        else SetColour(col + 1);
+        if ((int)col == NUMCOLOURS - 1) SetCol((Col)1);
+        else SetCol(col + 1);
+    }
+
+    public void SetRandomColour() {
+        Col colRand = (Col)Random.Range(1, NUMCOLOURS);
+        SetCol(colRand);
     }
 
     public void DisplayColour() {
@@ -77,20 +80,10 @@ public class Colour : MonoBehaviour {
         rendBackground.color = colToSet;
     }
 
-    public void SetColour(Col _col) {
+    public void SetCol(Col _col) {
         col = _col;
 
         DisplayColour();
     }
-
-    // Start is called before the first frame update
-    void Start() {
-       
-
-    }
-
-    // Update is called once per frame
-    void Update() {
-
-    }
+    
 }

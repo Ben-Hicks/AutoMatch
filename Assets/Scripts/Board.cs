@@ -28,7 +28,7 @@ public class Board : Singleton<Board> {
     public List<Position> lstTopLeftEdges;
     public List<Position> lstTopRightEdges;
 
-    public List<Tile> lstFlaggedToClear;
+    public HashSet<Tile> setFlaggedToClear;
 
     public Board() {
         lstTopLeftEdges = new List<Position>();
@@ -41,11 +41,29 @@ public class Board : Singleton<Board> {
     }
 
 
+    public void CollectFlaggedTiles() {
+        Debug.Log("Remember to actually properly set up the collections");
+        Debug.Log("Also consider if collections should be set up as coroutines so they can do animations");
+        foreach (Tile tile in setFlaggedToClear) {
+
+            if(tile.toCollectBy == null) {
+                //If no one is set to collect this tile, then let the player collect it
+                tile.toCollectBy = GameController.Get().entHero.collection;
+            }
+
+            tile.prop.OnCollect(tile.toCollectBy);
+
+            tile.toCollectBy = null;
+        }
+        
+    }
 
 
     public IEnumerator CleanupMatches() {
 
         CascadeAllTiles();
+
+        CollectFlaggedTiles();
 
         yield return AnimateMatchedTiles();
 
@@ -57,7 +75,7 @@ public class Board : Singleton<Board> {
         yield return AnimateMovingTiles();
 
         //Once everything's cleaned up, we can clear out our list of flagged tiles
-        lstFlaggedToClear.Clear();
+        setFlaggedToClear.Clear();
     }
 
     public void CascadeTile(Tile tile) {
@@ -73,10 +91,6 @@ public class Board : Singleton<Board> {
 
                 //Debug.Log("Stopping since " + posNext.i + "," + posNext.j + " can't be swapped into since it's deleted");
                 break;
-            } else if (At(posNext).deletionStatus == Tile.DELETIONSTATUS.FLAGGED) {
-
-                //Debug.Log("Yielding to " + posNext + " since it's flagged and it's further away from the center than we are");
-                CascadeTile(At(posNext));
             } else {
                 SwapTile(tile, tile.dirCascadeFrom);
             }
@@ -90,7 +104,8 @@ public class Board : Singleton<Board> {
 
     public void CascadeAllTiles() {
 
-        foreach (Tile tileToCascade in lstFlaggedToClear) {
+        foreach (Tile tileToCascade in setFlaggedToClear) {
+            //If we already set this tile to be deleted while dealing with another tile in the same cascade, then we don't need to look at it again
             if (tileToCascade.deletionStatus == Tile.DELETIONSTATUS.DELETED) continue;
             CascadeTile(tileToCascade);
         }
@@ -113,19 +128,8 @@ public class Board : Singleton<Board> {
                 //Then flag each tile along this match
                 for (int i = 0; i < nMatchLength; i++) {
 
-                    if (At(curPos.PosInDir(dir, i)).deletionStatus == Tile.DELETIONSTATUS.FLAGGED) {
-                        //If this tile was already flagged, we don't need to flag it again
+                    At(curPos.PosInDir(dir, i)).prop.FlagForDeletion();
 
-                    } else {
-                        //Otherwise we flag it
-                        At(curPos.PosInDir(dir, i)).FlagClear();
-
-                        //If the tile was indeed flagged, then we can add it to our list of tiles to be cleared out
-                        if (At(curPos.PosInDir(dir, i)).deletionStatus == Tile.DELETIONSTATUS.FLAGGED) {
-                            lstFlaggedToClear.Add(At(curPos.PosInDir(dir, i)));
-
-                        }
-                    }
                 }
 
             }
@@ -141,7 +145,7 @@ public class Board : Singleton<Board> {
 
     public int FlagMatches() {
 
-        lstFlaggedToClear = new List<Tile>();
+        setFlaggedToClear = new HashSet<Tile>();
 
         foreach (Position posStart in lstTopTwoEdges) {
             FlagMatchesInDir(posStart, Direction.Dir.D);
@@ -155,7 +159,7 @@ public class Board : Singleton<Board> {
             FlagMatchesInDir(posStart, Direction.Dir.DL);
         }
 
-        return lstFlaggedToClear.Count;
+        return setFlaggedToClear.Count;
 
     }
 
@@ -284,8 +288,8 @@ public class Board : Singleton<Board> {
                 if ((i + j) % 2 == 0) {
                     //if this is a valid tile then we can fill it
 
-                    //Initially, we can pick a random colour
-                    lstTiles[i][j].SetRandomColour();
+                    Debug.Log("Remember that we should eventually choose randomly from the basic tiles here");
+                    PropertyController.Get().PlaceProperty("Gold", lstTiles[i][j]);
 
                     if (bStartWithMatches == false) {
                         //if we don't want to start with matches, then we'll have to find a colour that won't form a match
@@ -321,10 +325,10 @@ public class Board : Singleton<Board> {
         Debug.Assert(nWidth % 2 == 1 && nHeight % 2 == 1);
 
         tilePlayer = At(posCenter);
-        tilePlayer.colour.SetColour(Colour.Col.WILD);
-        tilePlayer.bCannotBeCleared = true;
 
-        EntityController.Get().PlaceEntity(EntityController.Get().pfHero, tilePlayer);
+        PropertyController.Get().PlaceProperty("Hero", tilePlayer);
+        
+        GameController.Get().entHero = tilePlayer.prop.GetComponent<EntHero>();
 
         //Todo - fill with stuff to set up the player
     }
@@ -442,7 +446,7 @@ public class Board : Singleton<Board> {
             Vector3 v3NewScale = Vector3.Lerp(new Vector3(0f, 0f, 0f), new Vector3(fTileClearSwellSize, fTileClearSwellSize, fTileClearSwellSize),
                 0.5f * Mathf.Cos(Mathf.PI * (fProgress - 0.15f)) + 0.45f);
 
-            foreach (Tile tile in lstFlaggedToClear) {
+            foreach (Tile tile in setFlaggedToClear) {
 
                 tile.transform.localScale = v3NewScale;
                 
@@ -565,8 +569,9 @@ public class Board : Singleton<Board> {
 
     public void GenerateColoursForDeleted() {
 
-        foreach(Tile tile in lstFlaggedToClear) {
-            tile.SetRandomColour();
+        foreach(Tile tile in setFlaggedToClear) {
+            Debug.Log("Remember that we should eventually choose randomly from the basic tiles here");
+            PropertyController.Get().PlaceProperty("Gold", tile);
             tile.transform.localScale = new Vector3(1f, 1f, 1f);
         }
 
@@ -576,7 +581,7 @@ public class Board : Singleton<Board> {
     public void SetAllStablePosForDeleted() {
 
         //Look through each tile that we've flagged for clearing
-        foreach (Tile tile in lstFlaggedToClear) {
+        foreach (Tile tile in setFlaggedToClear) {
             //If we've already handled this position in another tile's run, then we don't need to handle it again
             if (At(tile.pos).deletionStatus == Tile.DELETIONSTATUS.ACTIVE) continue;
 

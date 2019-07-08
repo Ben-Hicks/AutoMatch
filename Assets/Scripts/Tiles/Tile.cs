@@ -24,14 +24,22 @@ public class Tile : MonoBehaviour {
     public int nJ;
 
     public bool bCannotBeCleared;
-
-    public Colour colour;
     public Text txtDebug;
 
-    public enum DELETIONSTATUS { ACTIVE, FLAGGED, DELETED};
+    public enum DELETIONSTATUS { ACTIVE, FLAGGED, DELETED}; //TODO:: Get rid of this if possible
     public DELETIONSTATUS deletionStatus;
 
-    public Entity entity;
+    public Collection toCollectBy;
+
+    public Property prop;
+
+    private Colour privcolour;
+    public Colour colour {
+        get {
+            if (privcolour == null) privcolour = GetComponent<Colour>();
+            return privcolour;
+        }
+    }
 
     public void Init(int i, int j) {
         SetPositon(new Position() {
@@ -43,15 +51,11 @@ public class Tile : MonoBehaviour {
         SaveStablePos();
     }
 
-    public bool HasEntity() {
-        return entity != null;
-    }
+    public void SetProperty(Property _prop) {
 
-    public void SetEntity(Entity _entity) {
-        Debug.Assert((_entity == null && entity != null) || (_entity != null && entity == null));
-
-        entity = _entity;
-        entity.SetTile(this);
+        prop = _prop;
+        prop.SetTile(this);
+        prop.Init();
     }
 
     public void SetDirTowardCenter(Direction.Dir _dirTowardCenter) {
@@ -67,11 +71,6 @@ public class Tile : MonoBehaviour {
         nJ = pos.j;
     }
 
-    public void SetRandomColour() {
-        Colour.Col colRand = (Colour.Col)Random.Range(1, Colour.NUMCOLOURS);
-        colour.SetColour(colRand);
-    }
-
     public static Vector2 GetBoardLocation(Position pos) {
         return new Vector2(pos.i * fTileDistHorz + (pos.i - 1) * fTileGapHorz,
                          -(pos.j * fTileDistVert + (pos.j - 1) * fTileGapVert));
@@ -81,16 +80,7 @@ public class Tile : MonoBehaviour {
         posLastStable = pos;
     }
 
-    public void FlagClear() {
-
-        //TODO:: Have triggers like bombs or static-unclearable tiles
-
-        //TODO:: Also add collecting mana/xp/whatever when cleared
-
-        if (bCannotBeCleared == false) {
-            deletionStatus = DELETIONSTATUS.FLAGGED;
-        } 
-    }
+    
 
     public void SetDebugText(string s) {
         if (txtDebug == null) txtDebug = GetComponentInChildren<Text>();

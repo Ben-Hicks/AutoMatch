@@ -55,7 +55,6 @@ public class Position {
     }
 
     public Direction.Dir GetAdjacentDir(Position posEnd) {
-        Debug.Log("Checking adjacency between " + this.ToString() + " and " + posEnd.ToString());
 
         if (PosInDir(Direction.Dir.D).IsEqual(posEnd)) return Direction.Dir.D;
         if (PosInDir(Direction.Dir.DL).IsEqual(posEnd)) return Direction.Dir.DL;

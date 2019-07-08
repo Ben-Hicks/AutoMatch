@@ -454,5 +454,32 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5492675459445591168, guid: 78d6d242c2f680842966a8c1760422e7,
+        type: 3}
+      propertyPath: arPropertyEntries.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5492675459445591168, guid: 78d6d242c2f680842966a8c1760422e7,
+        type: 3}
+      propertyPath: arPropertyEntries.Array.data[0].sName
+      value: Gold
+      objectReference: {fileID: 0}
+    - target: {fileID: 5492675459445591168, guid: 78d6d242c2f680842966a8c1760422e7,
+        type: 3}
+      propertyPath: arPropertyEntries.Array.data[1].sName
+      value: Hero
+      objectReference: {fileID: 0}
+    - target: {fileID: 5492675459445591168, guid: 78d6d242c2f680842966a8c1760422e7,
+        type: 3}
+      propertyPath: arPropertyEntries.Array.data[0].goProperty
+      value: 
+      objectReference: {fileID: 5259060393839927081, guid: fbba56bd8307f9946aa3da62dd4d0dec,
+        type: 3}
+    - target: {fileID: 5492675459445591168, guid: 78d6d242c2f680842966a8c1760422e7,
+        type: 3}
+      propertyPath: arPropertyEntries.Array.data[1].goProperty
+      value: 
+      objectReference: {fileID: 5623294479343024117, guid: aa46aa68d6914834aa26768acfc7fc47,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 78d6d242c2f680842966a8c1760422e7, type: 3}

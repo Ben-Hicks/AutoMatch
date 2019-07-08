@@ -7,7 +7,6 @@ public class SelectorManual : AbilitySelector {
     public override IEnumerator SelectAndUseAbility() {
 
         while (true) {
-            Debug.Log("Looking for movement inputs");
 
             Direction.Dir dirToMove = Direction.Dir.NONE;
 
@@ -31,8 +30,6 @@ public class SelectorManual : AbilitySelector {
                 Tile tileTarget = Board.Get().At(owner.tile.pos.PosInDir(dirToMove));
 
                 if (abilToUse.CanUse() && abilToUse.CanTarget(tileTarget)) {
-
-                    Debug.Log("Going through the use process");
 
                     abilToUse.SetTarget(tileTarget);
                     abilToUse.PayCost();
