@@ -315,12 +315,16 @@ public class Board : Singleton<Board> {
 
     }
 
+    
+    //TODO - Move this somewhere else
     public void InitPlayerTile() {
         Debug.Assert(nWidth % 2 == 1 && nHeight % 2 == 1);
 
         tilePlayer = At(posCenter);
         tilePlayer.colour.SetColour(Colour.Col.WILD);
         tilePlayer.bCannotBeCleared = true;
+
+        EntityController.Get().PlaceEntity(EntityController.Get().pfHero, tilePlayer);
 
         //Todo - fill with stuff to set up the player
     }

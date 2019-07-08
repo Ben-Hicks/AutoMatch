@@ -55,13 +55,14 @@ public class Position {
     }
 
     public Direction.Dir GetAdjacentDir(Position posEnd) {
+        Debug.Log("Checking adjacency between " + this.ToString() + " and " + posEnd.ToString());
 
-        if (PosInDir(Direction.Dir.D) == posEnd) return Direction.Dir.D;
-        if (PosInDir(Direction.Dir.DL) == posEnd) return Direction.Dir.DL;
-        if (PosInDir(Direction.Dir.DR) == posEnd) return Direction.Dir.DR;
-        if (PosInDir(Direction.Dir.U) == posEnd) return Direction.Dir.U;
-        if (PosInDir(Direction.Dir.UL) == posEnd) return Direction.Dir.UL;
-        if (PosInDir(Direction.Dir.UR) == posEnd) return Direction.Dir.UR;
+        if (PosInDir(Direction.Dir.D).IsEqual(posEnd)) return Direction.Dir.D;
+        if (PosInDir(Direction.Dir.DL).IsEqual(posEnd)) return Direction.Dir.DL;
+        if (PosInDir(Direction.Dir.DR).IsEqual(posEnd)) return Direction.Dir.DR;
+        if (PosInDir(Direction.Dir.U).IsEqual(posEnd)) return Direction.Dir.U;
+        if (PosInDir(Direction.Dir.UL).IsEqual(posEnd)) return Direction.Dir.UL;
+        if (PosInDir(Direction.Dir.UR).IsEqual(posEnd)) return Direction.Dir.UR;
 
         //if none of the above directions worked we'll just return null
         return Direction.Dir.NONE;

@@ -11,6 +11,12 @@ public abstract class Ability {
 
     //TODO cost
 
+
+    public Ability(Entity _owner) {
+        owner = _owner;
+    }
+
+
     public abstract bool CanTarget(Tile _tileTarget);
 
     public void SetTarget(Tile _tileTarget) {

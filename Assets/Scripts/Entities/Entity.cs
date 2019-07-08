@@ -4,7 +4,10 @@ using UnityEngine;
 
 public class Entity : MonoBehaviour {
 
-    public List<Ability> lstActions;//TO UPDATE
+    public const int NUMABILSLOTS = 6;
+    public enum ABILSLOT { PASS, MOVEMENT, ABIL1, ABIL2, ABIL3, ABIL4 };
+    public List<Ability> lstAbilities;
+
     public int nMaxHealth;
     public int nCurHealth;
 
@@ -26,10 +29,15 @@ public class Entity : MonoBehaviour {
     void Start() {
         abilityselector = GetComponent<AbilitySelector>();
         GameController.Get().RegisterEntity(this);
+
+        InitStandardAbilities();
     }
 
-    // Update is called once per frame
-    void Update() {
-
+    public void InitStandardAbilities() {
+        lstAbilities = new List<Ability>(NUMABILSLOTS);
+        for (int i = 0; i < NUMABILSLOTS; i++) lstAbilities.Add(null);
+        
+        lstAbilities[(int)ABILSLOT.MOVEMENT] = new AbilityMove(this);
     }
+
 }

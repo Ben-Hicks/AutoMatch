@@ -7,6 +7,7 @@ public class SelectorManual : AbilitySelector {
     public override IEnumerator SelectAndUseAbility() {
 
         while (true) {
+            Debug.Log("Looking for movement inputs");
 
             Direction.Dir dirToMove = Direction.Dir.NONE;
 
@@ -25,24 +26,30 @@ public class SelectorManual : AbilitySelector {
             }
 
             if (dirToMove != Direction.Dir.NONE) {
-                Board.Get().SwapTile(Board.Get().tilePlayer, dirToMove);
-                yield return Board.Get().AnimateMovingTiles();
-                break;
-            } else {
-                yield return null;
+                Ability abilToUse = owner.lstAbilities[(int)Entity.ABILSLOT.MOVEMENT];
+
+                Tile tileTarget = Board.Get().At(owner.tile.pos.PosInDir(dirToMove));
+
+                if (abilToUse.CanUse() && abilToUse.CanTarget(tileTarget)) {
+
+                    Debug.Log("Going through the use process");
+
+                    abilToUse.SetTarget(tileTarget);
+                    abilToUse.PayCost();
+
+                    yield return abilToUse.ExecuteAbility();
+
+                    //clean out the target
+                    abilToUse.SetTarget(null);
+
+                    break;
+                }
             }
+
+            yield return null;
+            
         }
 
     }
 
-    // Start is called before the first frame update
-    void Start() { 
-
-        
-    }
-
-    // Update is called once per frame
-    void Update() {
-
-    }
 }

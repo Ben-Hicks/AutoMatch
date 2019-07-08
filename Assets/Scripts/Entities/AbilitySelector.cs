@@ -9,5 +9,8 @@ public abstract class AbilitySelector : MonoBehaviour {
 
     public abstract IEnumerator SelectAndUseAbility();
 
+    public void Start() {
+        owner = GetComponent<Entity>();
+    }
 
 }

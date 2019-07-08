@@ -4,6 +4,11 @@ using UnityEngine;
 
 public class AbilityMove : Ability {
 
+
+    public AbilityMove(Entity _owner): base(_owner) {
+
+    }
+
     public override void PayCost() {
         //TODO - something here
     }
@@ -19,9 +24,9 @@ public class AbilityMove : Ability {
     }
 
     public override IEnumerator ExecuteAbility() {
-
+        Debug.Log("Executing Move Ability");
         Board.Get().SwapTile(owner.tile, owner.tile.pos.GetAdjacentDir(tileTarget.pos));
+        yield return Board.Get().AnimateMovingTiles();
 
-        return null;
     }
 }

@@ -30,7 +30,8 @@ public class Tile : MonoBehaviour {
 
     public enum DELETIONSTATUS { ACTIVE, FLAGGED, DELETED};
     public DELETIONSTATUS deletionStatus;
-    
+
+    public Entity entity;
 
     public void Init(int i, int j) {
         SetPositon(new Position() {
@@ -40,6 +41,17 @@ public class Tile : MonoBehaviour {
 
         this.transform.localPosition = GetBoardLocation(pos);
         SaveStablePos();
+    }
+
+    public bool HasEntity() {
+        return entity != null;
+    }
+
+    public void SetEntity(Entity _entity) {
+        Debug.Assert((_entity == null && entity != null) || (_entity != null && entity == null));
+
+        entity = _entity;
+        entity.SetTile(this);
     }
 
     public void SetDirTowardCenter(Direction.Dir _dirTowardCenter) {
