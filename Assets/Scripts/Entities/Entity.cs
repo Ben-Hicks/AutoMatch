@@ -10,7 +10,9 @@ public abstract class Entity : Property {
 
     public int nMaxHealth;
     public int nCurHealth;
-    
+
+    public int nCollectionPriority;
+
     public AbilitySelector abilityselector;
 
     private Collection privcollection;
@@ -35,6 +37,7 @@ public abstract class Entity : Property {
 
     public override void SetDefaultPropertyValues() {
         bBlocksMovement = true;
+        nCollectionPriority = 0;
     }
 
     public void InitStandardAbilities() {

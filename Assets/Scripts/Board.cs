@@ -48,8 +48,11 @@ public class Board : Singleton<Board> {
 
             if(tile.toCollectBy == null) {
                 //If no one is set to collect this tile, then let the player collect it
+
+                Debug.Log("Currently not letting players collect faraway tiles");
+                return;
                 tile.toCollectBy = GameController.Get().entHero.collection;
-            }
+            } 
 
             tile.prop.OnCollect(tile.toCollectBy);
 
@@ -198,10 +201,30 @@ public class Board : Singleton<Board> {
             //If the match is long enough
             if (nMatchLength >= MINMATCHLENGTH) {
 
-                //Then flag each tile along this match
-                for (int i = 0; i < nMatchLength; i++) {
+                Entity entHighestCollectionPriority = null;
+                //first we'll find the highest collection priority entity in the match
+                for(int i=0; i < nMatchLength; i++) {
 
-                    At(curPos.PosInDir(dir, i)).prop.FlagForDeletion();
+                    //Attempt to get an entity component from the current tile 
+                    //TODO:: Optimize this since repeated getcomponents is likely slow
+                    Entity ent = At(curPos.PosInDir(dir, i)).prop.GetComponent<Entity>();
+
+                    //if either we haven't seen a collector yet, or this new collector is faster
+                    if (ent != null && (entHighestCollectionPriority == null || ent.nCollectionPriority > entHighestCollectionPriority.nCollectionPriority)) {
+                        entHighestCollectionPriority = ent;
+                    }
+                }
+
+                //Then flag each tile along this match, and update their collector reference if its better than their current one
+                for (int i = 0; i < nMatchLength; i++) {
+                    Tile tile = At(curPos.PosInDir(dir, i));
+
+                    tile.prop.FlagForDeletion();
+
+                    if (entHighestCollectionPriority != null && (tile.toCollectBy == null || entHighestCollectionPriority.nCollectionPriority > tile.toCollectBy.entity.nCollectionPriority)) {
+                        tile.toCollectBy = entHighestCollectionPriority.collection;
+                    }
+
 
                 }
 

@@ -13,4 +13,9 @@ public class EntHero : Entity {
         colour.SetCol(Colour.Col.WILD);
     }
 
+    public override void SetDefaultPropertyValues() {
+        bBlocksMovement = true;
+        nCollectionPriority = 999999999;
+    }
+
 }

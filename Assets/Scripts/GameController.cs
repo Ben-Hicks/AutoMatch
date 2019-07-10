@@ -47,6 +47,9 @@ public class GameController : Singleton<GameController> {
     //       could ensure the board gets a chance to finish initiallizing itself
     public IEnumerator GameLoop() {
 
+        //Initially pause for a frame to ensure all initializations can happen before moving forward with the game loop
+        yield return null;
+
         while (true) {
             Board.Get().UpdateDistsFromPlayer();
 

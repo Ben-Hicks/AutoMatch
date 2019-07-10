@@ -15,7 +15,8 @@ public class AbilityMove : Ability {
 
     public override bool CanTarget(Tile _tileTarget) {
 
-        return owner.tile.pos.GetAdjacentDir(_tileTarget.pos) != Direction.Dir.NONE;
+        return owner.tile.pos.GetAdjacentDir(_tileTarget.pos) != Direction.Dir.NONE &&
+            _tileTarget.prop.bBlocksMovement == false;
 
     }
 
