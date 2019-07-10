@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5492675459445591183}
   - component: {fileID: 5492675459445591168}
   m_Layer: 0
-  m_Name: pfEntityManager
+  m_Name: pfPropertyManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -43,5 +43,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0d7ef3b38553ee48ab254f6d94a8ff4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pfHero: {fileID: 5623294479343024117, guid: aa46aa68d6914834aa26768acfc7fc47, type: 3}
-  lstEnemyPrefabs: []
+  arPropertyEntries:
+  - sName: Hero
+    goProperty: {fileID: 5623294479343024117, guid: aa46aa68d6914834aa26768acfc7fc47,
+      type: 3}
+  - sName: Gold
+    goProperty: {fileID: 5259060393839927081, guid: fbba56bd8307f9946aa3da62dd4d0dec,
+      type: 3}
+  - sName: Blocker
+    goProperty: {fileID: 7703089548995867608, guid: 8f9ab9906daabc84d9d8864387488161,
+      type: 3}

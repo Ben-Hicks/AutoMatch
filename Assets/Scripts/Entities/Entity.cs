@@ -33,6 +33,10 @@ public abstract class Entity : Property {
         InitStandardAbilities();
     }
 
+    public override void SetDefaultPropertyValues() {
+        bBlocksMovement = true;
+    }
+
     public void InitStandardAbilities() {
         lstAbilities = new List<Ability>(NUMABILSLOTS);
         for (int i = 0; i < NUMABILSLOTS; i++) lstAbilities.Add(null);

@@ -68,4 +68,13 @@ public class Position {
 
     }
 
+
+    public int DirectDistFrom(Position end) {
+
+        int dX = Mathf.Abs(end.i - i);
+        int dY = Mathf.Abs(end.j - j);
+
+        return dX + Mathf.Max(0, (dY - dX) / 2);
+
+    }
 }

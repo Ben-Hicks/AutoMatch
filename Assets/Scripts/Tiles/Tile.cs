@@ -20,10 +20,12 @@ public class Tile : MonoBehaviour {
     public Direction.Dir dirTowardCenter;
     public Direction.Dir dirCascadeFrom;
 
+    public int nPathDistToPlayer;
+    public int nDirectDistToPlayer;
+
     public int nI;
     public int nJ;
-
-    public bool bCannotBeCleared;
+    
     public Text txtDebug;
 
     public enum DELETIONSTATUS { ACTIVE, FLAGGED, DELETED}; //TODO:: Get rid of this if possible
@@ -80,6 +82,14 @@ public class Tile : MonoBehaviour {
         posLastStable = pos;
     }
 
+    public void UpdateDirectDistToPlayer() {
+        nDirectDistToPlayer = pos.DirectDistFrom(GameController.Get().entHero.tile.pos);
+    }
+
+    public void UpdatePathDistToPlayer(int _nPathDistToPlayer) {
+        nPathDistToPlayer = _nPathDistToPlayer;
+        SetDebugText(nDirectDistToPlayer.ToString() + " " + nPathDistToPlayer.ToString());
+    }
     
 
     public void SetDebugText(string s) {

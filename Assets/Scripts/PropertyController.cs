@@ -61,6 +61,20 @@ public class PropertyController : Singleton<PropertyController> {
         return dictProperties[sName];
     }
 
+    public void SpawnNewProperty(Tile tile) {
+        //TODO:: Replace this with a class whose job is to only decide which type of tiles should be spawned given the circumstance of the game
+
+        float fRand = Random.Range(0, 100);
+
+        if(fRand < 50) {
+            PlaceProperty("Gold", tile);
+        } else {
+            PlaceProperty("Blocker", tile);
+        }
+
+
+    }
+
     public override void Init() {
         if (bDictInitialized == false) InitPropertiesDictionary();
     }

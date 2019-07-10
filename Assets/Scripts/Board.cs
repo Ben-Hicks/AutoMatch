@@ -59,6 +59,79 @@ public class Board : Singleton<Board> {
     }
 
 
+    public void GetPathDistsTo(Tile tileStart, ref Dictionary<Tile, int> dictDists) {
+
+        int nInfinity = 999999999;
+
+        foreach (Tile tile in lstAllTiles) {
+            //initially say all tiles are extremely far away
+            dictDists[tile] = nInfinity;
+        }
+
+        int nCurDist = 0;
+        dictDists[tileStart] = 0;
+
+        Queue<Tile> queueNextToProcess = new Queue<Tile>();
+        //Initially we'll add the starting tile, as well as a special null tile to count when we've exhausted
+        // finding tiles at the same distance
+        queueNextToProcess.Enqueue(tileStart);
+        queueNextToProcess.Enqueue(null);
+
+        while (true) {
+
+            Tile tileCur = queueNextToProcess.Dequeue();
+
+            //Check if we've reached the end of elements all with distance, nCurDist
+            if(tileCur == null) {
+                //If we have no elements left to explore, then we can end
+                if (queueNextToProcess.Count == 0) break;
+
+                //Increase the distance and re-add the marker to mark the end of tiles at this distance
+                nCurDist++;
+                queueNextToProcess.Enqueue(null);
+            } else {
+
+                //If we have a tile as the next element we're exploring, then we can get all of its adjacent tiles
+                List<Tile> lstAdj = GetAdjacentTiles(tileCur);
+
+                foreach(Tile tile in lstAdj) {
+                    //If we can't move onto this tile, then move on to the next one
+                    if (tile.prop.bBlocksMovement) continue;
+
+                    //If this tile was already explored, then move on to the next one
+                    if (dictDists[tile] != nInfinity) continue;
+
+                    //If we can move to this tile, and it wasn't explored already, then this
+                    // must be our first time seeing it, so add it to the list of items to explore next
+                    queueNextToProcess.Enqueue(tile);
+                    //And we can record its length to ensure we don't try to visit it multiple times
+                    dictDists[tile] = nCurDist + 1;
+                }
+            }
+        }
+    }
+
+    public void UpdatePathDistsFromPlayer() {
+        //Use the breadthfirst search algorithm to examine each tile's path-distance from the player's tile
+        Dictionary<Tile, int> dictDistsToPlayer = new Dictionary<Tile, int>();
+        GetPathDistsTo(GameController.Get().entHero.tile, ref dictDistsToPlayer);
+
+        foreach (Tile tile in lstAllTiles) {
+            tile.UpdatePathDistToPlayer(dictDistsToPlayer[tile]);
+        }
+    }
+
+    public void UpdateDistsFromPlayer() {
+
+        foreach(Tile tile in lstAllTiles) {
+            tile.UpdateDirectDistToPlayer();
+        }
+
+        UpdatePathDistsFromPlayer();
+
+    }
+
+
     public IEnumerator CleanupMatches() {
 
         CascadeAllTiles();
@@ -187,17 +260,23 @@ public class Board : Singleton<Board> {
         //We need to fix up the swapped tiles to ensure their positions accurately represent their new position
         At(thisPos).SetPositon(thisPos);
         At(otherPos).SetPositon(otherPos);
-
-        At(thisPos).SetDebugText(At(thisPos).posLastStable.ToString());
-        At(otherPos).SetDebugText(At(otherPos).posLastStable.ToString());
+       
     }
 
-    public void SwapTile(Tile tile, Tile other) {
+    public List<Tile> GetAdjacentTiles(Tile tile) {
 
+        List<Tile> lstAdj = new List<Tile>();
 
+        for(Direction.Dir dir = 0; (int)dir <= Direction.NUMDIRECTIONS; dir++) {
+            if (dir == Direction.Dir.NONE) continue;
 
+            if (ValidTile(tile.pos.PosInDir(dir))) {
+                lstAdj.Add(At(tile.pos.PosInDir(dir)));
+            }
+        }
+
+        return lstAdj;
     }
-
 
 
     public int GetMatchingLength(Position posStart, Direction.Dir dir) {
@@ -287,9 +366,8 @@ public class Board : Singleton<Board> {
 
                 if ((i + j) % 2 == 0) {
                     //if this is a valid tile then we can fill it
-
-                    Debug.Log("Remember that we should eventually choose randomly from the basic tiles here");
-                    PropertyController.Get().PlaceProperty("Gold", lstTiles[i][j]);
+                    
+                    PropertyController.Get().SpawnNewProperty(lstTiles[i][j]);
 
                     if (bStartWithMatches == false) {
                         //if we don't want to start with matches, then we'll have to find a colour that won't form a match
@@ -299,13 +377,13 @@ public class Board : Singleton<Board> {
                             //but we need to check the matches to the left and above to ensure that we're not picking a colour that would form a match of three
 
                             if (GetMatchingLength(new Position(i, j), Direction.Dir.U) >= 3) {
-                                Debug.Log("Would have had a match of three above, so skipping");
+                                //Debug.Log("Would have had a match of three above, so skipping");
                             } else if (GetMatchingLength(new Position(i, j), Direction.Dir.UL) >= 3) {
-                                Debug.Log("Would have had a match of three to the left and above, so skipping");
+                                //Debug.Log("Would have had a match of three to the left and above, so skipping");
                             } else if (GetMatchingLength(new Position(i, j), Direction.Dir.DL) >= 3) {
-                                Debug.Log("Would have had a match of three to the left and below, so skipping");
+                                //Debug.Log("Would have had a match of three to the left and below, so skipping");
                             } else {
-                                Debug.Log("Breaking after " + iColourAttempts + " attempts");
+                                //Debug.Log("Breaking after " + iColourAttempts + " attempts");
                                 break;
                             }
                             //If we haven't broken, then we should advance our colour in the hopes the next colour won't have a match
@@ -561,7 +639,6 @@ public class Board : Singleton<Board> {
         for (int i = 0; i < nDeletedDist; i++) {
             At(posClosestToCenter.PosInDir(dirCascadeFrom, i)).posLastStable = posClosestToCenter.PosInDir(dirCascadeFrom, i + nDeletedDist);
             At(posClosestToCenter.PosInDir(dirCascadeFrom, i)).deletionStatus = Tile.DELETIONSTATUS.ACTIVE;
-            At(posClosestToCenter.PosInDir(dirCascadeFrom, i)).SetDebugText(At(posClosestToCenter.PosInDir(dirCascadeFrom, i)).posLastStable.ToString());
         }
 
     }
@@ -570,8 +647,7 @@ public class Board : Singleton<Board> {
     public void GenerateColoursForDeleted() {
 
         foreach(Tile tile in setFlaggedToClear) {
-            Debug.Log("Remember that we should eventually choose randomly from the basic tiles here");
-            PropertyController.Get().PlaceProperty("Gold", tile);
+            PropertyController.Get().SpawnNewProperty(tile);
             tile.transform.localScale = new Vector3(1f, 1f, 1f);
         }
 

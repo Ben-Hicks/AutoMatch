@@ -115,7 +115,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -0.21}
   m_SizeDelta: {x: 0.4379, y: 0.4881}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &4793036849322923567
@@ -229,12 +229,15 @@ MonoBehaviour:
   v2GoalLocation: {x: 0, y: 0}
   dirTowardCenter: 0
   dirCascadeFrom: 0
+  nPathDistToPlayer: 0
+  nDirectDistToPlayer: 0
   nI: 0
   nJ: 0
   bCannotBeCleared: 0
-  colour: {fileID: 6903956646356869597}
   txtDebug: {fileID: 0}
   deletionStatus: 0
+  toCollectBy: {fileID: 0}
+  prop: {fileID: 0}
 --- !u!114 &6903956646356869597
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -248,7 +251,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   col: 0
-  tile: {fileID: 4686502200840896141}
   rendBackground: {fileID: 6273138618207442897}
 --- !u!222 &2702202599407251350
 CanvasRenderer:

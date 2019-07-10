@@ -48,8 +48,9 @@ public class GameController : Singleton<GameController> {
     public IEnumerator GameLoop() {
 
         while (true) {
-            //Initially ensure that our starting matches all get cleaned up
+            Board.Get().UpdateDistsFromPlayer();
 
+            //Initially ensure that our starting matches all get cleaned up
             while (true) {
                 int nFlagged = Board.Get().FlagMatches();
 
@@ -64,7 +65,9 @@ public class GameController : Singleton<GameController> {
                 
             }
 
+            Board.Get().UpdateDistsFromPlayer();
             yield return GetNextActingEntity().abilityselector.SelectAndUseAbility();
+            
 
         }
     }

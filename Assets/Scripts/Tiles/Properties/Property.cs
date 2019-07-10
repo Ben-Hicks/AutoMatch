@@ -7,14 +7,20 @@ public abstract class Property : MonoBehaviour {
     public GameObject go;
     
     public Tile tile;
+    public bool bBlocksMovement;
 
     public Colour colour {
         get { return tile.colour; }
         set { tile.colour.SetCol(value.col); }
     }
 
+    public virtual void SetDefaultPropertyValues() {
+        bBlocksMovement = false;
+    }
+
     public void Init() {
         SetDefaultColour();
+        SetDefaultPropertyValues();
     }
 
     public virtual void SetDefaultColour() {
