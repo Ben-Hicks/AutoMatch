@@ -134,7 +134,6 @@ public class Board : Singleton<Board> {
 
     }
 
-
     public IEnumerator CleanupMatches() {
 
         CascadeAllTiles();
@@ -267,6 +266,7 @@ public class Board : Singleton<Board> {
     }
 
     public void SwapTile(Tile tile, Direction.Dir dir) {
+        if (dir == Direction.Dir.NONE) return; //Since no swapping needs to be done
 
         Position thisPos = tile.pos;
         Position otherPos = tile.pos.PosInDir(dir);

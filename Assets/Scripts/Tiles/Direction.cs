@@ -6,6 +6,7 @@ public static class Direction {
 
     public const int NUMDIRECTIONS = 6;
     public enum Dir {NONE, UR, U, UL, DL, D, DR };
+    public static List<Dir> lstAllDirs = new List<Dir>(new[] { Dir.UR, Dir.U, Dir.UL, Dir.DL, Dir.D, Dir.DR });
 
     public static Dir Negate(Dir d) {
         switch (d) {

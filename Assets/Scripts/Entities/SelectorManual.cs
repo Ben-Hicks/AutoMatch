@@ -30,14 +30,8 @@ public class SelectorManual : AbilitySelector {
                 Tile tileTarget = Board.Get().At(owner.tile.pos.PosInDir(dirToMove));
 
                 if (abilToUse.CanUse() && abilToUse.CanTarget(tileTarget)) {
-
-                    abilToUse.SetTarget(tileTarget);
-                    abilToUse.PayCost();
-
-                    yield return abilToUse.ExecuteAbility();
-
-                    //clean out the target
-                    abilToUse.SetTarget(null);
+                    Debug.Log("SlectorManual.tileTarget is " + tileTarget);
+                    yield return abilToUse.UseWithTarget(tileTarget);
 
                     break;
                 }
