@@ -69,10 +69,7 @@ public abstract class AbilitySelector : MonoBehaviour {
         if (dirCurrentBest != Direction.Dir.NONE) {
             Ability abilToUse = owner.lstAbilities[(int)Entity.ABILSLOT.MOVEMENT];
 
-            if (abilToUse.CanUse() && abilToUse.CanTarget(dirCurrentBest)) {
-
-                yield return abilToUse.UseWithTarget(dirCurrentBest);
-            }
+            yield return abilToUse.UseWithTarget(dirCurrentBest);
         }
     }
 }

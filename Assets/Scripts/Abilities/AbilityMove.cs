@@ -9,6 +9,30 @@ public class AbilityMove : Ability {
 
     }
 
+    public override IEnumerator AttemptManualUse() {
+        //Since movement is the default action, we're just going to try once
+        // to see if we're supposed to move, and if not - we can just exit without doing anything
+
+        Tile tileTarget = InputController.Get().SelectedTile();
+
+        if (tileTarget != null) {
+            Debug.Log("We have a targetted tile");
+            if (CanUse() && CanTarget(tileTarget)) {
+                Debug.Log("The target was valid so we'll use the ability");
+
+                //if we actually found an ability we can use successfully, then let our selector know
+                ((SelectorManual)owner.abilityselector).bUsedAbility = true;
+
+                yield return UseWithTarget(tileTarget);
+            } else {
+                Debug.Log("Invalid target");
+            }
+        } else {
+            Debug.Log("Waiting for targetting input, but nothing found yet");
+        }
+
+    }
+
     public override void PayCost() {
         //TODO - something here
     }

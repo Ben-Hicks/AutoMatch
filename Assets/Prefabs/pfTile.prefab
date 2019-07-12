@@ -10,6 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 8087052177886007138}
   - component: {fileID: 6273138618207442897}
+  - component: {fileID: 7458970108473702517}
+  - component: {fileID: 5841603805588297134}
   m_Layer: 0
   m_Name: sprTileBackground
   m_TagString: Untagged
@@ -79,6 +81,50 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!60 &7458970108473702517
+PolygonCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 842553472106326455}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 1, y: 1}
+    newSize: {x: 1, y: 1}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Points:
+    m_Paths:
+    - - {x: 0, y: 0.5}
+      - {x: -0.43301272, y: 0.24999999}
+      - {x: -0.4330127, y: -0.25000003}
+      - {x: 0.00000004371139, y: -0.5}
+      - {x: 0.43301272, y: -0.24999996}
+      - {x: 0.43301272, y: 0.24999996}
+--- !u!114 &5841603805588297134
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 842553472106326455}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7fcb0b9fa65e4348ba9188efe02cea1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  owner: {fileID: 4686502200840896141}
 --- !u!1 &866666919193318927
 GameObject:
   m_ObjectHideFlags: 0
@@ -233,7 +279,6 @@ MonoBehaviour:
   nDirectDistToPlayer: 0
   nI: 0
   nJ: 0
-  bCannotBeCleared: 0
   txtDebug: {fileID: 0}
   deletionStatus: 0
   toCollectBy: {fileID: 0}

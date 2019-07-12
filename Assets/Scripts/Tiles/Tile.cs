@@ -98,8 +98,6 @@ public class Tile : MonoBehaviour {
         txtDebug.text = s;
     }
 
-   
-
     // Start is called before the first frame update
     void Start() {
 

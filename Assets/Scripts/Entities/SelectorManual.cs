@@ -4,36 +4,38 @@ using UnityEngine;
 
 public class SelectorManual : AbilitySelector {
 
+    public bool bUsedAbility;
+
     public override IEnumerator SelectAndUseAbility() {
 
-        while (true) {
+        bUsedAbility = false;
 
-            Direction.Dir dirToMove = Direction.Dir.NONE;
+        while (bUsedAbility == false) {
 
-            if (Input.GetKeyDown(KeyCode.Q)) {
-                dirToMove = Direction.Dir.UL;
-            } else if (Input.GetKeyDown(KeyCode.W)) {
-                dirToMove = Direction.Dir.U;
-            } else if (Input.GetKeyDown(KeyCode.E)) {
-                dirToMove = Direction.Dir.UR;
-            } else if (Input.GetKeyDown(KeyCode.A)) {
-                dirToMove = Direction.Dir.DL;
-            } else if (Input.GetKeyDown(KeyCode.S)) {
-                dirToMove = Direction.Dir.D;
-            } else if (Input.GetKeyDown(KeyCode.D)) {
-                dirToMove = Direction.Dir.DR;
+            //Should just select an ability first in this loop, then move to a loop where it gets the target
+            if (Input.GetKeyUp(KeyCode.Alpha1)) {
+                Debug.Log("Would enter ability selection 1 at this point");
+                bUsedAbility = true;
+                //yield return owner.lstAbilities[(int)Entity.ABILSLOT.ABIL1].AttemptManualUse();
+            } else if (Input.GetKeyUp(KeyCode.Alpha2)) {
+                Debug.Log("Would enter ability selection 2 at this point");
+                bUsedAbility = true;
+                //yield return owner.lstAbilities[(int)Entity.ABILSLOT.ABIL2].AttemptManualUse();
+            } else if (Input.GetKeyUp(KeyCode.Alpha3)) {
+                Debug.Log("Would enter ability selection 3 at this point");
+                bUsedAbility = true;
+                //yield return owner.lstAbilities[(int)Entity.ABILSLOT.ABIL3].AttemptManualUse();
+            } else if (Input.GetKeyUp(KeyCode.Alpha4)) {
+                Debug.Log("Would enter ability selection 4 at this point");
+                bUsedAbility = true;
+                //yield return owner.lstAbilities[(int)Entity.ABILSLOT.ABIL4].AttemptManualUse();
+            } else {
+                Debug.Log("Would enter move selection at this point");
+                yield return owner.lstAbilities[(int)Entity.ABILSLOT.MOVEMENT].AttemptManualUse();
             }
 
-            if (dirToMove != Direction.Dir.NONE) {
-                Ability abilToUse = owner.lstAbilities[(int)Entity.ABILSLOT.MOVEMENT];
-
-                Tile tileTarget = Board.Get().At(owner.tile.pos.PosInDir(dirToMove));
-
-                if (abilToUse.CanUse() && abilToUse.CanTarget(tileTarget)) {
-                    yield return abilToUse.UseWithTarget(tileTarget);
-
-                    break;
-                }
+            if (bUsedAbility) {
+                break;
             }
 
             yield return null;
