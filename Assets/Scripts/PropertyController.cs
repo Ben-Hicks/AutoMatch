@@ -66,9 +66,9 @@ public class PropertyController : Singleton<PropertyController> {
 
         float fRand = Random.Range(0, 100);
 
-        if(fRand < 0) {
+        if(fRand < 3) {
             PlaceProperty("Stabber", tile);
-        }else if(fRand < 50) {
+        }else if(fRand < 70) {
             PlaceProperty("Gold", tile);
         } else {
             PlaceProperty("Blocker", tile);

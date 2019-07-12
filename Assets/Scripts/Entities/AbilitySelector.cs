@@ -47,7 +47,7 @@ public abstract class AbilitySelector : MonoBehaviour {
                 //If this tile is on the board, and we can move onto it, then check how far away it would be from the player
 
                 int nPathDist = dictPathDistsToTarget[Board.Get().At(posToMoveTo)];
-                int nDirectDist = posToMoveTo.DirectDistFrom(owner.tile.pos);
+                int nDirectDist = posToMoveTo.DirectDistFrom(entTarget.tile.pos);
 
                 if (dirCurrentBest == Direction.Dir.NONE ||
                     nPathDist < nClosestPathDist ||
@@ -56,10 +56,11 @@ public abstract class AbilitySelector : MonoBehaviour {
                     //Otherwise, if we have a current best direction, check if we have a shorter pathdistance in this direction
                     //And if its the same, then we can break ties by examining the direct distance
 
+
                     //Update the best direction (and the distances for the tile in that direction);
                     dirCurrentBest = dir;
-                    nClosestPathDist = dictPathDistsToTarget[Board.Get().At(posToMoveTo)];
-                    nClosestDirectDist = posToMoveTo.DirectDistFrom(owner.tile.pos);
+                    nClosestPathDist = nPathDist;
+                    nClosestDirectDist = nDirectDist;
                 }
             }
         }

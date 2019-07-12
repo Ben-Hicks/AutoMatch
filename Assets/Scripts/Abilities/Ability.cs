@@ -19,9 +19,9 @@ public abstract class Ability {
 
     public IEnumerator UseWithTarget(Tile _tileTarget) {
 
-        if (CanUse() && CanTarget(tileTarget)) {
+        if (CanUse() && CanTarget(_tileTarget)) {
 
-            SetTarget(tileTarget);
+            SetTarget(_tileTarget);
             PayCost();
 
             yield return ExecuteAbility();

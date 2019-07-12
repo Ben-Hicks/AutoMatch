@@ -14,7 +14,6 @@ public class AbilityMove : Ability {
     }
 
     public override bool CanTarget(Tile _tileTarget) {
-        Debug.Log("_tileTarget is " + _tileTarget);
 
         return owner.tile.pos.GetAdjacentDir(_tileTarget.pos) != Direction.Dir.NONE &&
             _tileTarget.prop.bBlocksMovement == false;
@@ -26,7 +25,7 @@ public class AbilityMove : Ability {
     }
 
     public override IEnumerator ExecuteAbility() {
-        Debug.Log("Executing Move Ability");
+
         Board.Get().SwapTile(owner.tile, owner.tile.pos.GetAdjacentDir(tileTarget.pos));
         yield return Board.Get().AnimateMovingTiles();
 
