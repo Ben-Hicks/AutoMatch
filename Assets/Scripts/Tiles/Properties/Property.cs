@@ -9,6 +9,10 @@ public abstract class Property : MonoBehaviour {
     public Tile tile;
     public bool bBlocksMovement;
 
+    public enum PRIORITY { NEG, NONE, LOW, MID, HIGH, INFINITE };
+    public PRIORITY overwritePriority;
+
+
     public Colour colour {
         get { return tile.colour; }
         set { tile.colour.SetCol(value.col); }

@@ -11,7 +11,7 @@ public abstract class Entity : Property {
     public int nMaxHealth;
     public int nCurHealth;
 
-    public int nCollectionPriority;
+    public PRIORITY collectionPriority;
 
     public AbilitySelector abilityselector;
 
@@ -33,11 +33,7 @@ public abstract class Entity : Property {
         GameController.Get().RegisterEntity(this);
 
         InitStandardAbilities();
-    }
-
-    public override void SetDefaultPropertyValues() {
-        bBlocksMovement = true;
-        nCollectionPriority = 0;
+        InitSpecialAbilities();
     }
 
     public void InitStandardAbilities() {
@@ -45,6 +41,10 @@ public abstract class Entity : Property {
         for (int i = 0; i < NUMABILSLOTS; i++) lstAbilities.Add(null);
         
         lstAbilities[(int)ABILSLOT.MOVEMENT] = new AbilityMove(this);
+    }
+
+    public virtual void InitSpecialAbilities() {
+
     }
 
     public override void FlagForDeletion() {

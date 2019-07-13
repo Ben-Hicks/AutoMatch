@@ -125,4 +125,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   go: {fileID: 0}
   tile: {fileID: 0}
-  bBlocksMovement: 0
+  bBlocksMovement: 1
+  overwritePriority: 2

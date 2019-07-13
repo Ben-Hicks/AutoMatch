@@ -14,9 +14,8 @@ public class SelectorManual : AbilitySelector {
 
             //Should just select an ability first in this loop, then move to a loop where it gets the target
             if (Input.GetKeyUp(KeyCode.Alpha1)) {
-                Debug.Log("Would enter ability selection 1 at this point");
-                bUsedAbility = true;
-                //yield return owner.lstAbilities[(int)Entity.ABILSLOT.ABIL1].AttemptManualUse();
+                Debug.Log("Manually using ability 1");
+                yield return owner.lstAbilities[(int)Entity.ABILSLOT.ABIL1].AttemptManualUse();
             } else if (Input.GetKeyUp(KeyCode.Alpha2)) {
                 Debug.Log("Would enter ability selection 2 at this point");
                 bUsedAbility = true;
@@ -30,7 +29,6 @@ public class SelectorManual : AbilitySelector {
                 bUsedAbility = true;
                 //yield return owner.lstAbilities[(int)Entity.ABILSLOT.ABIL4].AttemptManualUse();
             } else {
-                Debug.Log("Would enter move selection at this point");
                 yield return owner.lstAbilities[(int)Entity.ABILSLOT.MOVEMENT].AttemptManualUse();
             }
 
@@ -38,7 +36,7 @@ public class SelectorManual : AbilitySelector {
                 break;
             }
 
-            yield return null;
+            //Not yielding here since each of the previous things above will yeild themselves if they fail to get input
             
         }
 

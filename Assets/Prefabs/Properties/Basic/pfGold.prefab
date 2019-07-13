@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3046343551125709479}
   - component: {fileID: 659632238948021310}
   m_Layer: 0
-  m_Name: sprHeroImage
+  m_Name: sprGoldImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -125,3 +125,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   go: {fileID: 0}
   tile: {fileID: 0}
+  bBlocksMovement: 0
+  overwritePriority: 1

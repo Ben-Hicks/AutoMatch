@@ -32,7 +32,7 @@ public abstract class Ability {
                     Debug.Log("Invalid target");
                 }
             } else {
-                Debug.Log("Waiting for targetting input, but nothing found yet");
+                yield return null;
             }
         }
 

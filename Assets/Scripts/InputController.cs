@@ -14,6 +14,8 @@ public class InputController : Singleton<InputController> {
         //If we haven't already found an input this frame, then check if the keyboard is being pressed
         if(fTimeSinceSelected != 0f) {
             CheckKeyboardInput();
+        } else {
+            CheckKeyboardInput();
         }
 
         //Check if our inputted 

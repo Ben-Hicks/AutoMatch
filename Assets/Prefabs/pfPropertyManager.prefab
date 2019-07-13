@@ -53,3 +53,9 @@ MonoBehaviour:
   - sName: Blocker
     goProperty: {fileID: 7703089548995867608, guid: 8f9ab9906daabc84d9d8864387488161,
       type: 3}
+  - sName: Stabber
+    goProperty: {fileID: 2953531982274221241, guid: 1ee5c70890217114680c8f57e06c313b,
+      type: 3}
+  - sName: Icicle
+    goProperty: {fileID: 238967470984163798, guid: b8b2f7ea44af6344693a370e69c18e60,
+      type: 3}

@@ -125,7 +125,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e47e44cde2810743ad5148bd8b48d87, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  owner: {fileID: 0}
+  owner: {fileID: 9106494328890035794}
+  entTarget: {fileID: 0}
+  bUsedAbility: 0
 --- !u!114 &9106494328890035794
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -138,11 +140,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e3076ad273d6bb448b503979014be34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  go: {fileID: 0}
+  go: {fileID: 5623294479343024117}
   tile: {fileID: 0}
-  nMaxHealth: 0
-  nCurHealth: 0
-  abilityselector: {fileID: 0}
+  bBlocksMovement: 1
+  overwritePriority: 5
+  nMaxHealth: 100
+  nCurHealth: 100
+  collectionPriority: 5
+  abilityselector: {fileID: -4058528868415426814}
 --- !u!114 &904296820709223461
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -155,5 +160,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81bfe5bd56f6db040bb83037d63dd69b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  entity: {fileID: 0}
+  entity: {fileID: 9106494328890035794}
   nGold: 0

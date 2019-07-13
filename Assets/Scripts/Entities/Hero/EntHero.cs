@@ -13,9 +13,10 @@ public class EntHero : Entity {
         colour.SetCol(Colour.Col.WILD);
     }
 
-    public override void SetDefaultPropertyValues() {
-        bBlocksMovement = true;
-        nCollectionPriority = 999999999;
+    public override void InitSpecialAbilities() {
+
+        lstAbilities[(int)ABILSLOT.ABIL1] = new AbilityIcicleWave(this);
+
     }
 
 }

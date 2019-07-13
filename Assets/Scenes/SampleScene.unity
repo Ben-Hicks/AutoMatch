@@ -426,22 +426,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5492675459445591168, guid: 78d6d242c2f680842966a8c1760422e7,
-        type: 3}
-      propertyPath: arPropertyEntries.Array.size
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 5492675459445591168, guid: 78d6d242c2f680842966a8c1760422e7,
-        type: 3}
-      propertyPath: arPropertyEntries.Array.data[3].sName
-      value: Stabber
-      objectReference: {fileID: 0}
-    - target: {fileID: 5492675459445591168, guid: 78d6d242c2f680842966a8c1760422e7,
-        type: 3}
-      propertyPath: arPropertyEntries.Array.data[3].goProperty
-      value: 
-      objectReference: {fileID: 2953531982274221241, guid: 1ee5c70890217114680c8f57e06c313b,
-        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 78d6d242c2f680842966a8c1760422e7, type: 3}
 --- !u!1001 &1914960294

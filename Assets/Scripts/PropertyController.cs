@@ -25,8 +25,15 @@ public class PropertyController : Singleton<PropertyController> {
     public void PlaceProperty(GameObject pfProperty, Tile tile) {
 
         if(tile.prop != null) {
-            //If this tile already have a previous property on it, then we'll have to clear out that property
-            GameObject.Destroy(tile.prop.go);
+            if (pfProperty.GetComponent<Property>().overwritePriority < tile.prop.overwritePriority) {
+                //If the new property can't overwrite the existing property on this tile, then we shouldn't place anything here
+                Debug.Log("Blocking a spawn since the new tile's priority isn't high enough since " + pfProperty.GetComponent<Property>().overwritePriority + " is less than " + tile.prop.overwritePriority);
+                return;
+            } else {
+
+                //If this tile already have a previous property on it, then we'll have to clear out that property
+                GameObject.Destroy(tile.prop.go);
+            }
         }
 
 
@@ -63,6 +70,11 @@ public class PropertyController : Singleton<PropertyController> {
 
     public void SpawnNewProperty(Tile tile) {
         //TODO:: Replace this with a class whose job is to only decide which type of tiles should be spawned given the circumstance of the game
+
+        //Set the overwriting priority to the minimum so that any tile can be placed overtop of this
+        if (tile.prop != null) {
+            tile.prop.overwritePriority = Property.PRIORITY.NEG;
+        }
 
         float fRand = Random.Range(0, 100);
 

@@ -42,7 +42,6 @@ public class Board : Singleton<Board> {
 
 
     public void CollectFlaggedTiles() {
-        Debug.Log("Remember to actually properly set up the collections");
         Debug.Log("Also consider if collections should be set up as coroutines so they can do animations");
         foreach (Tile tile in setFlaggedToClear) {
 
@@ -209,7 +208,7 @@ public class Board : Singleton<Board> {
                     Entity ent = At(curPos.PosInDir(dir, i)).prop.GetComponent<Entity>();
 
                     //if either we haven't seen a collector yet, or this new collector is faster
-                    if (ent != null && (entHighestCollectionPriority == null || ent.nCollectionPriority > entHighestCollectionPriority.nCollectionPriority)) {
+                    if (ent != null && (entHighestCollectionPriority == null || ent.collectionPriority > entHighestCollectionPriority.collectionPriority)) {
                         entHighestCollectionPriority = ent;
                     }
                 }
@@ -220,7 +219,7 @@ public class Board : Singleton<Board> {
 
                     tile.prop.FlagForDeletion();
 
-                    if (entHighestCollectionPriority != null && (tile.toCollectBy == null || entHighestCollectionPriority.nCollectionPriority > tile.toCollectBy.entity.nCollectionPriority)) {
+                    if (entHighestCollectionPriority != null && (tile.toCollectBy == null || entHighestCollectionPriority.collectionPriority > tile.toCollectBy.entity.collectionPriority)) {
                         tile.toCollectBy = entHighestCollectionPriority.collection;
                     }
 

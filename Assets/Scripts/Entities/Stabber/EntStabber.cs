@@ -12,9 +12,4 @@ public class EntStabber : Entity {
         colour.SetCol(Colour.Col.RED);
     }
 
-    public override void SetDefaultPropertyValues() {
-        bBlocksMovement = true;
-        nCollectionPriority = 5;
-    }
-
 }
