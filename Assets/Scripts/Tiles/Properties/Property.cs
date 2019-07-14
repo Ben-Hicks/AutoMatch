@@ -18,13 +18,8 @@ public abstract class Property : MonoBehaviour {
         set { tile.colour.SetCol(value.col); }
     }
 
-    public virtual void SetDefaultPropertyValues() {
-        bBlocksMovement = false;
-    }
-
     public void Init() {
         SetDefaultColour();
-        SetDefaultPropertyValues();
     }
 
     public virtual void SetDefaultColour() {

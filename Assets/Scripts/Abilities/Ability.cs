@@ -30,6 +30,7 @@ public abstract class Ability {
                     break;
                 } else {
                     Debug.Log("Invalid target");
+                    yield return null;
                 }
             } else {
                 yield return null;
