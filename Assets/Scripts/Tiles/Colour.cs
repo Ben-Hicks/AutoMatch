@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class Colour : MonoBehaviour {
 
-    public const int NUMCOLOURS = 8;
-    public enum Col { WILD, BLUE, RED, GREEN, GOLD, PURPLE, CYAN, BLACK };
+    public const int NUMCOLOURS = 10;
+    public enum Col { WILD, BLUE, RED, GREEN, GOLD, PURPLE, CYAN, BLACK, WHITE, ORANGE };
 
     public Col col;
 
@@ -69,6 +69,14 @@ public class Colour : MonoBehaviour {
 
             case Col.BLACK:
                 colToSet = Color.black;
+                break;
+
+            case Col.WHITE:
+                colToSet = Color.white;
+                break;
+
+            case Col.ORANGE:
+                colToSet = new Color(1f, 0.5f, 0.1f);
                 break;
 
             default:

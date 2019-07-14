@@ -5,7 +5,7 @@ using UnityEngine;
 public static class Direction {
 
     public const int NUMDIRECTIONS = 6;
-    public enum Dir {NONE, UR, U, UL, DL, D, DR };
+    public enum Dir { NONE, UR, U, UL, DL, D, DR };
     public static List<Dir> lstAllDirs = new List<Dir>(new[] { Dir.UR, Dir.U, Dir.UL, Dir.DL, Dir.D, Dir.DR });
 
     public static Dir Negate(Dir d) {
@@ -36,6 +36,16 @@ public static class Direction {
                 return Dir.DR;
 
         }
+    }
+
+    public static Dir Clockwise(Dir d) {
+        if (d == Dir.UR) return Dir.DR;
+        else return d - 1;
+    }
+
+    public static Dir CounterClockwise(Dir d) {
+        if (d == Dir.DR) return Dir.UR;
+        else return d + 1;
     }
 
     public static void Advance(ref Dir d) {
