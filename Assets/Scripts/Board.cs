@@ -8,7 +8,8 @@ public class Board : Singleton<Board> {
 
     public float fDelayBeforeCascade;
     public float fMatchAnimTime;
-    public float fTileClearSwellSize;
+    public float fTileSwellTime;
+    public float fTileSwellSize;
 
     public int nWidth;
     public int nHeight;
@@ -543,7 +544,7 @@ public class Board : Singleton<Board> {
             float fElapsedTime = Time.timeSinceLevelLoad - fTimeStart;
             float fProgress = Mathf.Min(1f, fElapsedTime / fMatchAnimTime);
 
-            Vector3 v3NewScale = Vector3.Lerp(new Vector3(0f, 0f, 0f), new Vector3(fTileClearSwellSize, fTileClearSwellSize, fTileClearSwellSize),
+            Vector3 v3NewScale = Vector3.Lerp(new Vector3(0f, 0f, 0f), new Vector3(fTileSwellSize, fTileSwellSize, fTileSwellSize),
                 0.5f * Mathf.Cos(Mathf.PI * (fProgress - 0.15f)) + 0.45f);
 
             foreach (Tile tile in setFlaggedToClear) {

@@ -98,6 +98,34 @@ public class Tile : MonoBehaviour {
         txtDebug.text = s;
     }
 
+
+    public IEnumerator AnimateSwell() {
+
+        float fTimeStart = Time.timeSinceLevelLoad;
+        float fSwellSize = Board.Get().fTileSwellSize;
+
+        while (true) {
+
+            float fElapsedTime = Time.timeSinceLevelLoad - fTimeStart;
+            float fProgress = Mathf.Min(1f, fElapsedTime / Board.Get().fTileSwellTime);
+
+            Vector3 v3NewScale = Vector3.Lerp(new Vector3(1f, 1f, 1f), new Vector3(fSwellSize, fSwellSize, fSwellSize),
+                Mathf.Sin(Mathf.PI * fProgress));
+
+            transform.localScale = v3NewScale;
+
+            //If our progress is complete, we can stop moving
+            if (fProgress == 1f) {
+                break;
+            } else {
+                //If we're not complete, we should yield for a frame
+                yield return null;
+            }
+        }
+
+        
+    }
+
     // Start is called before the first frame update
     void Start() {
 

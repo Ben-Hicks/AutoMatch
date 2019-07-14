@@ -30,8 +30,8 @@ public class AbilityIcicleWave : Ability {
         Direction.Dir dir = owner.tile.pos.GetAdjacentDir(posCur);
 
         while (Board.Get().ValidTile(posCur)) {
-
             PropertyController.Get().PlaceProperty("Icicle", Board.Get().At(posCur));
+            Board.Get().StartCoroutine(Board.Get().At(posCur).AnimateSwell());
             yield return new WaitForSeconds(0.1f);
 
             posCur = posCur.PosInDir(dir);
