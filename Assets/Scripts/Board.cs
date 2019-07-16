@@ -173,7 +173,7 @@ public class Board : Singleton<Board> {
                 //Debug.Log("Stopping since " + posNext.i + "," + posNext.j + " can't be swapped into since it's deleted");
                 break;
             } else {
-                SwapTile(tile, tile.dirCascadeFrom);
+                MoveTile(tile, tile.dirCascadeFrom);
             }
 
         }
@@ -264,36 +264,53 @@ public class Board : Singleton<Board> {
 
     }
 
-    public void SwapTile(Tile tile, Direction.Dir dir, int nDist) {
-        //Just perform nDist individual swaps
-        for (int i = 0; i < nDist; i++) {
-            SwapTile(tile, dir);
-        }
-    }
+    public void MoveTile(Tile tile, Direction.Dir dir, int nDist = 1) {
+        if (dir == Direction.Dir.NONE) return; //Since no moving needs to be done
 
-    public void SwapTile(Tile tile, Direction.Dir dir) {
-        if (dir == Direction.Dir.NONE) return; //Since no swapping needs to be done
+        Position posCur = tile.pos;
+        Position posDestination = tile.pos.PosInDir(dir, nDist);
 
-        Position thisPos = tile.pos;
-        Position otherPos = tile.pos.PosInDir(dir);
-
-        if (ValidTile(otherPos) == false) {
-            Debug.LogError("Can't swap with an invalid tile");
+        if (ValidTile(posDestination) == false) {
+            Debug.LogError("Can't move to an invalid position " + posDestination.ToString());
             return;
         }
 
+        //Start at the tile's position and fetch the tiles ahead one at a time
+        while(posCur.IsEqual(posDestination) == false) {
+            Debug.Log("Want to shift " + posCur.PosInDir(dir).ToString() + " to position " + posCur.ToString());
+
+            //Copy the reference of the tile above us
+            lstTiles[posCur.i][posCur.j] = At(posCur.PosInDir(dir));
+            At(posCur).SetPositon(posCur);
+
+            //Advance our tile up
+            posCur = posCur.PosInDir(dir);
+
+        }
+
+        //Once everything has been pulled down in sequence and we've reached our destination position
+        // we can set the destination position's tile to be our original tile
+        lstTiles[posDestination.i][posDestination.j] = tile;
+        At(posDestination).SetPositon(posDestination);
+
+    }
+
+    public void SwapTiles(Position pos, Position other) {
+
+        if(ValidTile(pos) == false || ValidTile(other) == false) {
+            Debug.Log("Can't swap with an invalid position: " + pos.ToString() + " and " + pos.ToString());
+        }
+
+        //Save a reference to the tile we're swapping
+        Tile tile = At(pos);
+
         //Swap the passed tile and the target tile as they are stored in the grid of tiles
-        lstTiles[thisPos.i][thisPos.j] = At(otherPos);
-        lstTiles[otherPos.i][otherPos.j] = tile;
+        lstTiles[pos.i][pos.j] = At(other);
+        lstTiles[other.i][other.j] = tile;
 
         //We need to fix up the swapped tiles to ensure their positions accurately represent their new position
-        At(thisPos).SetPositon(thisPos);
-        At(otherPos).SetPositon(otherPos);
-
-        //TODONOW:: Figure out a way to detect when one of the tile's we're swapping with is the player, and that 
-        //    we should shift the board appropriately - however, the board's shifting of the player should not retrigger
-        //    another board shift
-
+        At(pos).SetPositon(pos);
+        At(other).SetPositon(other);
     }
 
     public List<Tile> GetAdjacentTiles(Tile tile) {
@@ -366,37 +383,31 @@ public class Board : Singleton<Board> {
                     //Top Edge
                     if (j == 0 || j == 1) {
                         lstTopTwoEdges.Add(lstTiles[i][j].pos);
-                        Debug.Log( i + "," + j + " is top");
                     }
 
                     //Top/Left Edges
                     if (j == 0 || i == 0) {
                         lstTopLeftEdges.Add(lstTiles[i][j].pos);
-                        Debug.Log(i + "," + j + " is top/left");
                     }
 
                     //Top/Right Edges
                     if (j == 0 || i == nWidth - 1) {
                         lstTopRightEdges.Add(lstTiles[i][j].pos);
-                        Debug.Log(i + "," + j + " is top/right");
                     }
                     
                     //Bot Edge
                     if (j == nHeight - 1 || j == nHeight - 2) {
                         lstBottomTwoEdges.Add(lstTiles[i][j].pos);
-                        Debug.Log(i + "," + j + " is bottom");
                     }
 
                     //Bot/Left Edges
                     if (j == nHeight - 1 || i == 0) {
                         lstBottomLeftEdges.Add(lstTiles[i][j].pos);
-                        Debug.Log(i + "," + j + " is bot/left");
                     }
 
                     //Bot/Right Edges
                     if (j == nHeight - 1 || i == nWidth - 1) {
                         lstBottomRightEdges.Add(lstTiles[i][j].pos);
-                        Debug.Log(i + "," + j + " is bot/right");
                     }
 
 
@@ -599,9 +610,27 @@ public class Board : Singleton<Board> {
         
     }
 
+    public void RealignPlayer() {
+        
+        //If the player is not in the center of the board
+        if(tilePlayer.pos.IsEqual(posCenter) == false) {
+            //Then figure out how far they've moved (assuming in a straight line)
+            Position.DirDist dirDist = posCenter.DirDistTo(tilePlayer.pos);
+
+            Debug.Assert(dirDist.dir != Direction.Dir.NONE && dirDist.nDist != 0);
+            Debug.Log("Player at " + tilePlayer.pos.ToString() + " and center is " + posCenter.ToString());
+            Debug.Log("The player has moved in direction " + dirDist.dir + " by " + dirDist.nDist);
+            ShiftBoard(Direction.Negate(dirDist.dir), dirDist.nDist);
+        }
+
+    }
 
     public IEnumerator AnimateMovingTiles() {
 
+        //If tiles have been moving around, then first we should bring the player back to the center (in the event they moved)
+        RealignPlayer();
+
+        //Then figure out all of the tiles that have moved from their original position
         List<Tile> lstMovingTiles = new List<Tile>();
         foreach (Tile tile in lstAllTiles) {
             if(tile.pos.IsEqual(tile.posLastStable) == false) {
@@ -642,18 +671,9 @@ public class Board : Singleton<Board> {
         
     }
 
-    public void MovePlayer(Direction.Dir dir, int nDist = 1) {
-
-        //Move the player's tile in the appropriate direction
-        SwapTile(tilePlayer, dir, nDist);
-
-        //Move the rest of the map in the opposite direction to give the impression of movement through space
-        ShiftBoard(Direction.Negate(dir), nDist);
-
-        //We then assume that whatever process is calling us will then animate the movement of tiles appropriately
-    }
-
     public void ShiftBoard(Direction.Dir dir, int nDist = 1) {
+
+        Debug.Log("Shifting board in direction " + dir);
 
         //if shifting board up, then get all of the tiles along the bottom border
 
@@ -700,9 +720,11 @@ public class Board : Singleton<Board> {
 
             //As long as there is a tile at the position we want to pull from, keep pulling
             while (ValidTile(posTarget)) {
-                SwapTile(At(posCur), dirPull, nDist);
-                posCur = posCur.PosInDir(dir);
-                posTarget = posTarget.PosInDir(dir);
+
+                Debug.Log("Calling MoveTile with tile at " + posCur.ToString() + " dirPull=" + dirPull + " nDist= " + nDist);
+                MoveTile(At(posCur), dirPull, nDist);
+                posCur = posCur.PosInDir(dirPull);
+                posTarget = posTarget.PosInDir(dirPull);
             }
 
             //Once we've pulled all the tiles down, then we can generate new tiles for the tiles

@@ -7,6 +7,11 @@ public class Position {
     public int i;
     public int j;
 
+    public struct DirDist {
+        public Direction.Dir dir;
+        public int nDist;
+    }
+
     public Position(int _i = 0, int _j = 0) {
         i = _i;
         j = _j;
@@ -77,4 +82,48 @@ public class Position {
         return dX + Mathf.Max(0, (dY - dX) / 2);
 
     }
+
+    //We assume that there is a straight line to the other position
+    public DirDist DirDistTo(Position posOther) {
+        Direction.Dir dir = Direction.Dir.NONE;
+        int nDist = 0;
+
+        if (IsEqual(posOther)) {
+            //Then do nothing since we've already initialized our direction and dist to be none/0
+        } else if (i == posOther.i && j < posOther.j) {
+            //If we're in the same column but above the other position
+            dir = Direction.Dir.D;
+            nDist = (posOther.j - j)/2;
+        } else if (i == posOther.i) {
+            //If we're in the same column, then we must be below the other position
+            dir = Direction.Dir.U;
+            nDist = (j - posOther.j)/2;
+        } else {
+            //Then we must be along some diagonal
+            int nDistX = posOther.i - i;
+            int nDistY = posOther.j - j;
+
+            Debug.Assert(Mathf.Abs(nDistX) == Mathf.Abs(nDistY));
+
+            nDist = nDistX;
+
+            if(nDistX > 0 && nDistY < 0) {
+                //Then we are below and to the left
+                dir = Direction.Dir.UR;
+            }else if(nDistX > 0 && nDistY > 0) {
+                //Then we are above and to the left;
+                dir = Direction.Dir.DR;
+            }else if(nDistX < 0 && nDistY < 0) {
+                //Then we are below and to the right;
+                dir = Direction.Dir.UL;
+            }else if(nDistX < 0 && nDistY > 0) {
+                //Then we are above and to the right;
+                dir = Direction.Dir.DL;
+            }
+        }
+
+        return new DirDist() { dir = dir, nDist = nDist };
+    }
+
+
 }
