@@ -17,9 +17,8 @@ public class SelectorManual : AbilitySelector {
                 Debug.Log("Manually using ability 1");
                 yield return owner.lstAbilities[(int)Entity.ABILSLOT.ABIL1].AttemptManualUse();
             } else if (Input.GetKeyUp(KeyCode.Alpha2)) {
-                Debug.Log("Would enter ability selection 2 at this point");
-                bUsedAbility = true;
-                //yield return owner.lstAbilities[(int)Entity.ABILSLOT.ABIL2].AttemptManualUse();
+                Debug.Log("Manually using ability 2");
+                yield return owner.lstAbilities[(int)Entity.ABILSLOT.ABIL2].AttemptManualUse();
             } else if (Input.GetKeyUp(KeyCode.Alpha3)) {
                 Debug.Log("Would enter ability selection 3 at this point");
                 bUsedAbility = true;

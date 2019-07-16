@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AbilityIcicleWave : Ability {
+public class AbilityDash : Ability {
 
+    public const int nDist = 3;
 
-    public AbilityIcicleWave(Entity _owner) : base(_owner) {
+    public AbilityDash(Entity _owner) : base(_owner) {
 
     }
 
@@ -25,17 +26,16 @@ public class AbilityIcicleWave : Ability {
     }
 
     public override IEnumerator ExecuteAbility() {
+        
+        Direction.Dir dir = owner.tile.pos.GetAdjacentDir(tileTarget.pos);
+        int nCurDist = 0;
 
-        Position posCur = tileTarget.pos;
-        Direction.Dir dir = owner.tile.pos.GetAdjacentDir(posCur);
-
-        while (Board.Get().ValidTile(posCur)) {
-            PropertyController.Get().PlaceProperty("Icicle", Board.Get().At(posCur));
-            Board.Get().StartCoroutine(Board.Get().At(posCur).AnimateSwell());
-            yield return new WaitForSeconds(0.1f);
-
-            posCur = posCur.PosInDir(dir);
+        while (nCurDist < nDist && Board.Get().ValidTile(owner.tile.pos.PosInDir(dir)) && Board.Get().At(owner.tile.pos.PosInDir(dir)).prop.bBlocksMovement == false) {
+            Board.Get().SwapTile(owner.tile, dir);
+            nCurDist++;
         }
 
+        yield return Board.Get().AnimateMovingTiles();
+        
     }
 }
