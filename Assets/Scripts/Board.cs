@@ -28,6 +28,9 @@ public class Board : Singleton<Board> {
     public List<Position> lstTopTwoEdges;
     public List<Position> lstTopLeftEdges;
     public List<Position> lstTopRightEdges;
+    public List<Position> lstBottomTwoEdges;
+    public List<Position> lstBottomLeftEdges;
+    public List<Position> lstBottomRightEdges;
 
     public HashSet<Tile> setFlaggedToClear;
 
@@ -35,6 +38,9 @@ public class Board : Singleton<Board> {
         lstTopLeftEdges = new List<Position>();
         lstTopTwoEdges = new List<Position>();
         lstTopRightEdges = new List<Position>();
+        lstBottomRightEdges = new List<Position>();
+        lstBottomLeftEdges = new List<Position>();
+        lstBottomTwoEdges = new List<Position>();
     }
 
     public Tile At(Position pos) {
@@ -277,13 +283,17 @@ public class Board : Singleton<Board> {
         }
 
         //Swap the passed tile and the target tile as they are stored in the grid of tiles
-        lstTiles[tile.pos.i][tile.pos.j] = At(otherPos);
+        lstTiles[thisPos.i][thisPos.j] = At(otherPos);
         lstTiles[otherPos.i][otherPos.j] = tile;
 
         //We need to fix up the swapped tiles to ensure their positions accurately represent their new position
         At(thisPos).SetPositon(thisPos);
         At(otherPos).SetPositon(otherPos);
-       
+
+        //TODONOW:: Figure out a way to detect when one of the tile's we're swapping with is the player, and that 
+        //    we should shift the board appropriately - however, the board's shifting of the player should not retrigger
+        //    another board shift
+
     }
 
     public List<Tile> GetAdjacentTiles(Tile tile) {
@@ -351,17 +361,42 @@ public class Board : Singleton<Board> {
 
                     lstAllTiles.Add(lstTiles[i][j]);
 
-                    //Save references to the top and side edges
-                    if (j == 0) {
-                        lstTopLeftEdges.Add(lstTiles[i][j].pos);
-                        lstTopRightEdges.Add(lstTiles[i][j].pos);
+                    //Determine if this tile is part of an edge
+                    
+                    //Top Edge
+                    if (j == 0 || j == 1) {
                         lstTopTwoEdges.Add(lstTiles[i][j].pos);
-                    } else if (j == 1) {
-                        lstTopTwoEdges.Add(lstTiles[i][j].pos);
-                    } else if (i == 0) {
+                        Debug.Log( i + "," + j + " is top");
+                    }
+
+                    //Top/Left Edges
+                    if (j == 0 || i == 0) {
                         lstTopLeftEdges.Add(lstTiles[i][j].pos);
-                    } else if (i == nWidth - 1) {
+                        Debug.Log(i + "," + j + " is top/left");
+                    }
+
+                    //Top/Right Edges
+                    if (j == 0 || i == nWidth - 1) {
                         lstTopRightEdges.Add(lstTiles[i][j].pos);
+                        Debug.Log(i + "," + j + " is top/right");
+                    }
+                    
+                    //Bot Edge
+                    if (j == nHeight - 1 || j == nHeight - 2) {
+                        lstBottomTwoEdges.Add(lstTiles[i][j].pos);
+                        Debug.Log(i + "," + j + " is bottom");
+                    }
+
+                    //Bot/Left Edges
+                    if (j == nHeight - 1 || i == 0) {
+                        lstBottomLeftEdges.Add(lstTiles[i][j].pos);
+                        Debug.Log(i + "," + j + " is bot/left");
+                    }
+
+                    //Bot/Right Edges
+                    if (j == nHeight - 1 || i == nWidth - 1) {
+                        lstBottomRightEdges.Add(lstTiles[i][j].pos);
+                        Debug.Log(i + "," + j + " is bot/right");
                     }
 
 
@@ -390,7 +425,7 @@ public class Board : Singleton<Board> {
                 if ((i + j) % 2 == 0) {
                     //if this is a valid tile then we can fill it
                     
-                    PropertyController.Get().SpawnNewProperty(lstTiles[i][j]);
+                    PropertyController.Get().SpawnNewProperty(lstTiles[i][j], Direction.Dir.NONE);
 
                     if (bStartWithMatches == false) {
                         //if we don't want to start with matches, then we'll have to find a colour that won't form a match
@@ -607,6 +642,87 @@ public class Board : Singleton<Board> {
         
     }
 
+    public void MovePlayer(Direction.Dir dir, int nDist = 1) {
+
+        //Move the player's tile in the appropriate direction
+        SwapTile(tilePlayer, dir, nDist);
+
+        //Move the rest of the map in the opposite direction to give the impression of movement through space
+        ShiftBoard(Direction.Negate(dir), nDist);
+
+        //We then assume that whatever process is calling us will then animate the movement of tiles appropriately
+    }
+
+    public void ShiftBoard(Direction.Dir dir, int nDist = 1) {
+
+        //if shifting board up, then get all of the tiles along the bottom border
+
+        List<Position> lstStartingEdgePositions = null;
+
+        switch (dir) {
+            case Direction.Dir.D:
+                lstStartingEdgePositions = lstBottomTwoEdges;
+                break;
+
+            case Direction.Dir.DL:
+                lstStartingEdgePositions = lstBottomLeftEdges;
+                break;
+
+            case Direction.Dir.DR:
+                lstStartingEdgePositions = lstBottomRightEdges;
+                break;
+
+            case Direction.Dir.U:
+                lstStartingEdgePositions = lstTopTwoEdges;
+                break;
+
+            case Direction.Dir.UL:
+                lstStartingEdgePositions = lstTopLeftEdges;
+                break;
+
+            case Direction.Dir.UR:
+                lstStartingEdgePositions = lstTopRightEdges;
+                break;
+
+            case Direction.Dir.NONE:
+                //Since we're not shifting at all, then just return at this point
+                return;
+        }
+
+        //Now that we've got the starting edge for the direction we're going to be pulling tiles towards, let's start at this 
+        // edge and then progress in the opposite direction, pulling tiles down to the current location as we go
+        Direction.Dir dirPull = Direction.Negate(dir);
+
+        foreach (Position posInColumn in lstStartingEdgePositions) {
+
+            Position posCur = posInColumn;
+            Position posTarget = posCur.PosInDir(dirPull, nDist);
+
+            //As long as there is a tile at the position we want to pull from, keep pulling
+            while (ValidTile(posTarget)) {
+                SwapTile(At(posCur), dirPull, nDist);
+                posCur = posCur.PosInDir(dir);
+                posTarget = posTarget.PosInDir(dir);
+            }
+
+            //Once we've pulled all the tiles down, then we can generate new tiles for the tiles
+            // between posCur and posTarget since these will be newly explored
+            while(posCur.IsEqual(posTarget) == false) {
+                //Ask the property controller to give us a new tile
+                PropertyController.Get().SpawnNewProperty(At(posCur), dirPull);
+
+                //Set the stable pos to come from off screen at the appropriate distance
+                At(posCur).posLastStable = posCur.PosInDir(dirPull, nDist);
+
+                posCur = posCur.PosInDir(dirPull);
+            }
+        }
+
+
+
+    }
+
+
     // Update is called once per frame
     public void Update() {
         
@@ -670,7 +786,7 @@ public class Board : Singleton<Board> {
     public void GenerateColoursForDeleted() {
 
         foreach(Tile tile in setFlaggedToClear) {
-            PropertyController.Get().SpawnNewProperty(tile);
+            PropertyController.Get().SpawnNewProperty(tile, tile.dirCascadeFrom);
             tile.transform.localScale = new Vector3(1f, 1f, 1f);
         }
 

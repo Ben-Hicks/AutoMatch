@@ -67,8 +67,9 @@ public class PropertyController : Singleton<PropertyController> {
 
         return dictProperties[sName];
     }
+    
 
-    public void SpawnNewProperty(Tile tile) {
+    public void SpawnNewProperty(Tile tile, Direction.Dir dirOffScreen) {
         //TODO:: Replace this with a class whose job is to only decide which type of tiles should be spawned given the circumstance of the game
 
         //Set the overwriting priority to the minimum so that any tile can be placed overtop of this
@@ -78,9 +79,9 @@ public class PropertyController : Singleton<PropertyController> {
 
         float fRand = Random.Range(0, 100);
 
-        if(fRand < 3) {
+        if(fRand < 3 && dirOffScreen != Direction.Dir.NONE) {
             PlaceProperty("Stabber", tile);
-        }else if(fRand < 70) {
+        }else if(fRand < 85) {
             PlaceProperty("Gold", tile);
         } else {
             PlaceProperty("Blocker", tile);
