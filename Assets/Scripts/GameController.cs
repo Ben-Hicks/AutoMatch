@@ -83,6 +83,7 @@ public class GameController : Singleton<GameController> {
             Board.Get().RealignPlayer();
 
             yield return Board.Get().AnimateMovingTiles();
+            
         }
     }
 

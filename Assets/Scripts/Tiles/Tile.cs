@@ -133,4 +133,8 @@ public class Tile : MonoBehaviour {
 
     }
 
+    private void Update() {
+        SetDebugText(pos.ToString());
+    }
+
 }

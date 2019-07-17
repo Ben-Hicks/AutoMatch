@@ -635,6 +635,7 @@ public class Board : Singleton<Board> {
             Position.DirDist dirDist = posCenter.DirDistTo(tilePlayer.pos);
 
             Debug.Assert(dirDist.dir != Direction.Dir.NONE && dirDist.nDist != 0);
+            Debug.Log("Player moved " + dirDist.dir + " by " + dirDist.nDist);
 
             ShiftBoard(Direction.Negate(dirDist.dir), dirDist.nDist);
         }
@@ -686,7 +687,7 @@ public class Board : Singleton<Board> {
 
     public void ShiftBoard(Direction.Dir dir, int nDist = 1) {
 
-        Debug.Log("Shifting board in direction " + dir);
+        Debug.Log("Shifting board in direction " + dir + " by + " + nDist);
 
         //if shifting board up, then get all of the tiles along the bottom border
 
@@ -724,32 +725,32 @@ public class Board : Singleton<Board> {
 
         //Now that we've got the starting edge for the direction we're going to be pulling tiles towards, let's start at this 
         // edge and then progress in the opposite direction, pulling tiles down to the current location as we go
-        Direction.Dir dirPull = Direction.Negate(dir);
+        Direction.Dir dirPullFrom = Direction.Negate(dir);
 
         foreach (Position posInColumn in lstStartingEdgePositions) {
 
-            Position posCur = posInColumn;
-            Position posTarget = posCur.PosInDir(dirPull, nDist);
+            Position posTarget = posInColumn;
+            Position posPullFrom = posTarget.PosInDir(dirPullFrom, nDist);
 
             //As long as there is a tile at the position we want to pull from, keep pulling
-            while (ValidTile(posTarget)) {
+            while (ValidTile(posPullFrom)) {
 
-                //Debug.Log("Calling MoveTile with tile at " + posCur.ToString() + " dirPull=" + dirPull + " nDist= " + nDist);
-                MoveTile(At(posCur), dirPull, nDist);
-                posCur = posCur.PosInDir(dirPull);
-                posTarget = posTarget.PosInDir(dirPull);
+                Debug.Log("Calling MoveTile with tile at " + posPullFrom.ToString() + " dirPull=" + dir + " nDist= " + nDist);
+                MoveTile(At(posPullFrom), dir, nDist);
+                posTarget = posTarget.PosInDir(dirPullFrom);
+                posPullFrom = posPullFrom.PosInDir(dirPullFrom);
             }
 
             //Once we've pulled all the tiles down, then we can generate new tiles for the tiles
-            // between posCur and posTarget since these will be newly explored
-            while(posCur.IsEqual(posTarget) == false) {
+            // from posTarget til the edge of the board
+            while(ValidTile(posTarget)) {
                 //Ask the property controller to give us a new tile
-                PropertyController.Get().SpawnNewProperty(At(posCur), dirPull);
+                PropertyController.Get().SpawnNewProperty(At(posTarget), dir);
 
                 //Set the stable pos to come from off screen at the appropriate distance
-                At(posCur).posLastStable = posCur.PosInDir(dirPull, nDist);
+                At(posTarget).posLastStable = posTarget.PosInDir(dirPullFrom, nDist);
 
-                posCur = posCur.PosInDir(dirPull);
+                posTarget = posTarget.PosInDir(dirPullFrom);
             }
         }
 
