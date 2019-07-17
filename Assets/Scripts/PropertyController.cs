@@ -32,6 +32,10 @@ public class PropertyController : Singleton<PropertyController> {
             } else {
 
                 //If this tile already have a previous property on it, then we'll have to clear out that property
+                if(tile.prop.GetType().ToString() == "EntStabber") {
+                    Debug.Log("Destroying a stabber with id " + ((EntStabber)tile.prop).nID + " also, deletions should be done as a prop.OnRemoval function");
+                }
+                Destroy(tile.prop);
                 GameObject.Destroy(tile.prop.go);
             }
         }

@@ -4,12 +4,17 @@ using UnityEngine;
 
 public class EntStabber : Entity {
 
+    public static int nCurID = 0;
+    public int nID;
+
     public override void OnCollect(Collection collection) {
 
     }
 
     public override void SetDefaultColour() {
         colour.SetCol(Colour.Col.RED);
+        nID = nCurID;
+        nCurID++;
     }
 
 }

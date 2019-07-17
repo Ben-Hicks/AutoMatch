@@ -48,6 +48,4 @@ public abstract class Property : MonoBehaviour {
 
     public abstract void OnCollect(Collection collection);
 
-
-
 }

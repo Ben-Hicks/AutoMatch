@@ -54,4 +54,10 @@ public abstract class Entity : Property {
     public override void OnCollect(Collection collection) {
         Debug.Log("We collected an entity and should therefore do nothing");
     }
+
+
+    private void OnDestroy() {
+        GameController.Get().UnregisterEntity(this);
+    }
+
 }

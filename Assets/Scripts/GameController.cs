@@ -23,7 +23,7 @@ public class GameController : Singleton<GameController> {
 
     }
 
-    public void UnregisterEntiy(Entity entity) {
+    public void UnregisterEntity(Entity entity) {
 
         setActiveEntities.Remove(entity);
 
@@ -32,13 +32,18 @@ public class GameController : Singleton<GameController> {
     public Entity GetNextActingEntity() {
 
         Entity entityNext = queueEntities.Dequeue();
+
+       
         if (setActiveEntities.Contains(entityNext)) {
             //If the entity at the beginning of the queue exists, we should re-add it to the end of the queue, then return it
             queueEntities.Enqueue(entityNext);
+
             return entityNext;
         } else {
             //If the entity that was at the beginning was already unregistered, we shouldn't re-add it to the back of the queue
             //and should instead recurse to see if the next entity is active
+
+            Debug.Log("SKIPPING SINCE NON-ACTIVE");
             return GetNextActingEntity();
         }
     }
@@ -54,6 +59,7 @@ public class GameController : Singleton<GameController> {
             Board.Get().UpdateDistsFromPlayer();
 
             //Initially ensure that our starting matches all get cleaned up
+            Debug.Log("Should set back to true");
             while (true) {
                 int nFlagged = Board.Get().FlagMatches();
 
@@ -70,8 +76,13 @@ public class GameController : Singleton<GameController> {
 
             Board.Get().UpdateDistsFromPlayer();
             yield return GetNextActingEntity().abilityselector.SelectAndUseAbility();
-            
 
+            yield return new WaitForSeconds(0.1f);
+             
+            //After performing the entity's actions, ensure the player is moved to the center of the board
+            Board.Get().RealignPlayer();
+
+            yield return Board.Get().AnimateMovingTiles();
         }
     }
 

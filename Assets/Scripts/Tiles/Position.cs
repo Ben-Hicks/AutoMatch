@@ -105,7 +105,7 @@ public class Position {
 
             Debug.Assert(Mathf.Abs(nDistX) == Mathf.Abs(nDistY));
 
-            nDist = nDistX;
+            nDist = Mathf.Abs(nDistX);
 
             if(nDistX > 0 && nDistY < 0) {
                 //Then we are below and to the left

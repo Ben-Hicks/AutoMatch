@@ -270,6 +270,9 @@ public class Board : Singleton<Board> {
         Position posCur = tile.pos;
         Position posDestination = tile.pos.PosInDir(dir, nDist);
 
+        //Save a reference for the direction of the destination tile so that we can restore it later
+        Direction.Dir dirCenterDestination = At(posDestination).dirTowardCenter;
+
         if (ValidTile(posDestination) == false) {
             Debug.LogError("Can't move to an invalid position " + posDestination.ToString());
             return;
@@ -277,11 +280,16 @@ public class Board : Singleton<Board> {
 
         //Start at the tile's position and fetch the tiles ahead one at a time
         while(posCur.IsEqual(posDestination) == false) {
-            Debug.Log("Want to shift " + posCur.PosInDir(dir).ToString() + " to position " + posCur.ToString());
+            //Debug.Log("Want to shift " + posCur.PosInDir(dir).ToString() + " to position " + posCur.ToString());
 
+            
             //Copy the reference of the tile above us
+            Direction.Dir dirCenter = At(posCur).dirTowardCenter;
+
             lstTiles[posCur.i][posCur.j] = At(posCur.PosInDir(dir));
             At(posCur).SetPositon(posCur);
+            //Make sure we use the cascade direction for the previous tile in this location
+            At(posCur).SetDirTowardCenter(dirCenter);
 
             //Advance our tile up
             posCur = posCur.PosInDir(dir);
@@ -290,8 +298,12 @@ public class Board : Singleton<Board> {
 
         //Once everything has been pulled down in sequence and we've reached our destination position
         // we can set the destination position's tile to be our original tile
+        
         lstTiles[posDestination.i][posDestination.j] = tile;
         At(posDestination).SetPositon(posDestination);
+
+        //Restore the direction of the destination tile that we saved at the beginning
+        At(posDestination).SetDirTowardCenter(dirCenterDestination);
 
     }
 
@@ -311,6 +323,11 @@ public class Board : Singleton<Board> {
         //We need to fix up the swapped tiles to ensure their positions accurately represent their new position
         At(pos).SetPositon(pos);
         At(other).SetPositon(other);
+
+        //We also need to make sure that the tiles have the proper cascading directions
+        Direction.Dir dirCascadeSwap = At(pos).dirTowardCenter;
+        At(pos).SetDirTowardCenter(At(other).dirTowardCenter);
+        At(other).SetDirTowardCenter(dirCascadeSwap);
     }
 
     public List<Tile> GetAdjacentTiles(Tile tile) {
@@ -618,17 +635,13 @@ public class Board : Singleton<Board> {
             Position.DirDist dirDist = posCenter.DirDistTo(tilePlayer.pos);
 
             Debug.Assert(dirDist.dir != Direction.Dir.NONE && dirDist.nDist != 0);
-            Debug.Log("Player at " + tilePlayer.pos.ToString() + " and center is " + posCenter.ToString());
-            Debug.Log("The player has moved in direction " + dirDist.dir + " by " + dirDist.nDist);
+
             ShiftBoard(Direction.Negate(dirDist.dir), dirDist.nDist);
         }
 
     }
 
     public IEnumerator AnimateMovingTiles() {
-
-        //If tiles have been moving around, then first we should bring the player back to the center (in the event they moved)
-        RealignPlayer();
 
         //Then figure out all of the tiles that have moved from their original position
         List<Tile> lstMovingTiles = new List<Tile>();
@@ -721,7 +734,7 @@ public class Board : Singleton<Board> {
             //As long as there is a tile at the position we want to pull from, keep pulling
             while (ValidTile(posTarget)) {
 
-                Debug.Log("Calling MoveTile with tile at " + posCur.ToString() + " dirPull=" + dirPull + " nDist= " + nDist);
+                //Debug.Log("Calling MoveTile with tile at " + posCur.ToString() + " dirPull=" + dirPull + " nDist= " + nDist);
                 MoveTile(At(posCur), dirPull, nDist);
                 posCur = posCur.PosInDir(dirPull);
                 posTarget = posTarget.PosInDir(dirPull);
