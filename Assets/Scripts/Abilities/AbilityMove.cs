@@ -49,7 +49,7 @@ public class AbilityMove : Ability {
     public override IEnumerator ExecuteAbility() {
 
         Board.Get().MoveTile(owner.tile, owner.tile.pos.GetAdjacentDir(tileTarget.pos));
-        yield return Board.Get().AnimateMovingTiles();
+        yield return Board.Get().AnimateMovingTiles(owner.GetAnimTime(Board.Get().fStandardAnimTime));
 
     }
 }

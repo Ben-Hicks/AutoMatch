@@ -59,7 +59,6 @@ public class GameController : Singleton<GameController> {
             Board.Get().UpdateDistsFromPlayer();
 
             //Initially ensure that our starting matches all get cleaned up
-            Debug.Log("Should set back to true");
             while (true) {
                 int nFlagged = Board.Get().FlagMatches();
 
@@ -82,7 +81,7 @@ public class GameController : Singleton<GameController> {
             //After performing the entity's actions, ensure the player is moved to the center of the board
             Board.Get().RealignPlayer();
 
-            yield return Board.Get().AnimateMovingTiles();
+            yield return Board.Get().AnimateMovingTiles(Board.Get().fBoardScrollTime);
             
         }
     }

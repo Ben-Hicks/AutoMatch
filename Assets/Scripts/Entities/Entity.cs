@@ -55,6 +55,13 @@ public abstract class Entity : Property {
         Debug.Log("We collected an entity and should therefore do nothing");
     }
 
+    public float GetAnimTime(float fProposedAnimTime) {
+        if (tile.bActive) {
+            return fProposedAnimTime;
+        } else {
+            return 0.00001f;
+        }
+    }
 
     private void OnDestroy() {
         GameController.Get().UnregisterEntity(this);

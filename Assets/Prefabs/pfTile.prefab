@@ -79,7 +79,7 @@ SpriteRenderer:
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
-  m_MaskInteraction: 0
+  m_MaskInteraction: 1
   m_SpriteSortPoint: 0
 --- !u!60 &7458970108473702517
 PolygonCollider2D:
@@ -271,6 +271,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 713d05995116f38429fda3417e654641, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bActive: 0
   v2StartLocation: {x: 0, y: 0}
   v2GoalLocation: {x: 0, y: 0}
   dirTowardCenter: 0

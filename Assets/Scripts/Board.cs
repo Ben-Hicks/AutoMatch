@@ -13,7 +13,13 @@ public class Board : Singleton<Board> {
 
     public int nWidth;
     public int nHeight;
+
+    public int nActiveWidth;
+    public int nActiveHeight;
+
+    public float fStandardAnimTime;
     public float fCascadeTime;
+    public float fBoardScrollTime;
 
     public Position posCenter;
     public Tile tilePlayer;
@@ -25,6 +31,7 @@ public class Board : Singleton<Board> {
     public List<List<Tile>> lstTiles;
 
     public List<Tile> lstAllTiles;
+    public List<Tile> lstActiveTiles;
     public List<Position> lstTopTwoEdges;
     public List<Position> lstTopLeftEdges;
     public List<Position> lstTopRightEdges;
@@ -153,7 +160,7 @@ public class Board : Singleton<Board> {
 
         
 
-        yield return AnimateMovingTiles();
+        yield return AnimateMovingTiles(fCascadeTime);
 
         //Once everything's cleaned up, we can clear out our list of flagged tiles
         setFlaggedToClear.Clear();
@@ -199,38 +206,43 @@ public class Board : Singleton<Board> {
         Position curPos = posStart;
 
         while (ValidTile(curPos)) {
+            
+            if (At(curPos).bActive == false) {
+                //If the current tile is not active, then just skip it and look later
+            } else { 
 
-            //Check the MatchingLength of the current tile
-            int nMatchLength = GetMatchingLength(curPos, dir);
+                //Check the MatchingLength of the current tile
+                int nMatchLength = GetMatchingLength(curPos, dir);
 
-            //If the match is long enough
-            if (nMatchLength >= MINMATCHLENGTH) {
+                //If the match is long enough
+                if (nMatchLength >= MINMATCHLENGTH) {
 
-                Entity entHighestCollectionPriority = null;
-                //first we'll find the highest collection priority entity in the match
-                for(int i=0; i < nMatchLength; i++) {
+                    Entity entHighestCollectionPriority = null;
+                    //first we'll find the highest collection priority entity in the match
+                    for (int i = 0; i < nMatchLength; i++) {
 
-                    //Attempt to get an entity component from the current tile 
-                    //TODO:: Optimize this since repeated getcomponents is likely slow
-                    Entity ent = At(curPos.PosInDir(dir, i)).prop.GetComponent<Entity>();
+                        //Attempt to get an entity component from the current tile 
+                        //TODO:: Optimize this since repeated getcomponents is likely slow
+                        Entity ent = At(curPos.PosInDir(dir, i)).prop.GetComponent<Entity>();
 
-                    //if either we haven't seen a collector yet, or this new collector is faster
-                    if (ent != null && (entHighestCollectionPriority == null || ent.collectionPriority > entHighestCollectionPriority.collectionPriority)) {
-                        entHighestCollectionPriority = ent;
-                    }
-                }
-
-                //Then flag each tile along this match, and update their collector reference if its better than their current one
-                for (int i = 0; i < nMatchLength; i++) {
-                    Tile tile = At(curPos.PosInDir(dir, i));
-
-                    tile.prop.FlagForDeletion();
-
-                    if (entHighestCollectionPriority != null && (tile.toCollectBy == null || entHighestCollectionPriority.collectionPriority > tile.toCollectBy.entity.collectionPriority)) {
-                        tile.toCollectBy = entHighestCollectionPriority.collection;
+                        //if either we haven't seen a collector yet, or this new collector is faster
+                        if (ent != null && (entHighestCollectionPriority == null || ent.collectionPriority > entHighestCollectionPriority.collectionPriority)) {
+                            entHighestCollectionPriority = ent;
+                        }
                     }
 
+                    //Then flag each tile along this match, and update their collector reference if its better than their current one
+                    for (int i = 0; i < nMatchLength; i++) {
+                        Tile tile = At(curPos.PosInDir(dir, i));
 
+                        tile.prop.FlagForDeletion();
+
+                        if (entHighestCollectionPriority != null && (tile.toCollectBy == null || entHighestCollectionPriority.collectionPriority > tile.toCollectBy.entity.collectionPriority)) {
+                            tile.toCollectBy = entHighestCollectionPriority.collection;
+                        }
+
+
+                    }
                 }
 
             }
@@ -272,6 +284,7 @@ public class Board : Singleton<Board> {
 
         //Save a reference for the direction of the destination tile so that we can restore it later
         Direction.Dir dirCenterDestination = At(posDestination).dirTowardCenter;
+        bool bActiveDestination = At(posDestination).bActive;
 
         if (ValidTile(posDestination) == false) {
             Debug.LogError("Can't move to an invalid position " + posDestination.ToString());
@@ -285,11 +298,13 @@ public class Board : Singleton<Board> {
             
             //Copy the reference of the tile above us
             Direction.Dir dirCenter = At(posCur).dirTowardCenter;
+            bool bActive = At(posCur).bActive;
 
             lstTiles[posCur.i][posCur.j] = At(posCur.PosInDir(dir));
             At(posCur).SetPositon(posCur);
             //Make sure we use the cascade direction for the previous tile in this location
             At(posCur).SetDirTowardCenter(dirCenter);
+            At(posCur).SetActive(bActive);
 
             //Advance our tile up
             posCur = posCur.PosInDir(dir);
@@ -304,6 +319,7 @@ public class Board : Singleton<Board> {
 
         //Restore the direction of the destination tile that we saved at the beginning
         At(posDestination).SetDirTowardCenter(dirCenterDestination);
+        At(posDestination).SetActive(bActiveDestination);
 
     }
 
@@ -328,6 +344,10 @@ public class Board : Singleton<Board> {
         Direction.Dir dirCascadeSwap = At(pos).dirTowardCenter;
         At(pos).SetDirTowardCenter(At(other).dirTowardCenter);
         At(other).SetDirTowardCenter(dirCascadeSwap);
+
+        bool bActiveSwap = At(pos).bActive;
+        At(pos).SetActive(At(other).bActive);
+        At(other).SetActive(bActiveSwap);
     }
 
     public List<Tile> GetAdjacentTiles(Tile tile) {
@@ -351,8 +371,8 @@ public class Board : Singleton<Board> {
         Position posCur = posStart.PosInDir(dir);
         int nMatchLength = 1;
 
-        //As long as the next tile exists
-        while (ValidTile(posCur)) {
+        //As long as the next tile exists and is active
+        while (ActiveTile(posCur)) {
 
             //Ensure that every currently matched tile also matches with the new current tile
             for (int i = 0; i < nMatchLength; i++) {
@@ -436,6 +456,22 @@ public class Board : Singleton<Board> {
             }
 
         }
+    }
+
+    public void InitMarkActiveTiles() {
+
+        foreach (Tile tile in lstAllTiles) {
+            if(Mathf.Abs(posCenter.i - tile.pos.i) <= nActiveWidth && Mathf.Abs(posCenter.j - tile.pos.j) <= nActiveHeight) {
+                tile.SetActive(true);
+                lstActiveTiles.Add(tile);
+            } else {
+                tile.SetActive(false);
+            }
+        }
+    }
+
+    public bool ActiveTile(Position pos) {
+        return ValidTile(pos) && At(pos).bActive;
     }
 
     public bool ValidTile(Position pos) {
@@ -586,6 +622,7 @@ public class Board : Singleton<Board> {
 
     public override void Init() {
         InitTiles();
+        InitMarkActiveTiles();
         InitColours();
 
         InitPlayerTile();
@@ -642,7 +679,7 @@ public class Board : Singleton<Board> {
 
     }
 
-    public IEnumerator AnimateMovingTiles() {
+    public IEnumerator AnimateMovingTiles(float fDuration) {
 
         //Then figure out all of the tiles that have moved from their original position
         List<Tile> lstMovingTiles = new List<Tile>();
@@ -661,11 +698,11 @@ public class Board : Singleton<Board> {
             //Now that we know which tiles need to move, let's figure out where their positions should be at this point in time
             float fElapsedTime = Time.timeSinceLevelLoad - fTimeStart;
 
-            float fProgress = Mathf.Min(1f, fElapsedTime / fCascadeTime);
+            float fProgress = Mathf.Min(1f, fElapsedTime / fDuration);
             
 
             foreach (Tile tile in lstMovingTiles) {
-                tile.transform.localPosition = Library.LerpSmoothIn(tile.v2StartLocation, tile.v2GoalLocation, fProgress);
+                tile.transform.localPosition = Library.LerpSmoothStep(tile.v2StartLocation, tile.v2GoalLocation, fProgress);
             }
 
             //If our progress is complete, we can stop moving
@@ -735,7 +772,6 @@ public class Board : Singleton<Board> {
             //As long as there is a tile at the position we want to pull from, keep pulling
             while (ValidTile(posPullFrom)) {
 
-                Debug.Log("Calling MoveTile with tile at " + posPullFrom.ToString() + " dirPull=" + dir + " nDist= " + nDist);
                 MoveTile(At(posPullFrom), dir, nDist);
                 posTarget = posTarget.PosInDir(dirPullFrom);
                 posPullFrom = posPullFrom.PosInDir(dirPullFrom);

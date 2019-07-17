@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class Tile : MonoBehaviour {
 
+    public bool bActive;
+
     public Position pos;
     public Position posLastStable;
 
@@ -53,6 +55,12 @@ public class Tile : MonoBehaviour {
         SaveStablePos();
     }
 
+    public void SetActive(bool _bActive) {
+        bActive = _bActive;
+
+        SetDebugText(bActive.ToString());
+    }
+
     public void SetProperty(Property _prop) {
 
         prop = _prop;
@@ -88,7 +96,6 @@ public class Tile : MonoBehaviour {
 
     public void UpdatePathDistToPlayer(int _nPathDistToPlayer) {
         nPathDistToPlayer = _nPathDistToPlayer;
-        SetDebugText(nDirectDistToPlayer.ToString() + " " + nPathDistToPlayer.ToString());
     }
     
 
@@ -131,10 +138,6 @@ public class Tile : MonoBehaviour {
 
         
 
-    }
-
-    private void Update() {
-        SetDebugText(pos.ToString());
     }
 
 }

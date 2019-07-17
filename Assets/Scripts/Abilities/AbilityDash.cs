@@ -30,12 +30,12 @@ public class AbilityDash : Ability {
         Direction.Dir dir = owner.tile.pos.GetAdjacentDir(tileTarget.pos);
         int nCurDist = 0;
 
-        while (nCurDist < nDist && Board.Get().ValidTile(owner.tile.pos.PosInDir(dir)) && Board.Get().At(owner.tile.pos.PosInDir(dir)).prop.bBlocksMovement == false) {
+        while (nCurDist < nDist && Board.Get().ActiveTile(owner.tile.pos.PosInDir(dir)) && Board.Get().At(owner.tile.pos.PosInDir(dir)).prop.bBlocksMovement == false) {
             Board.Get().MoveTile(owner.tile, dir);
             nCurDist++;
         }
 
-        yield return Board.Get().AnimateMovingTiles();
+        yield return Board.Get().AnimateMovingTiles(owner.GetAnimTime(Board.Get().fStandardAnimTime));
         
     }
 }

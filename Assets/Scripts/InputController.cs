@@ -53,7 +53,7 @@ public class InputController : Singleton<InputController> {
 
         if(dirInputted != Direction.Dir.NONE) {
             Position posInputted = GameController.Get().entHero.tile.pos.PosInDir(dirInputted);
-            if (Board.Get().ValidTile(posInputted)) {
+            if (Board.Get().ActiveTile(posInputted)) {
                 //If we are trying to select a tile that exists
                 tileSelected = Board.Get().At(posInputted);
                 fTimeSinceSelected = 0f;

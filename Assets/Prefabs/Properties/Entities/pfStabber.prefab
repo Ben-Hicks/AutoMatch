@@ -68,6 +68,7 @@ MonoBehaviour:
   nCurHealth: 30
   collectionPriority: 3
   abilityselector: {fileID: 6706428863786639189}
+  nID: 0
 --- !u!114 &6706428863786639189
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -159,5 +160,5 @@ SpriteRenderer:
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
-  m_MaskInteraction: 0
+  m_MaskInteraction: 1
   m_SpriteSortPoint: 0

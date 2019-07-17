@@ -266,12 +266,81 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 519420028}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.79, y: -4.37, z: -10}
+  m_LocalPosition: {x: 10.46, y: -6.32, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &550662845
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 3170582655670353859, guid: bcb00908dd0c2d74da3b4ef2ae95b977,
+        type: 3}
+      propertyPath: m_Name
+      value: pfBoardVisibleWindow
+      objectReference: {fileID: 0}
+    - target: {fileID: 2452355874289501897, guid: bcb00908dd0c2d74da3b4ef2ae95b977,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 9.335301
+      objectReference: {fileID: 0}
+    - target: {fileID: 2452355874289501897, guid: bcb00908dd0c2d74da3b4ef2ae95b977,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -6.501448
+      objectReference: {fileID: 0}
+    - target: {fileID: 2452355874289501897, guid: bcb00908dd0c2d74da3b4ef2ae95b977,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2452355874289501897, guid: bcb00908dd0c2d74da3b4ef2ae95b977,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2452355874289501897, guid: bcb00908dd0c2d74da3b4ef2ae95b977,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2452355874289501897, guid: bcb00908dd0c2d74da3b4ef2ae95b977,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2452355874289501897, guid: bcb00908dd0c2d74da3b4ef2ae95b977,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2452355874289501897, guid: bcb00908dd0c2d74da3b4ef2ae95b977,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2452355874289501897, guid: bcb00908dd0c2d74da3b4ef2ae95b977,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2452355874289501897, guid: bcb00908dd0c2d74da3b4ef2ae95b977,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2452355874289501897, guid: bcb00908dd0c2d74da3b4ef2ae95b977,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: bcb00908dd0c2d74da3b4ef2ae95b977, type: 3}
 --- !u!1001 &908001470
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -494,6 +563,41 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3929126062738639436, guid: c0eb92f8ef94a054e87a897195efe60c,
+        type: 3}
+      propertyPath: nActiveRadius
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3929126062738639436, guid: c0eb92f8ef94a054e87a897195efe60c,
+        type: 3}
+      propertyPath: nWidth
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 3929126062738639436, guid: c0eb92f8ef94a054e87a897195efe60c,
+        type: 3}
+      propertyPath: nHeight
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 3929126062738639436, guid: c0eb92f8ef94a054e87a897195efe60c,
+        type: 3}
+      propertyPath: nActiveWidth
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 3929126062738639436, guid: c0eb92f8ef94a054e87a897195efe60c,
+        type: 3}
+      propertyPath: nActiveHeight
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 3929126062738639436, guid: c0eb92f8ef94a054e87a897195efe60c,
+        type: 3}
+      propertyPath: fStandardAnimTime
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3929126062738639436, guid: c0eb92f8ef94a054e87a897195efe60c,
+        type: 3}
+      propertyPath: fBoardScrollTime
+      value: 0.45
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c0eb92f8ef94a054e87a897195efe60c, type: 3}
