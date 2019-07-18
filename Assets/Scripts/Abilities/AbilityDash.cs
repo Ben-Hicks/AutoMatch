@@ -38,4 +38,23 @@ public class AbilityDash : Ability {
         yield return Board.Get().AnimateMovingTiles(owner.GetAnimTime(Board.Get().fStandardAnimTime));
         
     }
+
+    protected override List<Telegraph.TeleTileInfo> GenListTelegraphTiles(Position posToTarget) {
+        List<Telegraph.TeleTileInfo> lstTeleTarget = new List<Telegraph.TeleTileInfo>();
+
+        Direction.Dir dir = owner.tile.pos.GetAdjacentDir(posToTarget);
+        Position posCur = posToTarget;
+
+        //Include each tile in a line in the targetted direction (up to the maximum dist away)
+        for (int i=0; i<nDist; i++){
+            posCur = posCur.PosInDir(dir);
+
+            lstTeleTarget.Add(new Telegraph.TeleTileInfo {
+                pos = posCur,
+                telegraphType = Telegraph.TelegraphType.Movement
+            });
+        }
+
+        return lstTeleTarget;
+    }
 }

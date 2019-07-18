@@ -5,41 +5,68 @@ using UnityEngine;
 public class TelegraphController : Singleton<TelegraphController> {
 
     public Ability abilDisplay;
-    public float fDelayStandard;
+    List<Telegraph.TeleTileInfo> lstHoverTeleInfo;
+
     public float fDelayEnemyTelegraph;
-
     public float fFadeoutTime;
+    
 
-    public IEnumerator AnimateTelegraph(Ability _abilDisplay, float fDelay) {
+    public IEnumerator AnimateEnemyTelegraph(Ability abilEnemy, Position posToTarget) {
 
-        Debug.Log("Fill this in with the actual display for the needed tiles for the ability");
-        Debug.Log("Also set the alpha to 1");
+        List<Telegraph.TeleTileInfo> lstTeleInfo = abilEnemy.TelegraphedTiles(posToTarget);
 
-        //As long as we're still supposed to be displaying this ability, keep displaying it forever
-        while(abilDisplay == _abilDisplay) {
-            yield return new WaitForSeconds(0.1f); 
+        //Initially telegraph all tiles as they are specified in the list of teletileinfo
+        foreach(Telegraph.TeleTileInfo teleinfo in lstTeleInfo) {
+            Board.Get().At(teleinfo.pos).telegraph.SetTelegraph(teleinfo);
         }
 
-        //After the ability to display has changed, fadeout the telegraphs
+        float fStartTime = Time.timeSinceLevelLoad;
+
+        //Keep displaying this ability until we've hit the desired display time
+        while(Time.timeSinceLevelLoad - fStartTime > fDelayEnemyTelegraph) {
+            yield return new WaitForSeconds(0.05f); 
+        }
+
+        //Now we should fadeout the telegraph over time
         float fFadeoutStartTime = Time.timeSinceLevelLoad;
         while (true) {
 
             float fElapsedTime = Time.timeSinceLevelLoad - fFadeoutStartTime;
             float fProgress = Mathf.Min(1f, fElapsedTime / fFadeoutTime);
 
-            Debug.Log("set the alpha for each tile in abilDisplay");
-            Debug.Log("though be sure to not change the alpha if it is a member of the current abilDisplay's list of affected tiles");
+            foreach (Telegraph.TeleTileInfo teleinfo in lstTeleInfo) {
+                Board.Get().At(teleinfo.pos).telegraph.SetAlpha(1f - fProgress);
+            }
 
             if (fProgress == 1f) break;
         }
 
+        //Once the telegraph is done, clear the telegraphed info
+        foreach (Telegraph.TeleTileInfo teleinfo in lstTeleInfo) {
+            Board.Get().At(teleinfo.pos).telegraph.ClearTelegraph();
+        }
+
     }
 
-    public void SetAbilityToTelegraph(Ability _abilDisplay, float fDelay) {
+    public void ClearHoverTelegraph() {
+
+        foreach(Telegraph.TeleTileInfo teleinfo in lstHoverTeleInfo) {
+            Board.Get().At(teleinfo.pos).telegraph.ClearTelegraph();
+        }
+
+        lstHoverTeleInfo = null;
+    }
+
+    public void SetAbilityHoverTelegraph(Ability _abilDisplay, Position posToTarget) {
+        ClearHoverTelegraph();
+
         abilDisplay = _abilDisplay;
 
-        StartCoroutine(AnimateTelegraph(_abilDisplay, fDelay));
+        lstHoverTeleInfo = abilDisplay.TelegraphedTiles(posToTarget);
 
+        foreach (Telegraph.TeleTileInfo teleinfo in lstHoverTeleInfo) {
+            Board.Get().At(teleinfo.pos).telegraph.SetTelegraph(teleinfo);
+        }
     }
 
     public override void Init() {

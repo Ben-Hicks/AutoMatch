@@ -38,4 +38,18 @@ public class AbilityIcicleWave : Ability {
         }
 
     }
+
+    protected override List<Telegraph.TeleTileInfo> GenListTelegraphTiles(Position posToTarget) {
+
+        Direction.Dir dirAim = owner.tile.pos.GetAdjacentDir(posToTarget);
+
+        return new List<Telegraph.TeleTileInfo>() {
+            new Telegraph.TeleTileInfo {
+                pos = posToTarget,
+                telegraphType = Telegraph.TelegraphType.Harmful,
+                markerType = Telegraph.MarkerType.Direction,
+                dir = dirAim
+            }
+        };
+    }
 }

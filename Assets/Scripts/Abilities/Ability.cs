@@ -67,8 +67,8 @@ public abstract class Ability {
     }
 
     public bool CanTarget(Direction.Dir dir) {
-        Tile tileTarget = Board.Get().At(owner.tile.pos.PosInDir(dir));
-        return CanTarget(tileTarget);
+        Tile tilePotentialTarget = Board.Get().At(owner.tile.pos.PosInDir(dir));
+        return CanTarget(tilePotentialTarget);
     }
 
     public abstract bool CanTarget(Tile _tileTarget);
@@ -80,6 +80,25 @@ public abstract class Ability {
     public abstract bool CanUse();
 
     public abstract void PayCost();
+
+    protected abstract List<Telegraph.TeleTileInfo> GenListTelegraphTiles(Position posToTarget);
+
+    public List<Telegraph.TeleTileInfo> TelegraphedTiles(Position posToTarget) {
+        if (CanTarget(Board.Get().At(posToTarget)) == false) {
+            //If the tile is not a valid target, then telegraph it as invalid
+            Telegraph.TeleTileInfo invTeleInfo = new Telegraph.TeleTileInfo {
+                pos = posToTarget,
+                telegraphType = Telegraph.TelegraphType.Harmful,
+                markerType = Telegraph.MarkerType.Invalid,
+                dir = Direction.Dir.NONE
+            };
+            return new List<Telegraph.TeleTileInfo>() { invTeleInfo };
+        } else {
+            //If the tile's valid, then determine the exact tiles the ability will affect
+
+            return GenListTelegraphTiles(posToTarget);
+        }
+    }
 
     public abstract IEnumerator ExecuteAbility();
 }

@@ -52,4 +52,13 @@ public class AbilityMove : Ability {
         yield return Board.Get().AnimateMovingTiles(owner.GetAnimTime(Board.Get().fStandardAnimTime));
 
     }
+
+    protected override List<Telegraph.TeleTileInfo> GenListTelegraphTiles(Position posToTarget) {
+        return new List<Telegraph.TeleTileInfo>() {
+            new Telegraph.TeleTileInfo {
+                pos = posToTarget,
+                telegraphType = Telegraph.TelegraphType.Movement
+            }
+        };
+    }
 }

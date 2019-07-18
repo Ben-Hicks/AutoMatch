@@ -15,19 +15,24 @@ public class Telegraph : MonoBehaviour {
     public enum MarkerType { None, Direction, Invalid };
     public MarkerType markerType;
 
+    public struct TeleTileInfo {
+        public Position pos;
+        public TelegraphType telegraphType;
+        public MarkerType markerType;
+        public Direction.Dir dir;
+    };
+
     public SpriteRenderer rendMarker;
 
     public Direction.Dir dir;
 
     
-    public void SetTelegraphType(TelegraphType _telegraphType) {
-        telegraphType = _telegraphType;
+    public void SetTelegraphType() {
 
         rendBackground.color = lstTelegraphColors[(int)telegraphType];
     }
 
-    public void SetMarkerType(MarkerType _markerType) {
-        markerType = _markerType;
+    public void SetMarkerType() {
 
         if(markerType == MarkerType.None) {
             rendMarker.sprite = null;
@@ -66,12 +71,27 @@ public class Telegraph : MonoBehaviour {
         rendMarker.color = colMarker;
     }
 
-    public void SetTelegraph(TelegraphType _telegraphType, MarkerType _markerType = MarkerType.None) {
+    public void SetTelegraph(TeleTileInfo teleTileInfo) {
 
-        SetTelegraphType(_telegraphType);
-        SetMarkerType(_markerType);
+        Debug.Assert(tile.pos.IsEqual(teleTileInfo.pos));
+
+        telegraphType = teleTileInfo.telegraphType;
+        markerType = teleTileInfo.markerType;
+        dir = teleTileInfo.dir;
+
+        SetTelegraphType();
+        SetMarkerType();
 
     }
 
+    public void ClearTelegraph() {
+        SetTelegraph(new TeleTileInfo {
+            pos = tile.pos,
+            telegraphType = TelegraphType.None,
+            markerType = MarkerType.None,
+            dir = Direction.Dir.NONE
+        });
+        SetAlpha(1f);
+    }
 
 }
