@@ -36,6 +36,7 @@ public class Tile : MonoBehaviour {
     public Collection toCollectBy;
 
     public Property prop;
+    public Telegraph telegraph;
 
     private Colour privcolour;
     public Colour colour {
