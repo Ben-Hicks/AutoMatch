@@ -2,24 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SelectorStabber : AbilitySelector {
+public class SelectorStabber : SelectorEnemy {
 
 
 
     //TODO:: Make a Targetting Component behaviour that can be swapped out as needed
     public override void AcquireTarget() {
         SetTarget(GameController.Get().entHero);
+        Debug.Log("Target acquired " + entTarget);
     }
 
-    public override IEnumerator SelectAndUseAbility() {
-
-        //Initially, we'll retarget - maybe this should only be done periodically?
-        AcquireTarget();
-
-        //We currently only have a movement action, so we'll always pick that
-        yield return MoveTowardTarget();
+    public override void DecideNextAbility() {
+        //For now, just move towards the target
+        PlanMoveTowardTarget();
     }
-
-
    
 }

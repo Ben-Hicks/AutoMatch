@@ -26,7 +26,11 @@ public class Telegraph : MonoBehaviour {
 
     public Direction.Dir dir;
 
-    
+    public void Start() {
+        SetTelegraphType();
+        SetMarkerType();
+    }
+
     public void SetTelegraphType() {
 
         rendBackground.color = lstTelegraphColors[(int)telegraphType];
@@ -69,11 +73,11 @@ public class Telegraph : MonoBehaviour {
 
         rendBackground.color = colBackground;
         rendMarker.color = colMarker;
+
+        Debug.Log("SetAlpha called with " + fAlpha);
     }
 
     public void SetTelegraph(TeleTileInfo teleTileInfo) {
-
-        Debug.Assert(tile.pos.IsEqual(teleTileInfo.pos));
 
         telegraphType = teleTileInfo.telegraphType;
         markerType = teleTileInfo.markerType;
@@ -91,7 +95,6 @@ public class Telegraph : MonoBehaviour {
             markerType = MarkerType.None,
             dir = Direction.Dir.NONE
         });
-        SetAlpha(1f);
     }
 
 }

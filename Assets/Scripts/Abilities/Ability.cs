@@ -44,7 +44,12 @@ public abstract class Ability {
     public IEnumerator UseWithTarget(Direction.Dir dir) {
         Tile tileTarget = Board.Get().At(owner.tile.pos.PosInDir(dir));
 
-        yield return UseWithTarget(tileTarget);
+        return UseWithTarget(tileTarget);
+    }
+
+    public IEnumerator UseWithTarget(Position _posTarget) {
+
+        return UseWithTarget(Board.Get().At(_posTarget));
     }
 
     public IEnumerator UseWithTarget(Tile _tileTarget) {
@@ -57,7 +62,7 @@ public abstract class Ability {
             yield return ExecuteAbility();
 
             //clean out the target
-            SetTarget(null);
+            SetTarget(owner.tile);
         }
         
     }
@@ -71,7 +76,22 @@ public abstract class Ability {
         return CanTarget(tilePotentialTarget);
     }
 
+    public bool CanTarget(Position posTarget) {
+        if(Board.Get().ValidTile(posTarget) == false) {
+            return false;
+        }
+        return CanTarget(Board.Get().At(posTarget));
+    }
+
     public abstract bool CanTarget(Tile _tileTarget);
+
+    public void SetTarget(Direction.Dir dir) {
+        SetTarget(Board.Get().At(owner.tile.pos.PosInDir(dir)));
+    }
+
+    public void SetTarget(Position posTarget) {
+        SetTarget(Board.Get().At(posTarget));
+    }
 
     public void SetTarget(Tile _tileTarget) {
         tileTarget = _tileTarget;

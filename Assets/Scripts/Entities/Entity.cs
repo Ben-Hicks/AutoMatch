@@ -41,6 +41,7 @@ public abstract class Entity : Property {
         for (int i = 0; i < NUMABILSLOTS; i++) lstAbilities.Add(null);
         
         lstAbilities[(int)ABILSLOT.MOVEMENT] = new AbilityMove(this);
+        lstAbilities[(int)ABILSLOT.PASS] = new AbilityPass(this);
     }
 
     public virtual void InitSpecialAbilities() {

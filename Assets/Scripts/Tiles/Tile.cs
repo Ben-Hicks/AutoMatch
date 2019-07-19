@@ -19,11 +19,6 @@ public class Tile : MonoBehaviour {
     public const float fTileGapHorz = 0.14f;
     public const float fTileGapVert = 0.1f;
 
-    public Direction.Dir dirTowardCenter;
-    public Direction.Dir dirCascadeFrom;
-
-    public int nPathDistToPlayer;
-    public int nDirectDistToPlayer;
 
     public int nI;
     public int nJ;
@@ -57,9 +52,12 @@ public class Tile : MonoBehaviour {
     }
 
     public void SetActive(bool _bActive) {
+        if(bActive != _bActive) Debug.Log("Setting pos " + pos.ToString() + " to " + bActive);
+
         bActive = _bActive;
 
         SetDebugText(bActive.ToString());
+        
     }
 
     public void SetProperty(Property _prop) {
@@ -139,6 +137,10 @@ public class Tile : MonoBehaviour {
 
         
 
+    }
+
+    private void Update() {
+        SetDebugText(bActive.ToString());
     }
 
 }

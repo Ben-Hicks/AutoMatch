@@ -25,7 +25,8 @@ public class AbilityMove : Ability {
 
                 yield return UseWithTarget(tileTarget);
             } else {
-                Debug.Log("Invalid target for move action");
+                Debug.Log("Invalid target for move action at " + tileTarget.pos.ToString());
+                yield return null;
             }
         }
 

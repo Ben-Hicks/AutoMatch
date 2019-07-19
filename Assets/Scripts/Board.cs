@@ -41,6 +41,17 @@ public class Board : Singleton<Board> {
 
     public HashSet<Tile> setFlaggedToClear;
 
+    //Stores position-dependent info about a tile (that isn't really related to the value of the tile)
+    public struct TileInfo {
+        public Direction.Dir dirTowardCenter;
+        public Direction.Dir dirCascadeFrom;
+
+        public int nPathDistToPlayer;
+        public int nDirectDistToPlayer;
+    }
+
+    public List<List<TileInfo>> lstTileInfo;
+
     public Board() {
         lstTopLeftEdges = new List<Position>();
         lstTopTwoEdges = new List<Position>();
@@ -672,7 +683,6 @@ public class Board : Singleton<Board> {
             Position.DirDist dirDist = posCenter.DirDistTo(tilePlayer.pos);
 
             Debug.Assert(dirDist.dir != Direction.Dir.NONE && dirDist.nDist != 0);
-            Debug.Log("Player moved " + dirDist.dir + " by " + dirDist.nDist);
 
             ShiftBoard(Direction.Negate(dirDist.dir), dirDist.nDist);
         }
@@ -724,7 +734,6 @@ public class Board : Singleton<Board> {
 
     public void ShiftBoard(Direction.Dir dir, int nDist = 1) {
 
-        Debug.Log("Shifting board in direction " + dir + " by + " + nDist);
 
         //if shifting board up, then get all of the tiles along the bottom border
 
@@ -773,6 +782,7 @@ public class Board : Singleton<Board> {
             while (ValidTile(posPullFrom)) {
 
                 MoveTile(At(posPullFrom), dir, nDist);
+                Debug.Log("Moving " + posPullFrom.ToString() + " in " + dir + " by " + nDist);
                 posTarget = posTarget.PosInDir(dirPullFrom);
                 posPullFrom = posPullFrom.PosInDir(dirPullFrom);
             }
