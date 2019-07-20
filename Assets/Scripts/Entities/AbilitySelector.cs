@@ -20,7 +20,7 @@ public abstract class AbilitySelector : MonoBehaviour {
 
     }
 
-    public void Start() {
+    public virtual void Start() {
         owner = GetComponent<Entity>();
 
         AcquireTarget();

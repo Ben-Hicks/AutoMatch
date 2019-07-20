@@ -42,15 +42,9 @@ public class Board : Singleton<Board> {
     public HashSet<Tile> setFlaggedToClear;
 
     //Stores position-dependent info about a tile (that isn't really related to the value of the tile)
-    public struct TileInfo {
-        public Direction.Dir dirTowardCenter;
-        public Direction.Dir dirCascadeFrom;
-
-        public int nPathDistToPlayer;
-        public int nDirectDistToPlayer;
-    }
 
     public List<List<TileInfo>> lstTileInfo;
+    public List<TileInfo> lstAllTileInfo;
 
     public Board() {
         lstTopLeftEdges = new List<Position>();
@@ -63,6 +57,10 @@ public class Board : Singleton<Board> {
 
     public Tile At(Position pos) {
         return lstTiles[pos.i][pos.j];
+    }
+
+    public TileInfo InfoAt(Position pos) {
+        return lstTileInfo[pos.i][pos.j];
     }
 
 
@@ -144,18 +142,8 @@ public class Board : Singleton<Board> {
         GetPathDistsTo(GameController.Get().entHero.tile, ref dictDistsToPlayer);
 
         foreach (Tile tile in lstAllTiles) {
-            tile.UpdatePathDistToPlayer(dictDistsToPlayer[tile]);
+            InfoAt(tile.pos).nPathDistToPlayer = dictDistsToPlayer[tile];
         }
-    }
-
-    public void UpdateDistsFromPlayer() {
-
-        foreach(Tile tile in lstAllTiles) {
-            tile.UpdateDirectDistToPlayer();
-        }
-
-        UpdatePathDistsFromPlayer();
-
     }
 
     public IEnumerator CleanupMatches() {
@@ -180,7 +168,8 @@ public class Board : Singleton<Board> {
     public void CascadeTile(Tile tile) {
 
         while (true) {
-            Position posNext = tile.pos.PosInDir(tile.dirCascadeFrom);
+            Direction.Dir dirCascadeFrom = InfoAt(tile.pos).dirCascadeFrom;
+            Position posNext = tile.pos.PosInDir(dirCascadeFrom);
 
             //If we've reached the edge of the board, we can stop swapping
             if (ValidTile(posNext) == false) {
@@ -191,7 +180,7 @@ public class Board : Singleton<Board> {
                 //Debug.Log("Stopping since " + posNext.i + "," + posNext.j + " can't be swapped into since it's deleted");
                 break;
             } else {
-                MoveTile(tile, tile.dirCascadeFrom);
+                MoveTile(tile, dirCascadeFrom);
             }
 
         }
@@ -218,7 +207,7 @@ public class Board : Singleton<Board> {
 
         while (ValidTile(curPos)) {
             
-            if (At(curPos).bActive == false) {
+            if (InfoAt(curPos).bActive == false) {
                 //If the current tile is not active, then just skip it and look later
             } else { 
 
@@ -293,10 +282,6 @@ public class Board : Singleton<Board> {
         Position posCur = tile.pos;
         Position posDestination = tile.pos.PosInDir(dir, nDist);
 
-        //Save a reference for the direction of the destination tile so that we can restore it later
-        Direction.Dir dirCenterDestination = At(posDestination).dirTowardCenter;
-        bool bActiveDestination = At(posDestination).bActive;
-
         if (ValidTile(posDestination) == false) {
             Debug.LogError("Can't move to an invalid position " + posDestination.ToString());
             return;
@@ -306,16 +291,8 @@ public class Board : Singleton<Board> {
         while(posCur.IsEqual(posDestination) == false) {
             //Debug.Log("Want to shift " + posCur.PosInDir(dir).ToString() + " to position " + posCur.ToString());
 
-            
-            //Copy the reference of the tile above us
-            Direction.Dir dirCenter = At(posCur).dirTowardCenter;
-            bool bActive = At(posCur).bActive;
-
             lstTiles[posCur.i][posCur.j] = At(posCur.PosInDir(dir));
             At(posCur).SetPositon(posCur);
-            //Make sure we use the cascade direction for the previous tile in this location
-            At(posCur).SetDirTowardCenter(dirCenter);
-            At(posCur).SetActive(bActive);
 
             //Advance our tile up
             posCur = posCur.PosInDir(dir);
@@ -328,9 +305,6 @@ public class Board : Singleton<Board> {
         lstTiles[posDestination.i][posDestination.j] = tile;
         At(posDestination).SetPositon(posDestination);
 
-        //Restore the direction of the destination tile that we saved at the beginning
-        At(posDestination).SetDirTowardCenter(dirCenterDestination);
-        At(posDestination).SetActive(bActiveDestination);
 
     }
 
@@ -350,15 +324,6 @@ public class Board : Singleton<Board> {
         //We need to fix up the swapped tiles to ensure their positions accurately represent their new position
         At(pos).SetPositon(pos);
         At(other).SetPositon(other);
-
-        //We also need to make sure that the tiles have the proper cascading directions
-        Direction.Dir dirCascadeSwap = At(pos).dirTowardCenter;
-        At(pos).SetDirTowardCenter(At(other).dirTowardCenter);
-        At(other).SetDirTowardCenter(dirCascadeSwap);
-
-        bool bActiveSwap = At(pos).bActive;
-        At(pos).SetActive(At(other).bActive);
-        At(other).SetActive(bActiveSwap);
     }
 
     public List<Tile> GetAdjacentTiles(Tile tile) {
@@ -410,11 +375,14 @@ public class Board : Singleton<Board> {
     // j represents rows in those columns
     public void InitTiles() {
         lstTiles = new List<List<Tile>>(nWidth);
+        lstTileInfo = new List<List<TileInfo>>(nWidth);
+
         posCenter = new Position() { i = (nWidth - 1) / 2, j = (nHeight - 1) / 2 };
 
         for (int i = 0; i < nWidth; i++) {
 
             lstTiles.Add(new List<Tile>(nHeight));
+            lstTileInfo.Add(new List<TileInfo>(nHeight));
 
             for (int j = 0; j < nHeight; j++) {
 
@@ -423,8 +391,11 @@ public class Board : Singleton<Board> {
                     GameObject goTile = Instantiate(pfTile, this.transform);
                     lstTiles[i].Add(goTile.GetComponent<Tile>());
                     lstTiles[i][j].Init(i, j);
-
                     lstAllTiles.Add(lstTiles[i][j]);
+
+                    lstTileInfo[i].Add(goTile.GetComponent<TileInfo>());
+                    lstTileInfo[i][j].Init(i, j);
+                    lstAllTileInfo.Add(lstTileInfo[i][j]);
 
                     //Determine if this tile is part of an edge
                     
@@ -462,6 +433,7 @@ public class Board : Singleton<Board> {
                 } else {
                     //No tile should exist at this i,j so we'll just put a dummy null value
                     lstTiles[i].Add(null);
+                    lstTileInfo[i].Add(null);
                 }
 
             }
@@ -469,20 +441,22 @@ public class Board : Singleton<Board> {
         }
     }
 
+
     public void InitMarkActiveTiles() {
+        List<Tile> lstActiveTile = new List<Tile>();
 
         foreach (Tile tile in lstAllTiles) {
             if(Mathf.Abs(posCenter.i - tile.pos.i) <= nActiveWidth && Mathf.Abs(posCenter.j - tile.pos.j) <= nActiveHeight) {
-                tile.SetActive(true);
+                InfoAt(tile.pos).SetActive(true);
                 lstActiveTiles.Add(tile);
             } else {
-                tile.SetActive(false);
+                InfoAt(tile.pos).SetActive(false);
             }
         }
     }
 
     public bool ActiveTile(Position pos) {
-        return ValidTile(pos) && At(pos).bActive;
+        return ValidTile(pos) && InfoAt(pos).bActive;
     }
 
     public bool ValidTile(Position pos) {
@@ -549,13 +523,13 @@ public class Board : Singleton<Board> {
 
         Position posCur = posCenter;
 
-        At(posCenter).SetDirTowardCenter(Direction.Dir.D);
+        InfoAt(posCenter).SetDirTowardCenter(Direction.Dir.D);
 
         //fix bot right ambiguous tiles
         while (true) {
             posCur = posCur.PosInDir(Direction.Dir.DR).PosInDir(Direction.Dir.D);
             if (ValidTile(posCur) == false) break;
-            At(posCur).SetDirTowardCenter(Direction.Dir.U);
+            InfoAt(posCur).SetDirTowardCenter(Direction.Dir.U);
         }
 
         posCur = posCenter;
@@ -563,7 +537,7 @@ public class Board : Singleton<Board> {
         while (true) {
             posCur = posCur.PosInDir(Direction.Dir.UL).PosInDir(Direction.Dir.U);
             if (ValidTile(posCur) == false) break;
-            At(posCur).SetDirTowardCenter(Direction.Dir.D);
+            InfoAt(posCur).SetDirTowardCenter(Direction.Dir.D);
         }
 
         posCur = posCenter;
@@ -571,7 +545,7 @@ public class Board : Singleton<Board> {
         while (true) {
             posCur = posCur.PosInDir(Direction.Dir.UL).PosInDir(Direction.Dir.DL);
             if (ValidTile(posCur) == false) break;
-            At(posCur).SetDirTowardCenter(Direction.Dir.DR);
+            InfoAt(posCur).SetDirTowardCenter(Direction.Dir.DR);
         }
 
     }
@@ -601,7 +575,7 @@ public class Board : Singleton<Board> {
 
                 //Only actually set the tile if that tile exists
                 if (ValidTile(posCur)) {
-                    At(posCur).SetDirTowardCenter(dirCascadeCur);
+                    InfoAt(posCur).SetDirTowardCenter(dirCascadeCur);
                 }
 
                 posCur = posCur.PosInDir(curDir);
@@ -621,8 +595,6 @@ public class Board : Singleton<Board> {
 
 
     public void InitCascadeDirections() {
-
-        At(posCenter).dirTowardCenter = Direction.Dir.NONE;
 
         for (int i = 1; i < nHeight; i++) {
             InitCascadeDirectionsRing(i);
@@ -782,7 +754,7 @@ public class Board : Singleton<Board> {
             while (ValidTile(posPullFrom)) {
 
                 MoveTile(At(posPullFrom), dir, nDist);
-                Debug.Log("Moving " + posPullFrom.ToString() + " in " + dir + " by " + nDist);
+
                 posTarget = posTarget.PosInDir(dirPullFrom);
                 posPullFrom = posPullFrom.PosInDir(dirPullFrom);
             }
@@ -813,8 +785,8 @@ public class Board : Singleton<Board> {
 
     public void SetStablePosForDeleted(Tile tile) {
 
-        Direction.Dir dirTowardCenter = tile.dirTowardCenter;
-        Direction.Dir dirCascadeFrom = tile.dirCascadeFrom;
+        Direction.Dir dirTowardCenter = InfoAt(tile.pos).dirTowardCenter;
+        Direction.Dir dirCascadeFrom = InfoAt(tile.pos).dirCascadeFrom;
 
         int nDeletedDistTowardCenter = 1;
 
@@ -823,7 +795,7 @@ public class Board : Singleton<Board> {
         while (true) {
             Position posToCheck = tile.pos.PosInDir(dirTowardCenter, nDeletedDistTowardCenter);
 
-            if (At(posToCheck).deletionStatus == Tile.DELETIONSTATUS.DELETED && At(posToCheck).dirTowardCenter == dirTowardCenter) {
+            if (At(posToCheck).deletionStatus == Tile.DELETIONSTATUS.DELETED && InfoAt(posToCheck).dirTowardCenter == dirTowardCenter) {
                 //If the next tile in this direction is also deleted, and is part of the same cascade direction as us
 
                 posClosestToCenter = posToCheck;
@@ -868,7 +840,7 @@ public class Board : Singleton<Board> {
     public void GenerateColoursForDeleted() {
 
         foreach(Tile tile in setFlaggedToClear) {
-            PropertyController.Get().SpawnNewProperty(tile, tile.dirCascadeFrom);
+            PropertyController.Get().SpawnNewProperty(tile, InfoAt(tile.pos).dirCascadeFrom);
             tile.transform.localScale = new Vector3(1f, 1f, 1f);
         }
 

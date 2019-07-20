@@ -57,7 +57,7 @@ public abstract class Entity : Property {
     }
 
     public float GetAnimTime(float fProposedAnimTime) {
-        if (tile.bActive) {
+        if (Board.Get().InfoAt(tile.pos).bActive) {
             return fProposedAnimTime;
         } else {
             return 0.00001f;

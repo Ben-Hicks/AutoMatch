@@ -7,7 +7,9 @@ public abstract class SelectorEnemy : AbilitySelector {
     public Ability abilIntended;
     public Position posIntended;
 
-    public void Start() {
+    public override void Start() {
+        base.Start();
+
         AcquireTarget();
         DecideNextAbility();
     }

@@ -55,8 +55,10 @@ public class GameController : Singleton<GameController> {
         //Initially pause for a frame to ensure all initializations can happen before moving forward with the game loop
         yield return null;
 
+        Board.Get().UpdatePathDistsFromPlayer();
+
         while (true) {
-            Board.Get().UpdateDistsFromPlayer();
+            
 
             //Initially ensure that our starting matches all get cleaned up
             while (true) {
@@ -73,7 +75,7 @@ public class GameController : Singleton<GameController> {
                 
             }
 
-            Board.Get().UpdateDistsFromPlayer();
+            Board.Get().UpdatePathDistsFromPlayer();
             yield return GetNextActingEntity().abilityselector.SelectAndUseAbility();
 
             yield return new WaitForSeconds(0.1f);

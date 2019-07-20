@@ -5,7 +5,6 @@ using UnityEngine.UI;
 
 public class Tile : MonoBehaviour {
 
-    public bool bActive;
 
     public Position pos;
     public Position posLastStable;
@@ -51,14 +50,7 @@ public class Tile : MonoBehaviour {
         SaveStablePos();
     }
 
-    public void SetActive(bool _bActive) {
-        if(bActive != _bActive) Debug.Log("Setting pos " + pos.ToString() + " to " + bActive);
-
-        bActive = _bActive;
-
-        SetDebugText(bActive.ToString());
-        
-    }
+    
 
     public void SetProperty(Property _prop) {
 
@@ -67,11 +59,7 @@ public class Tile : MonoBehaviour {
         prop.Init();
     }
 
-    public void SetDirTowardCenter(Direction.Dir _dirTowardCenter) {
-        dirTowardCenter = _dirTowardCenter;
-        dirCascadeFrom = Direction.Negate(dirTowardCenter);
-       // colour.DisplayColour((Colour.Col)(dirTowardCenter - 1));
-    }
+    
 
     public void SetPositon(Position _pos) {
         pos = _pos;
@@ -87,14 +75,6 @@ public class Tile : MonoBehaviour {
 
     public void SaveStablePos() {
         posLastStable = pos;
-    }
-
-    public void UpdateDirectDistToPlayer() {
-        nDirectDistToPlayer = pos.DirectDistFrom(GameController.Get().entHero.tile.pos);
-    }
-
-    public void UpdatePathDistToPlayer(int _nPathDistToPlayer) {
-        nPathDistToPlayer = _nPathDistToPlayer;
     }
     
 
@@ -140,7 +120,7 @@ public class Tile : MonoBehaviour {
     }
 
     private void Update() {
-        SetDebugText(bActive.ToString());
+        SetDebugText(Board.Get().InfoAt(pos).bActive.ToString());
     }
 
 }
