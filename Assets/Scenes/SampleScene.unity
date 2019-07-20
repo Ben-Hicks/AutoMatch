@@ -609,6 +609,12 @@ PrefabInstance:
       propertyPath: fBoardScrollTime
       value: 0.45
       objectReference: {fileID: 0}
+    - target: {fileID: 3929126062738639436, guid: c0eb92f8ef94a054e87a897195efe60c,
+        type: 3}
+      propertyPath: pfTelegraph
+      value: 
+      objectReference: {fileID: 556994085748321237, guid: 313a17ba1736b4148b87256bad9917a2,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c0eb92f8ef94a054e87a897195efe60c, type: 3}
 --- !u!1001 &7340920048297613944
