@@ -678,5 +678,15 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8636363942497230091, guid: dd5708f9d5faf4b40822672b331ee12b,
+        type: 3}
+      propertyPath: fDelayEnemyTelegraph
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8636363942497230091, guid: dd5708f9d5faf4b40822672b331ee12b,
+        type: 3}
+      propertyPath: fFadeoutTime
+      value: 2
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dd5708f9d5faf4b40822672b331ee12b, type: 3}

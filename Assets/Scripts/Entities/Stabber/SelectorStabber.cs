@@ -13,6 +13,7 @@ public class SelectorStabber : SelectorEnemy {
     }
 
     public override void DecideNextAbility() {
+        Debug.Log("Requesting to plan move");
         //For now, just move towards the target
         PlanMoveTowardTarget();
     }

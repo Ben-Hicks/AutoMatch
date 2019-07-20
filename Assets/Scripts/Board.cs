@@ -515,6 +515,8 @@ public class Board : Singleton<Board> {
         
         GameController.Get().entHero = tilePlayer.prop.GetComponent<EntHero>();
 
+        PropertyController.Get().PlaceProperty("Stabber", At(posCenter.PosInDir(Direction.Dir.U, 3)));
+
         //Todo - fill with stuff to set up the player
     }
 

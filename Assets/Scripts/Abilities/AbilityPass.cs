@@ -29,7 +29,7 @@ public class AbilityPass : Ability {
 
     public override IEnumerator ExecuteAbility() {
 
-        Debug.Log("Passing");
+        Debug.Log(owner + " is Passing");
         yield return new WaitForSeconds(0.5f);
 
     }

@@ -4,14 +4,59 @@ using UnityEngine;
 
 public abstract class SelectorEnemy : AbilitySelector {
 
-    public Ability abilIntended;
-    public Position posIntended;
+    public Intended intended;
+
+    public Entity entTarget;
+
+    public class Intended {
+        public enum IntendType { DIRECTION, POSITION };
+        public IntendType intendType;
+
+        public Ability abil;
+        public Direction.Dir dir;
+        public Position pos;
+
+        public Intended(Ability _abil, Direction.Dir _dir) {
+            intendType = IntendType.DIRECTION;
+            abil = _abil;
+            dir = _dir;
+        }
+
+        public Intended(Ability _abil, Position _pos) {
+            intendType = IntendType.POSITION;
+            abil = _abil;
+            pos = _pos;
+        }
+
+        public Tile GetIntended() {
+            if(intendType == IntendType.DIRECTION) {
+                return Board.Get().At(abil.owner.tile.pos.PosInDir(dir));
+            } else {
+                return Board.Get().At(pos);
+            }
+        }
+
+        public void SetPass() {
+            abil = abil.owner.lstAbilities[(int)Entity.ABILSLOT.PASS];
+        }
+    }
 
     public override void Start() {
         base.Start();
 
         AcquireTarget();
         DecideNextAbility();
+    }
+
+    public void SetTarget(Entity _entTarget) {
+        entTarget = _entTarget;
+    }
+
+    //Use whatever base logic to decide who to attack - typically the player
+    public virtual void AcquireTarget() {
+
+        SetTarget(GameController.Get().entHero);
+
     }
 
     public void PlanMoveTowardTarget() {
@@ -53,15 +98,13 @@ public abstract class SelectorEnemy : AbilitySelector {
 
         //If there's a direction we can move in (even if it's not necessarily closer), we'll plan to move in that direction
         if (dirCurrentBest != Direction.Dir.NONE) {
-            abilIntended = owner.lstAbilities[(int)Entity.ABILSLOT.MOVEMENT];
-            posIntended = owner.tile.pos.PosInDir(dirCurrentBest);
+            intended = new Intended(owner.lstAbilities[(int)Entity.ABILSLOT.MOVEMENT], dirCurrentBest);
         } else {
             //Otherwise, if we can't move towards the target in a good way, just pass
-            abilIntended = owner.lstAbilities[(int)Entity.ABILSLOT.PASS];
-            posIntended = owner.tile.pos;
+            intended = new Intended(owner.lstAbilities[(int)Entity.ABILSLOT.PASS], Direction.Dir.NONE);
         }
 
-        
+        Debug.Log("Planning to use " + intended.abil + " with " + intended.intendType + " and dir: " + intended.dir + " and pos: " + intended.pos);
     }
 
     public abstract void DecideNextAbility();
@@ -69,15 +112,14 @@ public abstract class SelectorEnemy : AbilitySelector {
     public override IEnumerator SelectAndUseAbility() {
         
         //First, check if the inteded ability and its targetting is still valid
-        if(abilIntended == null || abilIntended.CanUse() == false || abilIntended.CanTarget(Board.Get().At(posIntended)) == false) {
+        if(intended.abil.CanUse() == false || intended.abil.CanTarget(intended.GetIntended()) == false) {
 
             //if the ability either can't be used, or the target is now invalid, then by default, do nothing
-            abilIntended = owner.lstAbilities[(int)Entity.ABILSLOT.PASS];
-            posIntended = owner.tile.pos;
+            intended.SetPass();
         }
 
         //Use the valid ability
-        yield return abilIntended.UseWithTarget(posIntended);
+        yield return intended.abil.UseWithTarget(intended.GetIntended());
 
         //Reacquire whatever target is most appropriate now
         AcquireTarget();
@@ -86,6 +128,6 @@ public abstract class SelectorEnemy : AbilitySelector {
         DecideNextAbility();
 
         //Let the TelegraphController know to broadcast the intended next action
-        StartCoroutine(TelegraphController.Get().AnimateEnemyTelegraph(abilIntended, posIntended));
+        StartCoroutine(TelegraphController.Get().AnimateEnemyTelegraph(intended.abil, intended.GetIntended().pos));
     }
 }

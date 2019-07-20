@@ -23,7 +23,7 @@ public class TelegraphController : Singleton<TelegraphController> {
         float fStartTime = Time.timeSinceLevelLoad;
 
         //Keep displaying this ability until we've hit the desired display time
-        while(Time.timeSinceLevelLoad - fStartTime > fDelayEnemyTelegraph) {
+        while(Time.timeSinceLevelLoad - fStartTime < fDelayEnemyTelegraph) {
             yield return new WaitForSeconds(0.05f); 
         }
 
@@ -39,6 +39,7 @@ public class TelegraphController : Singleton<TelegraphController> {
             }
 
             if (fProgress == 1f) break;
+            yield return null;
         }
 
         //Once the telegraph is done, clear the telegraphed info
