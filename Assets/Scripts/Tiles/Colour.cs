@@ -5,7 +5,20 @@ using UnityEngine;
 public class Colour : MonoBehaviour {
 
     public const int NUMCOLOURS = 10;
-    public enum Col { WILD, BLUE, RED, GREEN, GOLD, PURPLE, CYAN, BLACK, WHITE, ORANGE };
+    public enum Col { WILD, BLUE, RED, GREEN, GOLD, PURPLE, CYAN, BLACK, PINK, ORANGE };
+    public static Color[] arColors = new Color[] {
+        new Color(255f/255f, 255f/255f, 255f/255f),
+        new Color(1f/255f, 0, 72f/255f),
+        new Color(154f/255f, 0, 18f/255f),
+        new Color(2f/255f, 57f/255f, 0),
+        new Color(221f/255f, 189f/255f, 1f/255f),
+        new Color(67f/255f, 0, 118f/255f),
+        new Color(165f/255f, 187f/255f, 252f/255f),
+        new Color(0, 0, 0),
+        new Color(245f/255f, 171f/255f, 202f/255f),
+        new Color(161f/255f, 83f/255f, 0)
+    };
+    
 
     public Col col;
 
@@ -40,43 +53,43 @@ public class Colour : MonoBehaviour {
 
         switch (_col) {
             case Col.WILD:
-                colToSet = Color.gray;
+                colToSet = arColors[(int)_col];
                 break;
 
             case Col.BLUE:
-                colToSet = Color.blue;
+                colToSet = arColors[(int)_col];
                 break;
 
             case Col.RED:
-                colToSet = Color.red;
+                colToSet = arColors[(int)_col];
                 break;
 
             case Col.GREEN:
-                colToSet = Color.green;
+                colToSet = arColors[(int)_col];
                 break;
 
             case Col.GOLD:
-                colToSet = Color.yellow;
+                colToSet = arColors[(int)_col];
                 break;
 
             case Col.PURPLE:
-                colToSet = Color.magenta;
+                colToSet = arColors[(int)_col];
                 break;
 
             case Col.CYAN:
-                colToSet = Color.cyan;
+                colToSet = arColors[(int)_col];
                 break;
 
             case Col.BLACK:
-                colToSet = Color.black;
+                colToSet = arColors[(int)_col];
                 break;
 
-            case Col.WHITE:
-                colToSet = Color.white;
+            case Col.PINK:
+                colToSet = arColors[(int)_col];
                 break;
 
             case Col.ORANGE:
-                colToSet = new Color(1f, 0.5f, 0.1f);
+                colToSet = arColors[(int)_col];
                 break;
 
             default:
