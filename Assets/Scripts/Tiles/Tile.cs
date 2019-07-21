@@ -119,8 +119,4 @@ public class Tile : MonoBehaviour {
 
     }
 
-    private void Update() {
-        SetDebugText(Board.Get().InfoAt(pos).bActive.ToString());
-    }
-
 }

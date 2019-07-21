@@ -44,7 +44,9 @@ public class Telegraph : MonoBehaviour {
 
             string sPath = "Sprites/spr" + markerType.ToString();
 
-            Sprite sprMarker = (Sprite)Resources.Load(sPath);
+            Debug.Log("Searching for sprite " + sPath);
+
+            Sprite sprMarker = Resources.Load<Sprite>(sPath);
 
             if(sprMarker == null) {
                 Debug.Log("Sprite not found with path " + sPath);
@@ -73,8 +75,6 @@ public class Telegraph : MonoBehaviour {
 
         rendBackground.color = colBackground;
         rendMarker.color = colMarker;
-
-        Debug.Log("SetAlpha called with " + fAlpha);
     }
 
     public void SetTelegraph(TeleTileInfo teleTileInfo) {

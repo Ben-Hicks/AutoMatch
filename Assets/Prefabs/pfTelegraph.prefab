@@ -45,6 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80d17b1a83cc10543bba48b5f283fe87, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tile: {fileID: 0}
   lstTelegraphColors:
   - {r: 0, g: 0, b: 0, a: 0}
   - {r: 0, g: 1, b: 0, a: 1}
@@ -54,6 +55,7 @@ MonoBehaviour:
   telegraphType: 0
   rendBackground: {fileID: 5847088429270312836}
   markerType: 0
+  nRefCount: 0
   rendMarker: {fileID: 2105870141066753470}
   dir: 0
 --- !u!1 &1748995116792342036
@@ -193,7 +195,7 @@ Transform:
   m_GameObject: {fileID: 8250430309194461373}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -0.125}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
   m_Children: []
   m_Father: {fileID: 5891246700870707292}
   m_RootOrder: 1

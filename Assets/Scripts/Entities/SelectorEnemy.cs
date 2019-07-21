@@ -128,6 +128,6 @@ public abstract class SelectorEnemy : AbilitySelector {
         DecideNextAbility();
 
         //Let the TelegraphController know to broadcast the intended next action
-        StartCoroutine(TelegraphController.Get().AnimateEnemyTelegraph(intended.abil, intended.GetIntended().pos));
+        StartCoroutine(TelegraphController.Get().AnimateEnemyTelegraph(intended));
     }
 }

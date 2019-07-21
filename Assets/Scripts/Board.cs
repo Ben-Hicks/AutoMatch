@@ -41,6 +41,8 @@ public class Board : Singleton<Board> {
 
     public HashSet<Tile> setFlaggedToClear;
 
+    public Subject subBoardChanged;
+
     //Stores position-dependent info about a tile (that isn't really related to the value of the tile)
 
     public List<List<TileInfo>> lstTileInfo;
@@ -53,6 +55,7 @@ public class Board : Singleton<Board> {
         lstBottomRightEdges = new List<Position>();
         lstBottomLeftEdges = new List<Position>();
         lstBottomTwoEdges = new List<Position>();
+        subBoardChanged = new Subject();
     }
 
     public Tile At(Position pos) {
@@ -664,6 +667,9 @@ public class Board : Singleton<Board> {
     }
 
     public IEnumerator AnimateMovingTiles(float fDuration) {
+
+        //Notify everyone that the state of the board may have changed, and we are cleaning up the animations for it
+        subBoardChanged.NotifyObs();
 
         //Then figure out all of the tiles that have moved from their original position
         List<Tile> lstMovingTiles = new List<Tile>();

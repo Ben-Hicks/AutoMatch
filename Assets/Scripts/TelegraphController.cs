@@ -9,22 +9,52 @@ public class TelegraphController : Singleton<TelegraphController> {
 
     public float fDelayEnemyTelegraph;
     public float fFadeoutTime;
+
+    public float fTimeLastStableSnapshot;
     
-
-    public IEnumerator AnimateEnemyTelegraph(Ability abilEnemy, Position posToTarget) {
-
-        List<Telegraph.TeleTileInfo> lstTeleInfo = abilEnemy.TelegraphedTiles(posToTarget);
-
-        //Initially telegraph all tiles as they are specified in the list of teletileinfo
-        foreach(Telegraph.TeleTileInfo teleinfo in lstTeleInfo) {
+    public void TelegraphList(List<Telegraph.TeleTileInfo> _lstTeleInfo) {
+        foreach (Telegraph.TeleTileInfo teleinfo in _lstTeleInfo) {
             Board.Get().At(teleinfo.pos).telegraph.SetTelegraph(teleinfo);
         }
+    }
+
+    public void ClearList(List<Telegraph.TeleTileInfo> _lstTeleInfo) {
+        foreach (Telegraph.TeleTileInfo teleinfo in _lstTeleInfo) {
+            Board.Get().At(teleinfo.pos).telegraph.ClearTelegraph();
+        }
+    }
+
+    public void ClearAllTelegraphs() {
+        foreach (Tile tile in Board.Get().lstAllTiles) {
+            tile.telegraph.ClearTelegraph();
+        }
+    }
+
+    public IEnumerator AnimateEnemyTelegraph(SelectorEnemy.Intended intended) {
+
+        float fLocalTimeLastStableSnapshot = fTimeLastStableSnapshot;
+        List<Telegraph.TeleTileInfo> lstTeleInfo = intended.abil.TelegraphedTiles(intended.GetIntended().pos);
+
+        //Initially telegraph all tiles as they are specified in the list of teletileinfo
+        TelegraphList(lstTeleInfo);
 
         float fStartTime = Time.timeSinceLevelLoad;
 
         //Keep displaying this ability until we've hit the desired display time
         while(Time.timeSinceLevelLoad - fStartTime < fDelayEnemyTelegraph) {
-            yield return new WaitForSeconds(0.05f); 
+
+            //If there's been an update to the board recently, then clear out any previous telegraphs, update our lstTeleInfo, and re-telegraph
+            if(fLocalTimeLastStableSnapshot != fTimeLastStableSnapshot) {
+                fLocalTimeLastStableSnapshot = fTimeLastStableSnapshot;
+                
+                //Recalculate lstteleinfo
+                lstTeleInfo = intended.abil.TelegraphedTiles(intended.GetIntended().pos);
+
+                //Then reapply our telegraph to the new applicable tiles
+                TelegraphList(lstTeleInfo);
+            }
+
+            yield return null;
         }
 
         //Now we should fadeout the telegraph over time
@@ -33,6 +63,18 @@ public class TelegraphController : Singleton<TelegraphController> {
 
             float fElapsedTime = Time.timeSinceLevelLoad - fFadeoutStartTime;
             float fProgress = Mathf.Min(1f, fElapsedTime / fFadeoutTime);
+
+
+            //If there's been an update to the board recently, then clear out any previous telegraphs, update our lstTeleInfo, and re-telegraph
+            if (fLocalTimeLastStableSnapshot != fTimeLastStableSnapshot) {
+                fLocalTimeLastStableSnapshot = fTimeLastStableSnapshot;
+
+                //Recalculate lstteleinfo
+                lstTeleInfo = intended.abil.TelegraphedTiles(intended.GetIntended().pos);
+
+                //Then reapply our telegraph to the new applicable tiles
+                TelegraphList(lstTeleInfo);
+            }
 
             foreach (Telegraph.TeleTileInfo teleinfo in lstTeleInfo) {
                 Board.Get().At(teleinfo.pos).telegraph.SetAlpha(1f - fProgress);
@@ -43,17 +85,13 @@ public class TelegraphController : Singleton<TelegraphController> {
         }
 
         //Once the telegraph is done, clear the telegraphed info
-        foreach (Telegraph.TeleTileInfo teleinfo in lstTeleInfo) {
-            Board.Get().At(teleinfo.pos).telegraph.ClearTelegraph();
-        }
+        ClearList(lstTeleInfo);
 
     }
 
     public void ClearHoverTelegraph() {
 
-        foreach(Telegraph.TeleTileInfo teleinfo in lstHoverTeleInfo) {
-            Board.Get().At(teleinfo.pos).telegraph.ClearTelegraph();
-        }
+        ClearList(lstHoverTeleInfo);
 
         lstHoverTeleInfo = null;
     }
@@ -70,7 +108,16 @@ public class TelegraphController : Singleton<TelegraphController> {
         }
     }
 
+    public void cbOnBoardChange(Object target, params object[] args) {
+        //If the board changed at all, we can update our snapshot of the last time the board was stable
+        fTimeLastStableSnapshot = Time.timeSinceLevelLoad;
+
+        ClearAllTelegraphs();
+    }
+
     public override void Init() {
-        
+
+        Board.Get().subBoardChanged.Subscribe(cbOnBoardChange);
+
     }
 }
