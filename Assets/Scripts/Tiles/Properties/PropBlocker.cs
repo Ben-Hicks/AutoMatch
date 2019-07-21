@@ -6,8 +6,9 @@ public class PropBlocker : Property {
 
 
     public override void OnCollect(Collection collection) {
-        collection.nGold++;
+        base.OnCollect(collection);
 
-        Board.Get().setFlaggedToClear.Add(tile);
+        collection.nGold++;
+        
     }
 }

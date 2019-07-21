@@ -34,9 +34,6 @@ public class Telegraph : MonoBehaviour {
     public void SetTelegraphType() {
 
         rendBackground.color = lstTelegraphColors[(int)telegraphType];
-        if (telegraphType != TelegraphType.None) {
-            Debug.Log("Set color to " + rendBackground.color + " since telegraphType is " + telegraphType);
-        }
     }
 
     public void SetMarkerType() {

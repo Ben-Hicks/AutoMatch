@@ -104,7 +104,7 @@ public abstract class SelectorEnemy : AbilitySelector {
             intended = new Intended(owner.lstAbilities[(int)Entity.ABILSLOT.PASS], Direction.Dir.NONE);
         }
 
-        Debug.Log("Planning to use " + intended.abil + " with " + intended.intendType + " and dir: " + intended.dir + " and pos: " + intended.pos);
+        //Debug.Log("Planning to use " + intended.abil + " with " + intended.intendType + " and dir: " + intended.dir + " and pos: " + intended.pos);
     }
 
     public abstract void DecideNextAbility();

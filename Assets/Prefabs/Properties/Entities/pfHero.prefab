@@ -126,7 +126,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   owner: {fileID: 9106494328890035794}
-  entTarget: {fileID: 0}
   bUsedAbility: 0
 --- !u!114 &9106494328890035794
 MonoBehaviour:
@@ -144,8 +143,8 @@ MonoBehaviour:
   tile: {fileID: 0}
   bBlocksMovement: 1
   overwritePriority: 5
-  nMaxHealth: 100
-  nCurHealth: 100
+  nMaxHealth: 5
+  nCurHealth: 5
   collectionPriority: 5
   abilityselector: {fileID: -4058528868415426814}
 --- !u!114 &904296820709223461

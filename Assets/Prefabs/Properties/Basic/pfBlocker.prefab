@@ -126,4 +126,5 @@ MonoBehaviour:
   go: {fileID: 0}
   tile: {fileID: 0}
   bBlocksMovement: 1
+  bCanBeCollected: 1
   overwritePriority: 2

@@ -19,8 +19,6 @@ public class TileInfo : MonoBehaviour {
 
         bActive = _bActive;
 
-        Board.Get().At(pos).SetDebugText(bActive.ToString());
-
     }
 
     public void SetDirTowardCenter(Direction.Dir _dirTowardCenter) {

@@ -9,6 +9,8 @@ public abstract class Property : MonoBehaviour {
     public Tile tile;
     public bool bBlocksMovement;
 
+    public bool bCanBeCollected;
+
     public enum PRIORITY { NEG, NONE, LOW, MID, HIGH, INFINITE };
     public PRIORITY overwritePriority;
 
@@ -46,6 +48,11 @@ public abstract class Property : MonoBehaviour {
         tile = _tile;
     }
 
-    public abstract void OnCollect(Collection collection);
+    public virtual void OnCollect(Collection collection) {
+        //If the property is vulnerable to being cleared, then we can clear it
+        if (bCanBeCollected) {
+            Board.Get().setFlaggedToClear.Add(tile);
+        }
+    }
 
 }

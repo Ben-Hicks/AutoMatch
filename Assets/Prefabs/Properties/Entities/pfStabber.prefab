@@ -64,8 +64,8 @@ MonoBehaviour:
   tile: {fileID: 0}
   bBlocksMovement: 1
   overwritePriority: 4
-  nMaxHealth: 30
-  nCurHealth: 30
+  nMaxHealth: 2
+  nCurHealth: 2
   collectionPriority: 3
   abilityselector: {fileID: 6706428863786639189}
   nID: 0

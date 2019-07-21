@@ -11,6 +11,7 @@ public abstract class Entity : Property {
     public int nMaxHealth;
     public int nCurHealth;
 
+
     public PRIORITY collectionPriority;
 
     public AbilitySelector abilityselector;
@@ -51,9 +52,24 @@ public abstract class Entity : Property {
     public override void FlagForDeletion() {
         //Do nothing - entities shouldn't be deleted
     }
+    
 
-    public override void OnCollect(Collection collection) {
-        Debug.Log("We collected an entity and should therefore do nothing");
+    public void TakeHealing(int nAmount) {
+        Debug.Assert(nAmount > 0);
+        nCurHealth = Mathf.Min(nMaxHealth, nCurHealth + nAmount);
+    }
+
+    public void TakeDamage(int nAmount) {
+        Debug.Assert(nAmount > 0);
+        nCurHealth = Mathf.Max(0, nCurHealth - nAmount);
+
+        if(nCurHealth == 0) {
+            OnNoHealth();
+        }
+    }
+
+    public virtual void OnNoHealth() {
+        bCanBeCollected = true;
     }
 
     public float GetAnimTime(float fProposedAnimTime) {
@@ -66,6 +82,10 @@ public abstract class Entity : Property {
 
     private void OnDestroy() {
         GameController.Get().UnregisterEntity(this);
+    }
+
+    public void Update() {
+        tile.SetDebugText(nCurHealth.ToString() + "/" + nMaxHealth.ToString());
     }
 
 }

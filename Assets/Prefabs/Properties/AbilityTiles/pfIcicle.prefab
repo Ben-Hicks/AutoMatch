@@ -47,6 +47,7 @@ MonoBehaviour:
   go: {fileID: 0}
   tile: {fileID: 0}
   bBlocksMovement: 0
+  bCanBeCollected: 1
   overwritePriority: 3
 --- !u!1 &1049289788436902046
 GameObject:

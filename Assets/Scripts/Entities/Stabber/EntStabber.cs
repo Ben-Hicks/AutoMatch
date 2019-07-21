@@ -8,6 +8,7 @@ public class EntStabber : Entity {
     public int nID;
 
     public override void OnCollect(Collection collection) {
+        base.OnCollect(collection);
 
     }
 
