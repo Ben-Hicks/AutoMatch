@@ -15,16 +15,35 @@ public class SelectorManual : AbilitySelector {
             //Should just select an ability first in this loop, then move to a loop where it gets the target
             if (Input.GetKeyUp(KeyCode.Alpha1)) {
                 Debug.Log("Manually using ability 1");
+
+                //Clear all enemy telegraphs so that it's clear where your abilities are telegraphing themselves
+                TelegraphController.Get().ClearAllTelegraphs();
+
                 yield return owner.lstAbilities[(int)Entity.ABILSLOT.ABIL1].AttemptManualUse();
             } else if (Input.GetKeyUp(KeyCode.Alpha2)) {
                 Debug.Log("Manually using ability 2");
+
+                //Clear all enemy telegraphs so that it's clear where your abilities are telegraphing themselves
+                TelegraphController.Get().ClearAllTelegraphs();
+
+
                 yield return owner.lstAbilities[(int)Entity.ABILSLOT.ABIL2].AttemptManualUse();
             } else if (Input.GetKeyUp(KeyCode.Alpha3)) {
                 Debug.Log("Would enter ability selection 3 at this point");
+
+                //Clear all enemy telegraphs so that it's clear where your abilities are telegraphing themselves
+                TelegraphController.Get().ClearAllTelegraphs();
+
+
                 bUsedAbility = true;
                 //yield return owner.lstAbilities[(int)Entity.ABILSLOT.ABIL3].AttemptManualUse();
             } else if (Input.GetKeyUp(KeyCode.Alpha4)) {
                 Debug.Log("Would enter ability selection 4 at this point");
+
+                //Clear all enemy telegraphs so that it's clear where your abilities are telegraphing themselves
+                TelegraphController.Get().ClearAllTelegraphs();
+
+
                 bUsedAbility = true;
                 //yield return owner.lstAbilities[(int)Entity.ABILSLOT.ABIL4].AttemptManualUse();
             } else {
@@ -32,6 +51,7 @@ public class SelectorManual : AbilitySelector {
             }
 
             if (bUsedAbility) {
+                TelegraphController.Get().ClearAllTelegraphs();
                 break;
             }
 

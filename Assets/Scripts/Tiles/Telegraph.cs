@@ -6,8 +6,8 @@ public class Telegraph : MonoBehaviour {
 
     public Tile tile;
 
-    public enum TelegraphType { None, Helpful, Harmful, Movement, Special };
-    public Color[] lstTelegraphColors = new Color[5] { Color.clear, Color.green, Color.red, Color.grey, Color.yellow };
+    public enum TelegraphType { None, Movement, Helpful, Special, Harmful  };
+    public static Color[] lstTelegraphColors = new Color[5] { Color.clear, Color.grey, Color.green, Color.yellow, Color.red };
     public TelegraphType telegraphType;
 
     public SpriteRenderer rendBackground;
@@ -34,6 +34,9 @@ public class Telegraph : MonoBehaviour {
     public void SetTelegraphType() {
 
         rendBackground.color = lstTelegraphColors[(int)telegraphType];
+        if (telegraphType != TelegraphType.None) {
+            Debug.Log("Set color to " + rendBackground.color + " since telegraphType is " + telegraphType);
+        }
     }
 
     public void SetMarkerType() {
@@ -79,12 +82,26 @@ public class Telegraph : MonoBehaviour {
 
     public void SetTelegraph(TeleTileInfo teleTileInfo) {
 
-        telegraphType = teleTileInfo.telegraphType;
-        markerType = teleTileInfo.markerType;
-        dir = teleTileInfo.dir;
+        if(telegraphType != TelegraphType.None && telegraphType < teleTileInfo.telegraphType) {
+            //If we are trying to set a telegraph type with lower priority than the current one (and it's not a reset), then ignore it
+            return;
+        }
 
+        telegraphType = teleTileInfo.telegraphType;
         SetTelegraphType();
-        SetMarkerType();
+
+
+        if (telegraphType > teleTileInfo.telegraphType || markerType != MarkerType.None ) {
+            //Update the marker type only if we're upgrading the priority of our telegraph type, 
+            // or if we're maintaining the same priority, and the new markertype isn't null
+            markerType = teleTileInfo.markerType;
+            dir = teleTileInfo.dir;
+
+            SetMarkerType();
+        }
+        
+        
+        
 
     }
 

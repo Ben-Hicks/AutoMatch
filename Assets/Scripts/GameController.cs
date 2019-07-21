@@ -48,6 +48,22 @@ public class GameController : Singleton<GameController> {
         }
     }
 
+    public void PlanAllEnemyAbilties() {
+
+        List<SelectorEnemy> lstSelectorEnemy = new List<SelectorEnemy>();
+
+        //Let each enemy plan which action they should use
+        foreach(Entity ent in PropertyController.Get().lstAllEntities) {
+            SelectorEnemy selector = ent.GetComponent<SelectorEnemy>();
+            if (selector == null) continue;
+            selector.PlanNextAbility();
+            lstSelectorEnemy.Add(selector);
+        }
+
+        //Now that everything is planned, display the effected tiles
+        TelegraphController.Get().TelegraphAllEnemies(lstSelectorEnemy);
+    }
+
     //TODO:: Consider if this can be initialized by this class rather than the board, but in a way that 
     //       could ensure the board gets a chance to finish initiallizing itself
     public IEnumerator GameLoop() {
@@ -76,7 +92,14 @@ public class GameController : Singleton<GameController> {
             }
 
             Board.Get().UpdatePathDistsFromPlayer();
-            yield return GetNextActingEntity().abilityselector.SelectAndUseAbility();
+
+            Entity entNextActing = GetNextActingEntity();
+            if(entNextActing.GetComponent<SelectorManual>() != null) {
+                //If the next acting character is a manually-selecting entity, then we should telegraph all of the moves that the enemy is planning to do
+                PlanAllEnemyAbilties();
+            }
+
+            yield return entNextActing.abilityselector.SelectAndUseAbility();
 
             yield return new WaitForSeconds(0.1f);
              

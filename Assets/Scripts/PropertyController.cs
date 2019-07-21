@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class PropertyController : Singleton<PropertyController> {
 
+    public List<Entity> lstAllEntities;
+
     [System.Serializable]
     public struct PropertyEntry {
         public string sName;
@@ -31,10 +33,12 @@ public class PropertyController : Singleton<PropertyController> {
                 return;
             } else {
 
-                //If this tile already have a previous property on it, then we'll have to clear out that property
-                if(tile.prop.GetType().ToString() == "EntStabber") {
-                    Debug.Log("Destroying a stabber with id " + ((EntStabber)tile.prop).nID + " also, deletions should be done as a prop.OnRemoval function");
+                //If we're deleting an entity, then remove it from our list of all entities;
+                Entity entDeleted = tile.prop.GetComponent<Entity>();
+                if(entDeleted != null) {
+                    lstAllEntities.Remove(entDeleted);
                 }
+
                 Destroy(tile.prop);
                 GameObject.Destroy(tile.prop.go);
             }
@@ -49,6 +53,10 @@ public class PropertyController : Singleton<PropertyController> {
 
         //Make sure the property knows which GameObject it is attached to and representing it
         tile.prop.SetGameObject(inst);
+
+        //If the added property is an entity, then add it to our list
+        Entity ent = inst.GetComponent<Entity>();
+        if (ent != null) lstAllEntities.Add(ent);
     }
 
     void InitPropertiesDictionary() {
@@ -83,7 +91,7 @@ public class PropertyController : Singleton<PropertyController> {
 
         float fRand = Random.Range(0, 100);
 
-        if(fRand < 0 && dirOffScreen != Direction.Dir.NONE) {
+        if(fRand < 3 && dirOffScreen != Direction.Dir.NONE) {
             PlaceProperty("Stabber", tile);
         }else if(fRand < 85) {
             PlaceProperty("Gold", tile);

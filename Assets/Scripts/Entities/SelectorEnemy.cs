@@ -121,13 +121,15 @@ public abstract class SelectorEnemy : AbilitySelector {
         //Use the valid ability
         yield return intended.abil.UseWithTarget(intended.GetIntended());
 
+        
+    }
+
+    public void PlanNextAbility() {
         //Reacquire whatever target is most appropriate now
         AcquireTarget();
 
         //Decide what the next ability and targetting will be
         DecideNextAbility();
-
-        //Let the TelegraphController know to broadcast the intended next action
-        StartCoroutine(TelegraphController.Get().AnimateEnemyTelegraph(intended));
+        
     }
 }
