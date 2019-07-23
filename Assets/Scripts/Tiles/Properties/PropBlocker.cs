@@ -6,7 +6,6 @@ public class PropBlocker : Property {
 
 
     public override void OnCollect(Collection collection) {
-        base.OnCollect(collection);
 
         collection.nGold++;
         

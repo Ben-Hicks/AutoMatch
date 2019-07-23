@@ -31,8 +31,12 @@ public abstract class Property : MonoBehaviour {
     //By default, tiles will be deleted when they're matched
     public virtual void FlagForDeletion() {
 
-        tile.deletionStatus = Tile.DELETIONSTATUS.FLAGGED;
-        Board.Get().setFlaggedToClear.Add(tile);
+        if (bCanBeCollected == false) {
+            //If the tile can't be collected, then we shouldn't set it for any deletion
+        } else {
+            tile.deletionStatus = Tile.DELETIONSTATUS.FLAGGED;
+            Board.Get().setFlaggedToClear.Add(tile);
+        }
 
     }
 
@@ -48,11 +52,6 @@ public abstract class Property : MonoBehaviour {
         tile = _tile;
     }
 
-    public virtual void OnCollect(Collection collection) {
-        //If the property is vulnerable to being cleared, then we can clear it
-        if (bCanBeCollected) {
-            Board.Get().setFlaggedToClear.Add(tile);
-        }
-    }
+    public abstract void OnCollect(Collection collection);
 
 }

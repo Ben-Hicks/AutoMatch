@@ -48,10 +48,6 @@ public abstract class Entity : Property {
     public virtual void InitSpecialAbilities() {
 
     }
-
-    public override void FlagForDeletion() {
-        //Do nothing - entities shouldn't be deleted
-    }
     
 
     public void TakeHealing(int nAmount) {

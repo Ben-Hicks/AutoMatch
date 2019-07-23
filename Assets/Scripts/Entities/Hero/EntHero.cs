@@ -5,7 +5,7 @@ using UnityEngine;
 public class EntHero : Entity {
 
     public override void OnCollect(Collection collection) {
-        base.OnCollect(collection);
+
     }
 
     public override void SetDefaultColour() {

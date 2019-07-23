@@ -142,6 +142,7 @@ MonoBehaviour:
   go: {fileID: 5623294479343024117}
   tile: {fileID: 0}
   bBlocksMovement: 1
+  bCanBeCollected: 0
   overwritePriority: 5
   nMaxHealth: 5
   nCurHealth: 5

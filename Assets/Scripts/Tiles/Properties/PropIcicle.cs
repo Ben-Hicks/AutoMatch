@@ -10,7 +10,6 @@ public class PropIcicle : Property {
     }
 
     public override void OnCollect(Collection collection) {
-        base.OnCollect(collection);
 
         collection.nGold++;
         
