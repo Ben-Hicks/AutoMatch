@@ -17,7 +17,7 @@ public class SelectorStabber : SelectorEnemy {
 
         if(dirAdjacentTarget == Direction.Dir.NONE) {
             //If we aren't adjacent to the target, then keep moving toward them
-            PlanMoveTowardTarget();
+            PlanMoveTowardTarget(entTarget.tile);
         } else {
             //If we are adjacent, then we should try to stab them
             intended = new Intended(owner.lstAbilities[(int)Entity.ABILSLOT.ABIL1], dirAdjacentTarget);

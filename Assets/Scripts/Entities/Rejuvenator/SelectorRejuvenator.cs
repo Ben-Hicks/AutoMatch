@@ -5,6 +5,7 @@ using UnityEngine;
 public class SelectorRejuvenator : SelectorEnemy {
 
     bool bMovedLastTurn;
+    Tile tileToRoamTowards;
 
     //TODO:: Make a Targetting Component behaviour that can be swapped out as needed
     public override void AcquireTarget() {
@@ -21,13 +22,16 @@ public class SelectorRejuvenator : SelectorEnemy {
                 intended = new Intended(owner.lstAbilities[(int)Entity.ABILSLOT.ABIL1], owner.tile.pos);
                 bMovedLastTurn = false;
             } else {
-                //Choose a random direction to move in
-                intended = new Intended(owner.lstAbilities[(int)EntHero.ABILSLOT.MOVEMENT], Direction.lstAllDirs[Random.Range(0, Direction.NUMDIRECTIONS)]);
+                //Choose a random position on the board to move towards
+                tileToRoamTowards = Board.Get().RandomActiveTile();
+
+                PlanMoveTowardTarget(tileToRoamTowards);
+
                 bMovedLastTurn = true;
             }
         } else {
             //If we are adjacent, then we should try to run away from the target
-            intended = new Intended(owner.lstAbilities[(int)Entity.ABILSLOT.MOVEMENT], Direction.Negate(dirAdjacentTarget));
+            PlanMoveAwayFromTarget(entTarget.tile);
         }
 
         Debug.Log("Planning to use " + intended.abil + " with " + intended.intendType + " and dir: " + intended.dir + " and pos: " + intended.pos);

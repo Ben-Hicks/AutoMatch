@@ -56,14 +56,14 @@ public abstract class SelectorEnemy : AbilitySelector {
 
     }
 
-    public void PlanMoveTowardTarget() {
+    public void PlanMoveTowardTarget(Tile tileTarget) {
         //Assuming the user has basic 1-tile movement options, this will move them one tile toward their set target
 
         Direction.Dir dirCurrentBest = Direction.Dir.NONE;
 
         Dictionary<Tile, int> dictPathDistsToTarget = new Dictionary<Tile, int>();
 
-        Board.Get().GetPathDistsTo(entTarget.tile, ref dictPathDistsToTarget);
+        Board.Get().GetPathDistsTo(tileTarget, ref dictPathDistsToTarget);
 
         int nClosestPathDist = -1;
         int nClosestDirectDist = -1;
@@ -75,7 +75,7 @@ public abstract class SelectorEnemy : AbilitySelector {
                 //If this tile is on the board, and we can move onto it, then check how far away it would be from the player
 
                 int nPathDist = dictPathDistsToTarget[Board.Get().At(posToMoveTo)];
-                int nDirectDist = posToMoveTo.DirectDistFrom(entTarget.tile.pos);
+                int nDirectDist = posToMoveTo.DirectDistFrom(tileTarget.pos);
 
                 if (dirCurrentBest == Direction.Dir.NONE ||
                     nPathDist < nClosestPathDist ||
@@ -98,6 +98,55 @@ public abstract class SelectorEnemy : AbilitySelector {
             intended = new Intended(owner.lstAbilities[(int)Entity.ABILSLOT.MOVEMENT], dirCurrentBest);
         } else {
             //Otherwise, if we can't move towards the target in a good way, just pass
+            intended = new Intended(owner.lstAbilities[(int)Entity.ABILSLOT.PASS], Direction.Dir.NONE);
+        }
+
+        //Debug.Log("Planning to use " + intended.abil + " with " + intended.intendType + " and dir: " + intended.dir + " and pos: " + intended.pos);
+    }
+
+    public void PlanMoveAwayFromTarget(Tile tileTarget) {
+        //Assuming the user has basic 1-tile movement options, this will move them one tile toward their set target
+
+        Direction.Dir dirCurrentBest = Direction.Dir.NONE;
+
+        //TODO:: Optimize this so that we can just pull from the saved player distances if the target is the player
+        Dictionary<Tile, int> dictPathDistsToTarget = new Dictionary<Tile, int>();
+
+        Board.Get().GetPathDistsTo(tileTarget, ref dictPathDistsToTarget);
+
+        int nFurthestPathDist = -1;
+        int nFurthestDirectDist = -1;
+
+        //For each tile we can immediately reach - TODO:: Abstract this to check the results of where we can end up as a result of our move actions
+        foreach (Direction.Dir dir in Direction.lstAllDirs) {
+            Position posToMoveTo = owner.tile.pos.PosInDir(dir);
+            if (Board.Get().ValidTile(posToMoveTo) && Board.Get().At(posToMoveTo).prop.bBlocksMovement == false) {
+                //If this tile is on the board, and we can move onto it, then check how far away it would be from the player
+
+                int nPathDist = dictPathDistsToTarget[Board.Get().At(posToMoveTo)];
+                int nDirectDist = posToMoveTo.DirectDistFrom(tileTarget.pos);
+
+                if (dirCurrentBest == Direction.Dir.NONE ||
+                    nPathDist > nFurthestPathDist ||
+                    (nPathDist == nFurthestPathDist && nDirectDist < nFurthestDirectDist)) {
+                    //If this is the first non-none direction we've found, then we can accept it
+                    //Otherwise, if we have a current best direction, check if we have a longer pathdistance in this direction
+                    //And if its the same, then we can break ties by examining the direct distance
+
+
+                    //Update the best direction (and the distances for the tile in that direction);
+                    dirCurrentBest = dir;
+                    nFurthestPathDist = nPathDist;
+                    nFurthestDirectDist = nDirectDist;
+                }
+            }
+        }
+
+        //If there's a direction we can move in (even if it's not necessarily farther), we'll plan to move in that direction
+        if (dirCurrentBest != Direction.Dir.NONE) {
+            intended = new Intended(owner.lstAbilities[(int)Entity.ABILSLOT.MOVEMENT], dirCurrentBest);
+        } else {
+            //Otherwise, if we can't move away from the target in a good way, just pass
             intended = new Intended(owner.lstAbilities[(int)Entity.ABILSLOT.PASS], Direction.Dir.NONE);
         }
 
@@ -128,7 +177,7 @@ public abstract class SelectorEnemy : AbilitySelector {
         if (Board.Get().ActiveTile(owner.tile.pos) == false) {
             //If we aren't active, then move toward the player so we reach the board
             SetTarget(GameController.Get().entHero);
-            PlanMoveTowardTarget();
+            PlanMoveTowardTarget(entTarget.tile);
         } else {
             //If we are on an active tile, then we can let our behaviour selector choose how we should behave
 

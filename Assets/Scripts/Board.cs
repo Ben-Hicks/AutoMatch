@@ -66,7 +66,10 @@ public class Board : Singleton<Board> {
         return lstTileInfo[pos.i][pos.j];
     }
 
-
+    public Tile RandomActiveTile() {
+        return At(lstActiveTiles[Random.Range(0, lstActiveTiles.Count)].pos);
+    }
+   
     public void CollectFlaggedTiles() {
         Debug.Log("Also consider if collections should be set up as coroutines so they can do animations");
         foreach (Tile tile in setFlaggedToClear) {
