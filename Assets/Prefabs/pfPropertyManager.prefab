@@ -43,6 +43,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0d7ef3b38553ee48ab254f6d94a8ff4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  lstAllEntities: []
   arPropertyEntries:
   - sName: Hero
     goProperty: {fileID: 5623294479343024117, guid: aa46aa68d6914834aa26768acfc7fc47,
@@ -58,4 +59,7 @@ MonoBehaviour:
       type: 3}
   - sName: Icicle
     goProperty: {fileID: 238967470984163798, guid: b8b2f7ea44af6344693a370e69c18e60,
+      type: 3}
+  - sName: Rejuvenator
+    goProperty: {fileID: 266452498698718418, guid: effe251d81fe4c5458083c8345a828e4,
       type: 3}

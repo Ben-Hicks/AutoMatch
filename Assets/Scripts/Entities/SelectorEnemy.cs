@@ -124,11 +124,20 @@ public abstract class SelectorEnemy : AbilitySelector {
     }
 
     public void PlanNextAbility() {
-        //Reacquire whatever target is most appropriate now
-        AcquireTarget();
 
-        //Decide what the next ability and targetting will be
-        DecideNextAbility();
-        
+        if (Board.Get().ActiveTile(owner.tile.pos) == false) {
+            //If we aren't active, then move toward the player so we reach the board
+            SetTarget(GameController.Get().entHero);
+            PlanMoveTowardTarget();
+        } else {
+            //If we are on an active tile, then we can let our behaviour selector choose how we should behave
+
+            //Reacquire whatever target is most appropriate now
+            AcquireTarget();
+
+
+            //Decide what the next ability and targetting will be
+            DecideNextAbility();
+        }
     }
 }

@@ -61,7 +61,7 @@ public class AbilityStab : Ability {
                                         pos = posCur,
                                         telegraphType = Telegraph.TelegraphType.Harmful,
                                         markerType = Telegraph.MarkerType.None,
-                                        dir = dirAim
+                                        dir = Direction.Dir.NONE
                                     });
 
             posCur = posCur.PosInDir(dirAim);
