@@ -17,4 +17,8 @@ public class EntStabber : Entity {
         nCurID++;
     }
 
+    public override void InitSpecialAbilities() {
+        lstAbilities[(int)ABILSLOT.ABIL1] = new AbilityStab(this);
+    }
+
 }

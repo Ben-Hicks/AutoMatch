@@ -50,12 +50,12 @@ public abstract class Entity : Property {
     }
     
 
-    public void TakeHealing(int nAmount) {
+    public override void TakeHealing(int nAmount=1) {
         Debug.Assert(nAmount > 0);
         nCurHealth = Mathf.Min(nMaxHealth, nCurHealth + nAmount);
     }
 
-    public void TakeDamage(int nAmount) {
+    public override void TakeDamage(int nAmount=1) {
         Debug.Assert(nAmount > 0);
         nCurHealth = Mathf.Max(0, nCurHealth - nAmount);
 

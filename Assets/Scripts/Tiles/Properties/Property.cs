@@ -52,6 +52,14 @@ public abstract class Property : MonoBehaviour {
         tile = _tile;
     }
 
+    public virtual void TakeHealing(int nAmount=1) {
+        //By default, do nothing when trying to heal a standard tile
+    }
+
+    public virtual void TakeDamage(int nAmount=1) {
+       //By default, do nothing when trying to damage a standard tile
+    }
+
     public abstract void OnCollect(Collection collection);
 
 }

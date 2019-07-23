@@ -43,9 +43,6 @@ public abstract class SelectorEnemy : AbilitySelector {
 
     public override void Start() {
         base.Start();
-
-        AcquireTarget();
-        DecideNextAbility();
     }
 
     public void SetTarget(Entity _entTarget) {
@@ -117,6 +114,8 @@ public abstract class SelectorEnemy : AbilitySelector {
             //if the ability either can't be used, or the target is now invalid, then by default, do nothing
             intended.SetPass();
         }
+
+        Debug.Log("intended.GetIntended is " + intended.GetIntended());
 
         //Use the valid ability
         yield return intended.abil.UseWithTarget(intended.GetIntended());

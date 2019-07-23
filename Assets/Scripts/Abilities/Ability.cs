@@ -95,6 +95,7 @@ public abstract class Ability {
 
     public void SetTarget(Tile _tileTarget) {
         tileTarget = _tileTarget;
+        Debug.Log("SetTarget for " + ToString() + " set to " + tileTarget.pos.ToString());
     }
 
     public abstract bool CanUse();

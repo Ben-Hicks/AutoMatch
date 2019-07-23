@@ -12,8 +12,18 @@ public class SelectorStabber : SelectorEnemy {
     }
 
     public override void DecideNextAbility() {
-        //For now, just move towards the target
-        PlanMoveTowardTarget();
+
+        Direction.Dir dirAdjacentTarget = owner.tile.pos.GetAdjacentDir(entTarget.tile.pos);
+
+        if(dirAdjacentTarget == Direction.Dir.NONE) {
+            //If we aren't adjacent to the target, then keep moving toward them
+            PlanMoveTowardTarget();
+        } else {
+            //If we are adjacent, then we should try to stab them
+            intended = new Intended(owner.lstAbilities[(int)Entity.ABILSLOT.ABIL1], dirAdjacentTarget);
+        }
+
+        Debug.Log("Planning to use " + intended.abil + " with " + intended.intendType + " and dir: " + intended.dir + " and pos: " + intended.pos);
     }
    
 }

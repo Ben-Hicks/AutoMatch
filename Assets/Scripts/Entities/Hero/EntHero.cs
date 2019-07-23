@@ -16,6 +16,7 @@ public class EntHero : Entity {
 
         lstAbilities[(int)ABILSLOT.ABIL1] = new AbilityIcicleWave(this);
         lstAbilities[(int)ABILSLOT.ABIL2] = new AbilityDash(this);
+        lstAbilities[(int)ABILSLOT.ABIL3] = new AbilityStab(this);
 
     }
 
