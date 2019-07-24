@@ -5,7 +5,7 @@ using UnityEngine;
 public class Colour : MonoBehaviour {
 
     public const int NUMCOLOURS = 10;
-    public enum Col { WILD, BLUE, RED, GREEN, GOLD, PURPLE, CYAN, BLACK, PINK, ORANGE };
+    public enum Col { WILD, BLUE, RED, GREEN, GOLD, PURPLE, CYAN, BLACK, PINK, ORANGE, RANDOM };
     public static Color[] arColors = new Color[] {
         new Color(255f/255f, 255f/255f, 255f/255f),
         new Color(1f/255f, 0, 72f/255f),

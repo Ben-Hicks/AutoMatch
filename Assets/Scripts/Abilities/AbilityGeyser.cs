@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AbilityRejuvenate : Ability {
+public class AbilityGeyser : Ability {
 
-    public AbilityRejuvenate(Entity _owner) : base(_owner) {
-        
+    public int nRange;
+
+    public AbilityGeyser(Entity _owner) : base(_owner) {
+        nRange = 3;
     }
 
     public override void PayCost() {
@@ -13,8 +15,10 @@ public class AbilityRejuvenate : Ability {
     }
 
     public override bool CanTarget(Tile _tileTarget) {
-        Debug.Log("Any target for rejuvenate is valid - assuming no targetting process is necessary");
-        return true;
+
+        int nDirectDist = owner.tile.pos.DirectDistFrom(_tileTarget.pos);
+
+        return nDirectDist <= nRange;
     }
 
     public override bool CanUse() {
@@ -23,12 +27,11 @@ public class AbilityRejuvenate : Ability {
 
     public override IEnumerator ExecuteAbility() {
 
-        foreach(Direction.Dir dir in Direction.lstAllDirs) {
-            Board.Get().StartCoroutine(Board.Get().At(owner.tile.pos.PosInDir(dir)).AnimateSwell());
-            Board.Get().At(owner.tile.pos.PosInDir(dir)).prop.TakeHealing();
+        foreach (Direction.Dir dir in Direction.lstAllDirs) {
+            Board.Get().StartCoroutine(Board.Get().At(tileTarget.pos.PosInDir(dir)).AnimateSwell());
+            Board.Get().At(tileTarget.pos.PosInDir(dir)).prop.TakeDamage();
+            PropertyController.Get().PlaceProperty("Water", Board.Get().At(tileTarget.pos.PosInDir(dir)));
         }
-
-        Board.Get().At(owner.tile.pos).prop.TakeDamage();
 
         yield return new WaitForSeconds(owner.GetAnimTime(0.1f));
 
@@ -41,20 +44,12 @@ public class AbilityRejuvenate : Ability {
         foreach (Direction.Dir dir in Direction.lstAllDirs) {
 
             lstToTelegraph.Add(new Telegraph.TeleTileInfo {
-                pos = owner.tile.pos.PosInDir(dir),
-                telegraphType = Telegraph.TelegraphType.Helpful,
+                pos = tileTarget.pos.PosInDir(dir),
+                telegraphType = Telegraph.TelegraphType.Harmful,
                 markerType = Telegraph.MarkerType.None,
                 dir = Direction.Dir.NONE
             });
         }
-
-        lstToTelegraph.Add(new Telegraph.TeleTileInfo {
-            pos = owner.tile.pos,
-            telegraphType = Telegraph.TelegraphType.Harmful,
-            markerType = Telegraph.MarkerType.None,
-            dir = Direction.Dir.NONE
-        });
-
 
         return lstToTelegraph;
     }

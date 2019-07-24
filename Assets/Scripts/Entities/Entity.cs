@@ -11,7 +11,6 @@ public abstract class Entity : Property {
     public int nMaxHealth;
     public int nCurHealth;
 
-
     public PRIORITY collectionPriority;
 
     public AbilitySelector abilityselector;
@@ -24,6 +23,10 @@ public abstract class Entity : Property {
         }
     }
 
+    public Entity() {
+        InitStandardAbilities();
+    }
+
     public void SetAbilitySelector(AbilitySelector _abilityselector) {
         abilityselector = _abilityselector;
     }
@@ -34,7 +37,6 @@ public abstract class Entity : Property {
         GameController.Get().RegisterEntity(this);
 
         InitStandardAbilities();
-        InitSpecialAbilities();
     }
 
     public void InitStandardAbilities() {
@@ -43,10 +45,6 @@ public abstract class Entity : Property {
         
         lstAbilities[(int)ABILSLOT.MOVEMENT] = new AbilityMove(this);
         lstAbilities[(int)ABILSLOT.PASS] = new AbilityPass(this);
-    }
-
-    public virtual void InitSpecialAbilities() {
-
     }
     
 

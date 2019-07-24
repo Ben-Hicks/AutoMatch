@@ -10,6 +10,8 @@ public abstract class Property : MonoBehaviour {
     public bool bBlocksMovement;
 
     public bool bCanBeCollected;
+    
+    public Colour.Col colDefault;
 
     public enum PRIORITY { NEG, NONE, LOW, MID, HIGH, INFINITE };
     public PRIORITY overwritePriority;
@@ -25,7 +27,11 @@ public abstract class Property : MonoBehaviour {
     }
 
     public virtual void SetDefaultColour() {
-        colour.SetRandomColour();
+        if (colDefault == Colour.Col.RANDOM) {
+            colour.SetRandomColour();
+        } else {
+            colour.SetCol(colDefault);
+        }
     }
 
     //By default, tiles will be deleted when they're matched

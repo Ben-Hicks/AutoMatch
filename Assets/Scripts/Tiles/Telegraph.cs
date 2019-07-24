@@ -79,22 +79,25 @@ public class Telegraph : MonoBehaviour {
 
     public void SetTelegraph(TeleTileInfo teleTileInfo) {
 
-        if(telegraphType != TelegraphType.None && telegraphType < teleTileInfo.telegraphType) {
+        if(teleTileInfo.telegraphType != TelegraphType.None && telegraphType > teleTileInfo.telegraphType) {
             //If we are trying to set a telegraph type with lower priority than the current one (and it's not a reset), then ignore it
             return;
         }
 
-        telegraphType = teleTileInfo.telegraphType;
-        SetTelegraphType();
-
-
-        if (telegraphType > teleTileInfo.telegraphType || markerType != MarkerType.None ) {
+        if (teleTileInfo.telegraphType == TelegraphType.None || telegraphType < teleTileInfo.telegraphType || teleTileInfo.markerType != MarkerType.None ) {
             //Update the marker type only if we're upgrading the priority of our telegraph type, 
-            // or if we're maintaining the same priority, and the new markertype isn't null
+            // or if we're maintaining the same priority, and the new markertype isn't null (also allow directly setting to None)
+
+            telegraphType = teleTileInfo.telegraphType;
+            SetTelegraphType();
+
             markerType = teleTileInfo.markerType;
             dir = teleTileInfo.dir;
 
             SetMarkerType();
+        } else {
+            //Otherwise, if the new telegraph has the same priority as the current one, and
+            // the new marker is null, then we don't need to update the telegraph type or the marker type
         }
         
         

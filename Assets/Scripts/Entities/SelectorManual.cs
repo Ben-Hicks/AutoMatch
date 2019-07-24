@@ -37,14 +37,12 @@ public class SelectorManual : AbilitySelector {
 
                 yield return owner.lstAbilities[(int)Entity.ABILSLOT.ABIL3].AttemptManualUse();
             } else if (Input.GetKeyUp(KeyCode.Alpha4)) {
-                Debug.Log("Would enter ability selection 4 at this point");
+                Debug.Log("Manually using ability 4");
 
                 //Clear all enemy telegraphs so that it's clear where your abilities are telegraphing themselves
                 TelegraphController.Get().ClearAllTelegraphs();
-
-
-                bUsedAbility = true;
-                //yield return owner.lstAbilities[(int)Entity.ABILSLOT.ABIL4].AttemptManualUse();
+                
+                yield return owner.lstAbilities[(int)Entity.ABILSLOT.ABIL4].AttemptManualUse();
             } else {
                 yield return owner.lstAbilities[(int)Entity.ABILSLOT.MOVEMENT].AttemptManualUse();
             }

@@ -65,8 +65,8 @@ MonoBehaviour:
   bBlocksMovement: 1
   bCanBeCollected: 0
   overwritePriority: 4
-  nMaxHealth: 1
-  nCurHealth: 1
+  nMaxHealth: 3
+  nCurHealth: 3
   collectionPriority: 3
   abilityselector: {fileID: 908828917803316645}
   nID: 0
