@@ -4,24 +4,20 @@ using UnityEngine;
 
 public class AbilityRejuvenate : Ability {
 
-    public AbilityRejuvenate(Entity _owner) : base(_owner) {
-        
-    }
-
-    public override void PayCost() {
+    public override void PayCost(Entity owner) {
         //TODO - something here
     }
 
-    public override bool CanTarget(Tile _tileTarget) {
+    public override bool CanTarget(Entity owner, Tile _tileTarget) {
         Debug.Log("Any target for rejuvenate is valid - assuming no targetting process is necessary");
         return true;
     }
 
-    public override bool CanUse() {
+    public override bool CanUse(Entity owner) {
         return true;
     }
 
-    public override IEnumerator ExecuteAbility() {
+    public override IEnumerator ExecuteAbility(Entity owner, Tile tileTarget) {
 
         foreach(Direction.Dir dir in Direction.lstAllDirs) {
             Board.Get().StartCoroutine(Board.Get().At(owner.tile.pos.PosInDir(dir)).AnimateSwell());
@@ -34,7 +30,7 @@ public class AbilityRejuvenate : Ability {
 
     }
 
-    protected override List<Telegraph.TeleTileInfo> GenListTelegraphTiles(Position posToTarget) {
+    protected override List<Telegraph.TeleTileInfo> GenListTelegraphTiles(Entity owner, Position posToTarget) {
 
         List<Telegraph.TeleTileInfo> lstToTelegraph = new List<Telegraph.TeleTileInfo>();
 

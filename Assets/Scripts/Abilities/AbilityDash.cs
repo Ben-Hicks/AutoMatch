@@ -6,26 +6,22 @@ public class AbilityDash : Ability {
 
     public const int nDist = 3;
 
-    public AbilityDash(Entity _owner) : base(_owner) {
-
-    }
-
-    public override void PayCost() {
+    public override void PayCost(Entity owner) {
         //TODO - something here
     }
 
-    public override bool CanTarget(Tile _tileTarget) {
+    public override bool CanTarget(Entity owner, Tile _tileTarget) {
         Debug.Log("Should make a way to check if a tile is in a straight line of the start");
 
         return owner.tile.pos.GetAdjacentDir(_tileTarget.pos) != Direction.Dir.NONE;
 
     }
 
-    public override bool CanUse() {
+    public override bool CanUse(Entity owner) {
         return true;
     }
 
-    public override IEnumerator ExecuteAbility() {
+    public override IEnumerator ExecuteAbility(Entity owner, Tile tileTarget) {
         
         Direction.Dir dir = owner.tile.pos.GetAdjacentDir(tileTarget.pos);
         int nCurDist = 0;
@@ -39,7 +35,7 @@ public class AbilityDash : Ability {
         
     }
 
-    protected override List<Telegraph.TeleTileInfo> GenListTelegraphTiles(Position posToTarget) {
+    protected override List<Telegraph.TeleTileInfo> GenListTelegraphTiles(Entity owner, Position posToTarget) {
         List<Telegraph.TeleTileInfo> lstTeleTarget = new List<Telegraph.TeleTileInfo>();
 
         Direction.Dir dir = owner.tile.pos.GetAdjacentDir(posToTarget);

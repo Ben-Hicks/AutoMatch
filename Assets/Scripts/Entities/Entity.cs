@@ -6,7 +6,9 @@ public abstract class Entity : Property {
 
     public const int NUMABILSLOTS = 6;
     public enum ABILSLOT { PASS, MOVEMENT, ABIL1, ABIL2, ABIL3, ABIL4 };
-    public List<Ability> lstAbilities;
+
+    public AbilityController.ABIL[] arAbilUsed = new AbilityController.ABIL[NUMABILSLOTS];
+    public Ability[] arAbilities = new Ability[NUMABILSLOTS];
 
     public int nMaxHealth;
     public int nCurHealth;
@@ -35,18 +37,24 @@ public abstract class Entity : Property {
     void Start() {
         abilityselector = GetComponent<AbilitySelector>();
         GameController.Get().RegisterEntity(this);
-
-        InitStandardAbilities();
+        UpdateAllAbilities();
     }
 
     public void InitStandardAbilities() {
-        lstAbilities = new List<Ability>(NUMABILSLOTS);
-        for (int i = 0; i < NUMABILSLOTS; i++) lstAbilities.Add(null);
-        
-        lstAbilities[(int)ABILSLOT.MOVEMENT] = new AbilityMove(this);
-        lstAbilities[(int)ABILSLOT.PASS] = new AbilityPass(this);
+        arAbilUsed[(int)ABILSLOT.MOVEMENT] = AbilityController.ABIL.MOVE;
+        arAbilUsed[(int)ABILSLOT.PASS] = AbilityController.ABIL.PASS;
     }
     
+    public void UpdateAbility(ABILSLOT abilslot) {
+        //Using the selection information in arAbilUsed, fetch the instance of that type from AbilityController
+        arAbilities[(int)abilslot] = AbilityController.Get().AbilityInstance(arAbilUsed[(int)abilslot]);
+    }
+
+    public void UpdateAllAbilities() {
+        for(int i=0; i<NUMABILSLOTS; i++) {
+            UpdateAbility((ABILSLOT)i);
+        }
+    }
 
     public override void TakeHealing(int nAmount=1) {
         Debug.Assert(nAmount > 0);

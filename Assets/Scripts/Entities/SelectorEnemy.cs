@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+//TODO - only instantiate one of each of the types of AbilitySelectors and then share it among all 
+//        entities of that type
 public abstract class SelectorEnemy : AbilitySelector {
 
     public Intended intended;
@@ -12,17 +14,20 @@ public abstract class SelectorEnemy : AbilitySelector {
         public enum IntendType { DIRECTION, POSITION };
         public IntendType intendType;
 
+        public Entity owner;
         public Ability abil;
         public Direction.Dir dir;
         public Position pos;
 
-        public Intended(Ability _abil, Direction.Dir _dir) {
+        public Intended(Ability _abil, Entity _owner, Direction.Dir _dir) {
+            owner = _owner;
             intendType = IntendType.DIRECTION;
             abil = _abil;
             dir = _dir;
         }
 
-        public Intended(Ability _abil, Position _pos) {
+        public Intended(Ability _abil, Entity _owner, Position _pos) {
+            owner = _owner;
             intendType = IntendType.POSITION;
             abil = _abil;
             pos = _pos;
@@ -30,14 +35,14 @@ public abstract class SelectorEnemy : AbilitySelector {
 
         public Tile GetIntended() {
             if(intendType == IntendType.DIRECTION) {
-                return Board.Get().At(abil.owner.tile.pos.PosInDir(dir));
+                return Board.Get().At(owner.tile.pos.PosInDir(dir));
             } else {
                 return Board.Get().At(pos);
             }
         }
 
         public void SetPass() {
-            abil = abil.owner.lstAbilities[(int)Entity.ABILSLOT.PASS];
+            abil = owner.arAbilities[(int)Entity.ABILSLOT.PASS];
         }
     }
 
@@ -95,10 +100,10 @@ public abstract class SelectorEnemy : AbilitySelector {
 
         //If there's a direction we can move in (even if it's not necessarily closer), we'll plan to move in that direction
         if (dirCurrentBest != Direction.Dir.NONE) {
-            intended = new Intended(owner.lstAbilities[(int)Entity.ABILSLOT.MOVEMENT], dirCurrentBest);
+            intended = new Intended(owner.arAbilities[(int)Entity.ABILSLOT.MOVEMENT], owner, dirCurrentBest);
         } else {
             //Otherwise, if we can't move towards the target in a good way, just pass
-            intended = new Intended(owner.lstAbilities[(int)Entity.ABILSLOT.PASS], Direction.Dir.NONE);
+            intended = new Intended(owner.arAbilities[(int)Entity.ABILSLOT.PASS], owner, Direction.Dir.NONE);
         }
 
         //Debug.Log("Planning to use " + intended.abil + " with " + intended.intendType + " and dir: " + intended.dir + " and pos: " + intended.pos);
@@ -144,10 +149,10 @@ public abstract class SelectorEnemy : AbilitySelector {
 
         //If there's a direction we can move in (even if it's not necessarily farther), we'll plan to move in that direction
         if (dirCurrentBest != Direction.Dir.NONE) {
-            intended = new Intended(owner.lstAbilities[(int)Entity.ABILSLOT.MOVEMENT], dirCurrentBest);
+            intended = new Intended(owner.arAbilities[(int)Entity.ABILSLOT.MOVEMENT], owner, dirCurrentBest);
         } else {
             //Otherwise, if we can't move away from the target in a good way, just pass
-            intended = new Intended(owner.lstAbilities[(int)Entity.ABILSLOT.PASS], Direction.Dir.NONE);
+            intended = new Intended(owner.arAbilities[(int)Entity.ABILSLOT.PASS], owner, Direction.Dir.NONE);
         }
 
         //Debug.Log("Planning to use " + intended.abil + " with " + intended.intendType + " and dir: " + intended.dir + " and pos: " + intended.pos);
@@ -158,7 +163,7 @@ public abstract class SelectorEnemy : AbilitySelector {
     public override IEnumerator SelectAndUseAbility() {
         
         //First, check if the inteded ability and its targetting is still valid
-        if(intended.abil.CanUse() == false || intended.abil.CanTarget(intended.GetIntended()) == false) {
+        if(intended.abil.CanUse(intended.owner) == false || intended.abil.CanTarget(intended.owner, intended.GetIntended()) == false) {
 
             //if the ability either can't be used, or the target is now invalid, then by default, do nothing
             intended.SetPass();
@@ -167,7 +172,7 @@ public abstract class SelectorEnemy : AbilitySelector {
         Debug.Log("intended.GetIntended is " + intended.GetIntended());
 
         //Use the valid ability
-        yield return intended.abil.UseWithTarget(intended.GetIntended());
+        yield return intended.abil.UseWithTarget(intended.owner, intended.GetIntended());
 
         
     }

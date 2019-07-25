@@ -36,12 +36,12 @@ public class TelegraphController : Singleton<TelegraphController> {
         lstHoverTeleInfo = null;
     }
 
-    public void SetAbilityHoverTelegraph(Ability _abilDisplay, Position posToTarget) {
+    public void SetAbilityHoverTelegraph(Ability _abilDisplay, Entity owner, Position posToTarget) {
         ClearHoverTelegraph();
 
         abilDisplay = _abilDisplay;
 
-        lstHoverTeleInfo = abilDisplay.TelegraphedTiles(posToTarget);
+        lstHoverTeleInfo = abilDisplay.TelegraphedTiles(owner, posToTarget);
 
         foreach (Telegraph.TeleTileInfo teleinfo in lstHoverTeleInfo) {
             Board.Get().At(teleinfo.pos).telegraph.SetTelegraph(teleinfo);
@@ -55,7 +55,7 @@ public class TelegraphController : Singleton<TelegraphController> {
         //Then set the telegraphs for all enemies' planned abilities
         foreach (SelectorEnemy selector in lstSelectorEnemy) {
             Debug.Log("Asking for telegraph for " + selector + " that wants tile at " + selector.intended.GetIntended().pos.ToString());
-            TelegraphList(selector.intended.abil.TelegraphedTiles(selector.intended.GetIntended().pos));
+            TelegraphList(selector.intended.abil.TelegraphedTiles(selector.owner, selector.intended.GetIntended().pos));
         }
     }
 

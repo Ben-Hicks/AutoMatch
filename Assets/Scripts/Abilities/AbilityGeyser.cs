@@ -4,28 +4,24 @@ using UnityEngine;
 
 public class AbilityGeyser : Ability {
 
-    public int nRange;
+    public const int nRange = 3;
 
-    public AbilityGeyser(Entity _owner) : base(_owner) {
-        nRange = 3;
-    }
-
-    public override void PayCost() {
+    public override void PayCost(Entity owner) {
         //TODO - something here
     }
 
-    public override bool CanTarget(Tile _tileTarget) {
+    public override bool CanTarget(Entity owner, Tile _tileTarget) {
 
         int nDirectDist = owner.tile.pos.DirectDistFrom(_tileTarget.pos);
 
         return nDirectDist <= nRange;
     }
 
-    public override bool CanUse() {
+    public override bool CanUse(Entity owner) {
         return true;
     }
 
-    public override IEnumerator ExecuteAbility() {
+    public override IEnumerator ExecuteAbility(Entity owner, Tile tileTarget) {
 
         foreach (Direction.Dir dir in Direction.lstAllDirs) {
             Board.Get().StartCoroutine(Board.Get().At(tileTarget.pos.PosInDir(dir)).AnimateSwell());
@@ -37,14 +33,14 @@ public class AbilityGeyser : Ability {
 
     }
 
-    protected override List<Telegraph.TeleTileInfo> GenListTelegraphTiles(Position posToTarget) {
+    protected override List<Telegraph.TeleTileInfo> GenListTelegraphTiles(Entity owner, Position posToTarget) {
 
         List<Telegraph.TeleTileInfo> lstToTelegraph = new List<Telegraph.TeleTileInfo>();
 
         foreach (Direction.Dir dir in Direction.lstAllDirs) {
 
             lstToTelegraph.Add(new Telegraph.TeleTileInfo {
-                pos = tileTarget.pos.PosInDir(dir),
+                pos = posToTarget.PosInDir(dir),
                 telegraphType = Telegraph.TelegraphType.Harmful,
                 markerType = Telegraph.MarkerType.None,
                 dir = Direction.Dir.NONE

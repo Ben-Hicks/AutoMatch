@@ -90,7 +90,7 @@ GameObject:
   - component: {fileID: 4239750176051232521}
   - component: {fileID: 7063376728786694087}
   m_Layer: 0
-  m_Name: pfBasicWater
+  m_Name: pfWater
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -127,4 +127,5 @@ MonoBehaviour:
   tile: {fileID: 0}
   bBlocksMovement: 0
   bCanBeCollected: 1
+  colDefault: 1
   overwritePriority: 1

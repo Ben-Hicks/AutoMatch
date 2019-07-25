@@ -19,7 +19,7 @@ public class SelectorManual : AbilitySelector {
                 //Clear all enemy telegraphs so that it's clear where your abilities are telegraphing themselves
                 TelegraphController.Get().ClearAllTelegraphs();
 
-                yield return owner.lstAbilities[(int)Entity.ABILSLOT.ABIL1].AttemptManualUse();
+                yield return owner.arAbilities[(int)Entity.ABILSLOT.ABIL1].AttemptManualUse(owner);
             } else if (Input.GetKeyUp(KeyCode.Alpha2)) {
                 Debug.Log("Manually using ability 2");
 
@@ -27,7 +27,7 @@ public class SelectorManual : AbilitySelector {
                 TelegraphController.Get().ClearAllTelegraphs();
 
 
-                yield return owner.lstAbilities[(int)Entity.ABILSLOT.ABIL2].AttemptManualUse();
+                yield return owner.arAbilities[(int)Entity.ABILSLOT.ABIL2].AttemptManualUse(owner);
             } else if (Input.GetKeyUp(KeyCode.Alpha3)) {
                 Debug.Log("Manually using ability 3");
 
@@ -35,16 +35,16 @@ public class SelectorManual : AbilitySelector {
                 TelegraphController.Get().ClearAllTelegraphs();
 
 
-                yield return owner.lstAbilities[(int)Entity.ABILSLOT.ABIL3].AttemptManualUse();
+                yield return owner.arAbilities[(int)Entity.ABILSLOT.ABIL3].AttemptManualUse(owner);
             } else if (Input.GetKeyUp(KeyCode.Alpha4)) {
                 Debug.Log("Manually using ability 4");
 
                 //Clear all enemy telegraphs so that it's clear where your abilities are telegraphing themselves
                 TelegraphController.Get().ClearAllTelegraphs();
                 
-                yield return owner.lstAbilities[(int)Entity.ABILSLOT.ABIL4].AttemptManualUse();
+                yield return owner.arAbilities[(int)Entity.ABILSLOT.ABIL4].AttemptManualUse(owner);
             } else {
-                yield return owner.lstAbilities[(int)Entity.ABILSLOT.MOVEMENT].AttemptManualUse();
+                yield return owner.arAbilities[(int)Entity.ABILSLOT.MOVEMENT].AttemptManualUse(owner);
             }
 
             if (bUsedAbility) {

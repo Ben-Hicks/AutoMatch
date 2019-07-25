@@ -4,12 +4,8 @@ using UnityEngine;
 
 public abstract class Ability {
 
-    public Entity owner;
-
-    public Tile tileTarget;
-
     //Try to use this ability (and gather any targets)
-    public virtual IEnumerator AttemptManualUse() {
+    public virtual IEnumerator AttemptManualUse(Entity owner) {
 
         while (true) {
 
@@ -20,13 +16,13 @@ public abstract class Ability {
                 yield break;
             }else if (tileTarget != null) {
                 Debug.Log("We have a targetted tile");
-                if (CanUse() && CanTarget(tileTarget)) {
+                if (CanUse(owner) && CanTarget(owner, tileTarget)) {
                     Debug.Log("The target was valid so we'll use the ability");
 
                     //if we actually found an ability we can use successfully, then let our selector know
                     ((SelectorManual)owner.abilityselector).bUsedAbility = true;
 
-                    yield return UseWithTarget(tileTarget);
+                    yield return UseWithTarget(owner, tileTarget);
                     break;
                 } else {
                     Debug.Log("Invalid target");
@@ -41,71 +37,51 @@ public abstract class Ability {
 
     //TODO cost
 
-    public IEnumerator UseWithTarget(Direction.Dir dir) {
+    public IEnumerator UseWithTarget(Entity owner, Direction.Dir dir) {
         Tile tileTarget = Board.Get().At(owner.tile.pos.PosInDir(dir));
 
-        return UseWithTarget(tileTarget);
+        return UseWithTarget(owner, tileTarget);
     }
 
-    public IEnumerator UseWithTarget(Position _posTarget) {
+    public IEnumerator UseWithTarget(Entity owner, Position posTarget) {
 
-        return UseWithTarget(Board.Get().At(_posTarget));
+        return UseWithTarget(owner, Board.Get().At(posTarget));
     }
 
-    public IEnumerator UseWithTarget(Tile _tileTarget) {
+    public IEnumerator UseWithTarget(Entity owner, Tile tileTarget) {
 
-        if (CanUse() && CanTarget(_tileTarget)) {
+        if (CanUse(owner) && CanTarget(owner, tileTarget)) {
+            
+            PayCost(owner);
 
-            SetTarget(_tileTarget);
-            PayCost();
+            yield return ExecuteAbility(owner, tileTarget);
 
-            yield return ExecuteAbility();
-
-            //clean out the target
-            SetTarget(owner.tile);
         }
         
     }
 
-    public Ability(Entity _owner) {
-        owner = _owner;
-    }
-
-    public bool CanTarget(Direction.Dir dir) {
+    public bool CanTarget(Entity owner, Direction.Dir dir) {
         Tile tilePotentialTarget = Board.Get().At(owner.tile.pos.PosInDir(dir));
-        return CanTarget(tilePotentialTarget);
+        return CanTarget(owner, tilePotentialTarget);
     }
 
-    public bool CanTarget(Position posTarget) {
+    public bool CanTarget(Entity owner, Position posTarget) {
         if(Board.Get().ValidTile(posTarget) == false) {
             return false;
         }
-        return CanTarget(Board.Get().At(posTarget));
+        return CanTarget(owner, Board.Get().At(posTarget));
     }
 
-    public abstract bool CanTarget(Tile _tileTarget);
+    public abstract bool CanTarget(Entity owner, Tile _tileTarget);
 
-    public void SetTarget(Direction.Dir dir) {
-        SetTarget(Board.Get().At(owner.tile.pos.PosInDir(dir)));
-    }
+    public abstract bool CanUse(Entity owner);
 
-    public void SetTarget(Position posTarget) {
-        SetTarget(Board.Get().At(posTarget));
-    }
+    public abstract void PayCost(Entity owner);
 
-    public void SetTarget(Tile _tileTarget) {
-        tileTarget = _tileTarget;
-        Debug.Log("SetTarget for " + ToString() + " set to " + tileTarget.pos.ToString());
-    }
+    protected abstract List<Telegraph.TeleTileInfo> GenListTelegraphTiles(Entity owner, Position posToTarget);
 
-    public abstract bool CanUse();
-
-    public abstract void PayCost();
-
-    protected abstract List<Telegraph.TeleTileInfo> GenListTelegraphTiles(Position posToTarget);
-
-    public List<Telegraph.TeleTileInfo> TelegraphedTiles(Position posToTarget) {
-        if (CanTarget(Board.Get().At(posToTarget)) == false) {
+    public List<Telegraph.TeleTileInfo> TelegraphedTiles(Entity owner, Position posToTarget) {
+        if (CanTarget(owner, Board.Get().At(posToTarget)) == false) {
             //If the tile is not a valid target, then telegraph it as invalid
             Telegraph.TeleTileInfo invTeleInfo = new Telegraph.TeleTileInfo {
                 pos = posToTarget,
@@ -117,9 +93,9 @@ public abstract class Ability {
         } else {
             //If the tile's valid, then determine the exact tiles the ability will affect
 
-            return GenListTelegraphTiles(posToTarget);
+            return GenListTelegraphTiles(owner, posToTarget);
         }
     }
 
-    public abstract IEnumerator ExecuteAbility();
+    public abstract IEnumerator ExecuteAbility(Entity owner, Tile tileTarget);
 }

@@ -48,6 +48,7 @@ MonoBehaviour:
   tile: {fileID: 0}
   bBlocksMovement: 0
   bCanBeCollected: 1
+  colDefault: 6
   overwritePriority: 3
 --- !u!1 &1049289788436902046
 GameObject:

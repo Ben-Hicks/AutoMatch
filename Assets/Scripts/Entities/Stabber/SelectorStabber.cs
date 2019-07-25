@@ -20,7 +20,7 @@ public class SelectorStabber : SelectorEnemy {
             PlanMoveTowardTarget(entTarget.tile);
         } else {
             //If we are adjacent, then we should try to stab them
-            intended = new Intended(owner.lstAbilities[(int)Entity.ABILSLOT.ABIL1], dirAdjacentTarget);
+            intended = new Intended(owner.arAbilities[(int)Entity.ABILSLOT.ABIL1], owner, dirAdjacentTarget);
         }
 
         Debug.Log("Planning to use " + intended.abil + " with " + intended.intendType + " and dir: " + intended.dir + " and pos: " + intended.pos);
