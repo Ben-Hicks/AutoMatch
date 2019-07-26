@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2689066165394713772}
   - component: {fileID: 824903669513186660}
-  - component: {fileID: 6204858890731914952}
+  - component: {fileID: 3065475292874384604}
   - component: {fileID: 908828917803316645}
   m_Layer: 0
   m_Name: pfRevujenator
@@ -48,7 +48,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   entity: {fileID: 0}
   nGold: 0
---- !u!114 &6204858890731914952
+--- !u!114 &3065475292874384604
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -57,7 +57,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 266452498698718418}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e14bad3c6b1822a4486b1e02e3aeaa90, type: 3}
+  m_Script: {fileID: 11500000, guid: 4d807ffd0d533b54f89282dc3d797bdf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   go: {fileID: 266452498698718418}
@@ -66,12 +66,11 @@ MonoBehaviour:
   bCanBeCollected: 0
   colDefault: 3
   overwritePriority: 4
-  arAbilUsed: 000000000400000005000000000000000000000000000000
+  arAbilUsed: 000000000400000000000000000000000000000000000000
   nMaxHealth: 3
   nCurHealth: 3
   collectionPriority: 3
   abilityselector: {fileID: 908828917803316645}
-  nID: 0
 --- !u!114 &908828917803316645
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -84,7 +83,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba6190a2981dd1a4a82713e9e90e77ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  owner: {fileID: 6204858890731914952}
+  owner: {fileID: 0}
   entTarget: {fileID: 0}
 --- !u!1 &682054593925758886
 GameObject:

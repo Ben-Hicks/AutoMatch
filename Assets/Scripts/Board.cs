@@ -519,7 +519,7 @@ public class Board : Singleton<Board> {
 
         PropertyController.Get().PlaceProperty("Hero", tilePlayer);
         
-        GameController.Get().entHero = tilePlayer.prop.GetComponent<EntHero>();
+        GameController.Get().entHero = tilePlayer.prop.GetComponent<Entity>();
 
         PropertyController.Get().PlaceProperty("Stabber", At(posCenter.PosInDir(Direction.Dir.U, 3)));
 
