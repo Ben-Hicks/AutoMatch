@@ -4,6 +4,11 @@ using UnityEngine;
 
 public class AbilityRejuvenate : Ability {
 
+    public override void InitProperties() {
+        nMinRange = 1;
+        nMaxRange = 1;
+    }
+
     public override void PayCost(Entity owner) {
         //TODO - something here
     }

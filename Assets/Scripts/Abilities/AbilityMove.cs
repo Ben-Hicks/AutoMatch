@@ -4,6 +4,11 @@ using UnityEngine;
 
 public class AbilityMove : Ability {
 
+    public override void InitProperties() {
+        nMinRange = 1;
+        nMaxRange = 1;
+    }
+
     public override IEnumerator AttemptManualUse(Entity owner) {
         //Since movement is the default action, we're just going to try once
         // to see if we're supposed to move, and if not - we can just exit without doing anything
@@ -32,9 +37,10 @@ public class AbilityMove : Ability {
     }
 
     public override bool CanTarget(Entity owner, Tile _tileTarget) {
+        //Check if there's any generic reasons why the targetting would be invalid
+        if (base.CanTarget(owner, _tileTarget) == false) return false;
 
-        return owner.tile.pos.GetAdjacentDir(_tileTarget.pos) != Direction.Dir.NONE &&
-            _tileTarget.prop.bBlocksMovement == false;
+        return _tileTarget.prop.bBlocksMovement == false;
 
     }
 

@@ -4,17 +4,20 @@ using UnityEngine;
 
 public class AbilityGeyser : Ability {
 
-    public const int nRange = 3;
+    public override void InitProperties() {
+        nMinRange = 2;
+        nMaxRange = 3;
+    }
 
     public override void PayCost(Entity owner) {
         //TODO - something here
     }
 
     public override bool CanTarget(Entity owner, Tile _tileTarget) {
+        //Check if there's any generic reasons why the targetting would be invalid
+        if (base.CanTarget(owner, _tileTarget) == false) return false;
 
-        int nDirectDist = owner.tile.pos.DirectDistFrom(_tileTarget.pos);
-
-        return nDirectDist <= nRange;
+        return true;
     }
 
     public override bool CanUse(Entity owner) {

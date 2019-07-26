@@ -4,6 +4,16 @@ using UnityEngine;
 
 public abstract class Ability {
 
+    public int nMaxRange;
+    public int nMinRange;
+
+    public Ability() {
+        InitProperties();
+    }
+    
+    //Define the values of properties of this ability (cost/range/etc)
+    public abstract void InitProperties();
+
     //Try to use this ability (and gather any targets)
     public virtual IEnumerator AttemptManualUse(Entity owner) {
 
@@ -72,7 +82,11 @@ public abstract class Ability {
         return CanTarget(owner, Board.Get().At(posTarget));
     }
 
-    public abstract bool CanTarget(Entity owner, Tile _tileTarget);
+    public virtual bool CanTarget(Entity owner, Tile _tileTarget) {
+        int nTargettedDist = owner.tile.pos.DirectDistFrom(_tileTarget.pos);
+
+        return nTargettedDist >= nMinRange && nTargettedDist <= nMaxRange;
+    }
 
     public abstract bool CanUse(Entity owner);
 

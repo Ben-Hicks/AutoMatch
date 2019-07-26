@@ -4,6 +4,11 @@ using UnityEngine;
 
 public class AbilityPass : Ability {
 
+    public override void InitProperties() {
+        nMinRange = 0;
+        nMaxRange = 10000;
+    }
+
     public override IEnumerator AttemptManualUse(Entity owner) {
         //This should always be accepted, but I currently don't have plans for how to manually select this
       

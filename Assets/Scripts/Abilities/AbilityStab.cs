@@ -6,14 +6,21 @@ public class AbilityStab : Ability {
 
     public const int nLength = 2;
 
+    public override void InitProperties() {
+        nMinRange = 1;
+        nMaxRange = nLength;
+    }
+
     public override void PayCost(Entity owner) {
         //TODO - something here
     }
 
     public override bool CanTarget(Entity owner, Tile _tileTarget) {
+        //Check if there's any generic reasons why the targetting would be invalid
+        if (base.CanTarget(owner, _tileTarget) == false) return false;
         Debug.Log("Should make a way to check if a tile is in a straight line of the start");
 
-        return owner.tile.pos.GetAdjacentDir(_tileTarget.pos) != Direction.Dir.NONE;
+        return true;
 
     }
 
