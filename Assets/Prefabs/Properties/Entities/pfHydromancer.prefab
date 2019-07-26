@@ -89,6 +89,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6441733981323531025}
   - component: {fileID: 6441733981323531024}
+  - component: {fileID: 1593379429675219252}
   m_Layer: 0
   m_Name: pfHydromancer
   m_TagString: Untagged
@@ -123,5 +124,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81bfe5bd56f6db040bb83037d63dd69b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  entity: {fileID: 0}
+  entity: {fileID: 1593379429675219252}
   nGold: 0
+--- !u!114 &1593379429675219252
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6441733981323531031}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d807ffd0d533b54f89282dc3d797bdf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  go: {fileID: 6441733981323531031}
+  tile: {fileID: 0}
+  bBlocksMovement: 1
+  bCanBeCollected: 0
+  colDefault: 1
+  overwritePriority: 0
+  arAbilUsed: 000000000400000000000000000000000000000000000000
+  nMaxHealth: 1
+  nCurHealth: 1
+  collectionPriority: 3
+  abilityselector: {fileID: 0}

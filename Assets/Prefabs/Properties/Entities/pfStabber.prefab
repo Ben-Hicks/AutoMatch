@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4640934661698771963}
   - component: {fileID: 3497688109716914809}
-  - component: {fileID: 2133575192050200222}
+  - component: {fileID: 2409103426792845283}
   - component: {fileID: 6706428863786639189}
   m_Layer: 0
   m_Name: pfStabber
@@ -46,9 +46,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81bfe5bd56f6db040bb83037d63dd69b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  entity: {fileID: 2133575192050200222}
+  entity: {fileID: 0}
   nGold: 0
---- !u!114 &2133575192050200222
+--- !u!114 &2409103426792845283
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -57,7 +57,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2953531982274221241}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: de88e6bac278183498fdf27126c85468, type: 3}
+  m_Script: {fileID: 11500000, guid: 4d807ffd0d533b54f89282dc3d797bdf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   go: {fileID: 2953531982274221241}
@@ -66,7 +66,7 @@ MonoBehaviour:
   bCanBeCollected: 0
   colDefault: 2
   overwritePriority: 4
-  arAbilUsed: 000000000400000006000000000000000000000000000000
+  arAbilUsed: 000000000400000000000000000000000000000000000000
   nMaxHealth: 1
   nCurHealth: 1
   collectionPriority: 3
@@ -83,7 +83,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0686bf3e8948be46b2efc7d2283024a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  owner: {fileID: 2133575192050200222}
+  owner: {fileID: 0}
   entTarget: {fileID: 0}
 --- !u!1 &4282591735952839571
 GameObject:

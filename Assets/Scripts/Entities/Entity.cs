@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class Entity : Property {
+public class Entity : Property {
 
     public const int NUMABILSLOTS = 6;
     public enum ABILSLOT { PASS, MOVEMENT, ABIL1, ABIL2, ABIL3, ABIL4 };
@@ -80,6 +80,10 @@ public abstract class Entity : Property {
         } else {
             return 0.00001f;
         }
+    }
+
+    public override void OnCollect(Collection collection) {
+        //TODO:: currently don't have any collection stuff done
     }
 
     private void OnDestroy() {
