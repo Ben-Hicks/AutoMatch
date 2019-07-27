@@ -111,22 +111,27 @@ public class Position {
             int nDistX = posOther.i - i;
             int nDistY = posOther.j - j;
 
-            Debug.Assert(Mathf.Abs(nDistX) == Mathf.Abs(nDistY));
+            if (Mathf.Abs(nDistX) != Mathf.Abs(nDistY)) {
+                //If there isn't a straight diagonal line, then we should 
+                // just break and return None/0
 
-            nDist = Mathf.Abs(nDistX);
+            } else {
 
-            if(nDistX > 0 && nDistY < 0) {
-                //Then we are below and to the left
-                dir = Direction.Dir.UR;
-            }else if(nDistX > 0 && nDistY > 0) {
-                //Then we are above and to the left;
-                dir = Direction.Dir.DR;
-            }else if(nDistX < 0 && nDistY < 0) {
-                //Then we are below and to the right;
-                dir = Direction.Dir.UL;
-            }else if(nDistX < 0 && nDistY > 0) {
-                //Then we are above and to the right;
-                dir = Direction.Dir.DL;
+                nDist = Mathf.Abs(nDistX);
+
+                if (nDistX > 0 && nDistY < 0) {
+                    //Then we are below and to the left
+                    dir = Direction.Dir.UR;
+                } else if (nDistX > 0 && nDistY > 0) {
+                    //Then we are above and to the left;
+                    dir = Direction.Dir.DR;
+                } else if (nDistX < 0 && nDistY < 0) {
+                    //Then we are below and to the right;
+                    dir = Direction.Dir.UL;
+                } else if (nDistX < 0 && nDistY > 0) {
+                    //Then we are above and to the right;
+                    dir = Direction.Dir.DL;
+                }
             }
         }
 

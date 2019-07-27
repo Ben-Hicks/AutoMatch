@@ -34,7 +34,7 @@ public class SelectorRejuvenator : SelectorEnemy {
             PlanMoveAwayFromTarget(entTarget.tile);
         }
 
-        Debug.Log("Planning to use " + intended.abil + " with " + intended.intendType + " and dir: " + intended.dir + " and pos: " + intended.pos);
+        Debug.Log("Planning to use " + intended.abil + " with " + intended.intendType + " and pos: " + intended.pos);
     }
 
 }

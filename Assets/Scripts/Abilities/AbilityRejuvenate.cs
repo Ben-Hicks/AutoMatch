@@ -5,16 +5,17 @@ using UnityEngine;
 public class AbilityRejuvenate : Ability {
 
     public override void InitProperties() {
-        nMinRange = 1;
-        nMaxRange = 1;
+        nMinRange = 3;
+        nMaxRange = 100;
     }
 
     public override void PayCost(Entity owner) {
         //TODO - something here
     }
 
-    public override bool CanTarget(Entity owner, Tile _tileTarget) {
-        Debug.Log("Any target for rejuvenate is valid - assuming no targetting process is necessary");
+    public override bool CanTarget(Entity owner, Position posTarget) {
+        if (base.CanTarget(owner, posTarget) == false) return false;
+
         return true;
     }
 
@@ -22,7 +23,7 @@ public class AbilityRejuvenate : Ability {
         return true;
     }
 
-    public override IEnumerator ExecuteAbility(Entity owner, Tile tileTarget) {
+    public override IEnumerator ExecuteAbility(Entity owner, Position posTarget) {
 
         foreach(Direction.Dir dir in Direction.lstAllDirs) {
             Board.Get().StartCoroutine(Board.Get().At(owner.tile.pos.PosInDir(dir)).AnimateSwell());

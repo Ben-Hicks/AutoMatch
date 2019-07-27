@@ -15,23 +15,25 @@ public class AbilityStab : Ability {
         //TODO - something here
     }
 
-    public override bool CanTarget(Entity owner, Tile _tileTarget) {
+    public override bool CanTarget(Entity owner, Position posTarget) {
         //Check if there's any generic reasons why the targetting would be invalid
-        if (base.CanTarget(owner, _tileTarget) == false) return false;
-        Debug.Log("Should make a way to check if a tile is in a straight line of the start");
+        if (base.CanTarget(owner, posTarget) == false) return false;
 
-        return true;
+        Position.DirDist dirDist = owner.tile.pos.DirDistTo(posTarget);
 
+        //Ensure that there is a straight line between us and the target
+        return dirDist.dir != Direction.Dir.NONE;
     }
 
     public override bool CanUse(Entity owner) {
         return true;
     }
 
-    public override IEnumerator ExecuteAbility(Entity owner, Tile tileTarget) {
+    public override IEnumerator ExecuteAbility(Entity owner, Position posTarget) {
 
-        Position posCur = tileTarget.pos;
-        Direction.Dir dir = owner.tile.pos.GetAdjacentDir(posCur);
+        Position.DirDist dirDist = owner.tile.pos.DirDistTo(posTarget);
+        
+        Position posCur = owner.tile.pos.PosInDir(dirDist.dir);
         int nCurLength = 1;
 
         while (Board.Get().ActiveTile(posCur) && nCurLength <= nLength) {
@@ -42,7 +44,7 @@ public class AbilityStab : Ability {
 
             yield return new WaitForSeconds(owner.GetAnimTime(0.05f));
 
-            posCur = posCur.PosInDir(dir);
+            posCur = posCur.PosInDir(dirDist.dir);
             nCurLength++;
         }
 
@@ -54,8 +56,9 @@ public class AbilityStab : Ability {
 
         List<Telegraph.TeleTileInfo> lstToTelegraph = new List<Telegraph.TeleTileInfo>();
 
-        Position posCur = posToTarget;
-        Direction.Dir dirAim = owner.tile.pos.GetAdjacentDir(posToTarget);
+        Position.DirDist dirDist = owner.tile.pos.DirDistTo(posToTarget);
+        
+        Position posCur = owner.tile.pos.PosInDir(dirDist.dir);
         int nCurLength = 1;
 
         while (Board.Get().ActiveTile(posCur) && nCurLength <= nLength) {
@@ -67,7 +70,7 @@ public class AbilityStab : Ability {
                                         dir = Direction.Dir.NONE
                                     });
 
-            posCur = posCur.PosInDir(dirAim);
+            posCur = posCur.PosInDir(dirDist.dir);
             nCurLength++;
         }
 

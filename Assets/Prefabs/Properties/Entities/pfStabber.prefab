@@ -72,7 +72,7 @@ MonoBehaviour:
   - abil: 4
     nPriority: 1
   - abil: 6
-    nPriority: 5
+    nPriority: 3
   - abil: 0
     nPriority: 0
   - abil: 0

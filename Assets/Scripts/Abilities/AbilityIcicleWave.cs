@@ -7,51 +7,53 @@ public class AbilityIcicleWave : Ability {
     public override void InitProperties() {
         nMinRange = 1;
         nMaxRange = 100;
+        tarType = TargetType.RELATIVE;
     }
 
     public override void PayCost(Entity owner) {
         //TODO - something here
     }
 
-    public override bool CanTarget(Entity owner, Tile _tileTarget) {
+    public override bool CanTarget(Entity owner, Position posTarget) {
         //Check if there's any generic reasons why the targetting would be invalid
-        if (base.CanTarget(owner, _tileTarget) == false) return false;
+        if (base.CanTarget(owner, posTarget) == false) return false;
 
-        Debug.Log("Should make a way to check if a tile is in a straight line of the start");
+        Position.DirDist dirDist = owner.tile.pos.DirDistTo(posTarget);
 
-        return true;
-
+        //Ensure that there is a straight line between us and the target
+        return dirDist.dir != Direction.Dir.NONE;
     }
 
     public override bool CanUse(Entity owner) {
         return true;
     }
 
-    public override IEnumerator ExecuteAbility(Entity owner, Tile tileTarget) {
+    public override IEnumerator ExecuteAbility(Entity owner, Position posTarget) {
 
-        Position posCur = tileTarget.pos;
-        Direction.Dir dir = owner.tile.pos.GetAdjacentDir(posCur);
+        Position.DirDist dirDist = owner.tile.pos.DirDistTo(posTarget);
+        
+        Position posCur = owner.tile.pos.PosInDir(dirDist.dir);
 
         while (Board.Get().ActiveTile(posCur)) {
             PropertyController.Get().PlaceProperty("Icicle", Board.Get().At(posCur));
             Board.Get().StartCoroutine(Board.Get().At(posCur).AnimateSwell());
             yield return new WaitForSeconds(owner.GetAnimTime(0.1f));
 
-            posCur = posCur.PosInDir(dir);
+            posCur = posCur.PosInDir(dirDist.dir);
         }
 
     }
 
     protected override List<Telegraph.TeleTileInfo> GenListTelegraphTiles(Entity owner, Position posToTarget) {
 
-        Direction.Dir dirAim = owner.tile.pos.GetAdjacentDir(posToTarget);
+        Position.DirDist dirDist = owner.tile.pos.DirDistTo(posToTarget);
 
         return new List<Telegraph.TeleTileInfo>() {
             new Telegraph.TeleTileInfo {
-                pos = posToTarget,
+                pos = owner.tile.pos.PosInDir(dirDist.dir),
                 telegraphType = Telegraph.TelegraphType.Harmful,
                 markerType = Telegraph.MarkerType.Direction,
-                dir = dirAim
+                dir = dirDist.dir
             }
         };
     }

@@ -7,15 +7,16 @@ public class AbilityGeyser : Ability {
     public override void InitProperties() {
         nMinRange = 2;
         nMaxRange = 3;
+        tarType = TargetType.ABSOLUTE;
     }
 
     public override void PayCost(Entity owner) {
         //TODO - something here
     }
 
-    public override bool CanTarget(Entity owner, Tile _tileTarget) {
+    public override bool CanTarget(Entity owner, Position posTarget) {
         //Check if there's any generic reasons why the targetting would be invalid
-        if (base.CanTarget(owner, _tileTarget) == false) return false;
+        if (base.CanTarget(owner, posTarget) == false) return false;
 
         return true;
     }
@@ -24,12 +25,12 @@ public class AbilityGeyser : Ability {
         return true;
     }
 
-    public override IEnumerator ExecuteAbility(Entity owner, Tile tileTarget) {
+    public override IEnumerator ExecuteAbility(Entity owner, Position posTarget) {
 
         foreach (Direction.Dir dir in Direction.lstAllDirs) {
-            Board.Get().StartCoroutine(Board.Get().At(tileTarget.pos.PosInDir(dir)).AnimateSwell());
-            Board.Get().At(tileTarget.pos.PosInDir(dir)).prop.TakeDamage();
-            PropertyController.Get().PlaceProperty("Water", Board.Get().At(tileTarget.pos.PosInDir(dir)));
+            Board.Get().StartCoroutine(Board.Get().At(posTarget.PosInDir(dir)).AnimateSwell());
+            Board.Get().At(posTarget.PosInDir(dir)).prop.TakeDamage();
+            PropertyController.Get().PlaceProperty("Water", Board.Get().At(posTarget.PosInDir(dir)));
         }
 
         yield return new WaitForSeconds(owner.GetAnimTime(0.1f));

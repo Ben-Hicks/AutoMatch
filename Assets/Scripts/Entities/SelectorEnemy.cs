@@ -15,7 +15,6 @@ public abstract class SelectorEnemy : AbilitySelector {
 
         public Entity owner;
         public Ability abil;
-        public Direction.Dir dir;
         public Position pos;
 
         public Intended(Ability _abil, Entity _owner, Ability.TargetType tarType, Position _pos) {
@@ -31,11 +30,11 @@ public abstract class SelectorEnemy : AbilitySelector {
            
         }
 
-        public Tile GetIntended() {
+        public Position GetIntendedPos() {
             if(intendType == Ability.TargetType.RELATIVE) {
-                return Board.Get().At(owner.tile.pos.PosInDir(dir));
+                return owner.tile.pos + pos;
             } else {
-                return Board.Get().At(pos);
+                return pos;
             }
         }
 
@@ -167,16 +166,16 @@ public abstract class SelectorEnemy : AbilitySelector {
     public override IEnumerator SelectAndUseAbility() {
         
         //First, check if the inteded ability and its targetting is still valid
-        if(intended.abil.CanUse(intended.owner) == false || intended.abil.CanTarget(intended.owner, intended.GetIntended()) == false) {
+        if(intended.abil.CanUse(intended.owner) == false || intended.abil.CanTarget(intended.owner, intended.GetIntendedPos()) == false) {
 
             //if the ability either can't be used, or the target is now invalid, then by default, do nothing
             intended.SetPass();
         }
 
-        Debug.Log("intended.GetIntended is " + intended.GetIntended());
+        Debug.Log("intended.GetIntended is " + intended.GetIntendedPos());
 
         //Use the valid ability
-        yield return intended.abil.UseWithTarget(intended.owner, intended.GetIntended());
+        yield return intended.abil.UseWithTarget(intended.owner, intended.GetIntendedPos());
 
         
     }

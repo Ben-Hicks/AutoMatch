@@ -7,12 +7,13 @@ public class AbilityPass : Ability {
     public override void InitProperties() {
         nMinRange = 0;
         nMaxRange = 10000;
+        tarType = TargetType.RELATIVE;
     }
 
     public override IEnumerator AttemptManualUse(Entity owner) {
         //This should always be accepted, but I currently don't have plans for how to manually select this
       
-        yield return UseWithTarget(owner, owner.tile);
+        yield return UseWithTarget(owner, owner.tile.pos);
 
     }
 
@@ -20,7 +21,7 @@ public class AbilityPass : Ability {
         //TODO - something here
     }
 
-    public override bool CanTarget(Entity owner, Tile _tileTarget) {
+    public override bool CanTarget(Entity owner, Position posTarget) {
         return true;
     }
 
@@ -28,7 +29,7 @@ public class AbilityPass : Ability {
         return true;
     }
 
-    public override IEnumerator ExecuteAbility(Entity owner, Tile tileTarget) {
+    public override IEnumerator ExecuteAbility(Entity owner, Position posTarget) {
 
         Debug.Log(owner + " is Passing");
         yield return new WaitForSeconds(0.5f);

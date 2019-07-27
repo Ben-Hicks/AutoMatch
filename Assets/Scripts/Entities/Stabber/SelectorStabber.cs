@@ -23,7 +23,7 @@ public class SelectorStabber : SelectorEnemy {
             intended = new Intended(owner.arAbilities[(int)Entity.ABILSLOT.ABIL1], owner, Ability.TargetType.RELATIVE, owner.tile.pos.PosInDir(dirAdjacentTarget));
         }
 
-        Debug.Log("Planning to use " + intended.abil + " with " + intended.intendType + " and dir: " + intended.dir + " and pos: " + intended.pos);
+        Debug.Log("Planning to use " + intended.abil + " with " + intended.intendType + " and pos: " + intended.pos);
     }
    
 }

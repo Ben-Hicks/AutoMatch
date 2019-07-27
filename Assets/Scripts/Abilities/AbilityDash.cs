@@ -9,19 +9,20 @@ public class AbilityDash : Ability {
     public override void InitProperties() {
         nMinRange = 1;
         nMaxRange = nDist;
+        tarType = TargetType.RELATIVE;
     }
 
     public override void PayCost(Entity owner) {
         //TODO - something here
     }
 
-    public override bool CanTarget(Entity owner, Tile _tileTarget) {
+    public override bool CanTarget(Entity owner, Position posTarget) {
         //Check if there's any generic reasons why the targetting would be invalid
-        if (base.CanTarget(owner, _tileTarget) == false) return false;
+        if (base.CanTarget(owner, posTarget) == false) return false;
 
-        Debug.Log("Should make a way to check if a tile is in a straight line of the start");
+        Position.DirDist dirDist = owner.tile.pos.DirDistTo(posTarget);
 
-        return owner.tile.pos.GetAdjacentDir(_tileTarget.pos) != Direction.Dir.NONE;
+        return dirDist.dir != Direction.Dir.NONE;
 
     }
 
@@ -29,13 +30,14 @@ public class AbilityDash : Ability {
         return true;
     }
 
-    public override IEnumerator ExecuteAbility(Entity owner, Tile tileTarget) {
-        
-        Direction.Dir dir = owner.tile.pos.GetAdjacentDir(tileTarget.pos);
+    public override IEnumerator ExecuteAbility(Entity owner, Position posTarget) {
+
+        Position.DirDist dirDist = owner.tile.pos.DirDistTo(posTarget);
         int nCurDist = 0;
 
-        while (nCurDist < nDist && Board.Get().ActiveTile(owner.tile.pos.PosInDir(dir)) && Board.Get().At(owner.tile.pos.PosInDir(dir)).prop.bBlocksMovement == false) {
-            Board.Get().MoveTile(owner.tile, dir);
+        while (nCurDist < nDist && Board.Get().ActiveTile(owner.tile.pos.PosInDir(dirDist.dir)) && 
+            Board.Get().At(owner.tile.pos.PosInDir(dirDist.dir)).prop.bBlocksMovement == false) {
+            Board.Get().MoveTile(owner.tile, dirDist.dir);
             nCurDist++;
         }
 
@@ -47,7 +49,7 @@ public class AbilityDash : Ability {
         List<Telegraph.TeleTileInfo> lstTeleTarget = new List<Telegraph.TeleTileInfo>();
 
         Direction.Dir dir = owner.tile.pos.GetAdjacentDir(posToTarget);
-        Position posCur = posToTarget;
+        Position posCur = owner.tile.pos.PosInDir(dir);
 
         //Include each tile in a line in the targetted direction (up to the maximum dist away)
         for (int i=0; i<nDist; i++){

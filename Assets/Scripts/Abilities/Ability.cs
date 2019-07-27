@@ -29,13 +29,13 @@ public abstract class Ability {
                 yield break;
             }else if (tileTarget != null) {
                 Debug.Log("We have a targetted tile");
-                if (CanUse(owner) && CanTarget(owner, tileTarget)) {
+                if (CanUse(owner) && CanTarget(owner, tileTarget.pos)) {
                     Debug.Log("The target was valid so we'll use the ability");
 
                     //if we actually found an ability we can use successfully, then let our selector know
                     ((SelectorManual)owner.abilityselector).bUsedAbility = true;
 
-                    yield return UseWithTarget(owner, tileTarget);
+                    yield return UseWithTarget(owner, tileTarget.pos);
                     break;
                 } else {
                     Debug.Log("Invalid target");
@@ -50,43 +50,23 @@ public abstract class Ability {
 
     //TODO cost
 
-    public IEnumerator UseWithTarget(Entity owner, Direction.Dir dir) {
-        Tile tileTarget = Board.Get().At(owner.tile.pos.PosInDir(dir));
-
-        return UseWithTarget(owner, tileTarget);
-    }
-
     public IEnumerator UseWithTarget(Entity owner, Position posTarget) {
 
-        return UseWithTarget(owner, Board.Get().At(posTarget));
-    }
+        if (CanUse(owner) && CanTarget(owner, posTarget)) {
 
-    public IEnumerator UseWithTarget(Entity owner, Tile tileTarget) {
-
-        if (CanUse(owner) && CanTarget(owner, tileTarget)) {
-            
             PayCost(owner);
 
-            yield return ExecuteAbility(owner, tileTarget);
+            yield return ExecuteAbility(owner, posTarget);
 
         }
-        
     }
 
-    public bool CanTarget(Entity owner, Direction.Dir dir) {
-        Tile tilePotentialTarget = Board.Get().At(owner.tile.pos.PosInDir(dir));
-        return CanTarget(owner, tilePotentialTarget);
-    }
-
-    public bool CanTarget(Entity owner, Position posTarget) {
+    public virtual bool CanTarget(Entity owner, Position posTarget) {
         if(Board.Get().ValidTile(posTarget) == false) {
             return false;
         }
-        return CanTarget(owner, Board.Get().At(posTarget));
-    }
 
-    public virtual bool CanTarget(Entity owner, Tile _tileTarget) {
-        int nTargettedDist = owner.tile.pos.DirectDistFrom(_tileTarget.pos);
+        int nTargettedDist = owner.tile.pos.DirectDistFrom(posTarget);
 
         return nTargettedDist >= nMinRange && nTargettedDist <= nMaxRange;
     }
@@ -98,7 +78,7 @@ public abstract class Ability {
     protected abstract List<Telegraph.TeleTileInfo> GenListTelegraphTiles(Entity owner, Position posToTarget);
 
     public List<Telegraph.TeleTileInfo> TelegraphedTiles(Entity owner, Position posToTarget) {
-        if (CanTarget(owner, Board.Get().At(posToTarget)) == false) {
+        if (CanTarget(owner, posToTarget) == false) {
             //If the tile is not a valid target, then telegraph it as invalid
             Telegraph.TeleTileInfo invTeleInfo = new Telegraph.TeleTileInfo {
                 pos = posToTarget,
@@ -114,5 +94,5 @@ public abstract class Ability {
         }
     }
 
-    public abstract IEnumerator ExecuteAbility(Entity owner, Tile tileTarget);
+    public abstract IEnumerator ExecuteAbility(Entity owner, Position posTarget);
 }
