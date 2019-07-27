@@ -19,7 +19,7 @@ public class SelectorRejuvenator : SelectorEnemy {
         if (dirAdjacentTarget == Direction.Dir.NONE) {
             //If we aren't adjacent to the target, then we can either move in a random direction, or heal
             if (bMovedLastTurn) {
-                intended = new Intended(owner.arAbilities[(int)Entity.ABILSLOT.ABIL1], owner, owner.tile.pos);
+                intended = new Intended(owner.arAbilities[(int)Entity.ABILSLOT.ABIL1], owner, Ability.TargetType.RELATIVE, owner.tile.pos);
                 bMovedLastTurn = false;
             } else {
                 //Choose a random position on the board to move towards

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2689066165394713772}
   - component: {fileID: 824903669513186660}
   - component: {fileID: 3065475292874384604}
-  - component: {fileID: 908828917803316645}
+  - component: {fileID: 4490685457920608987}
   m_Layer: 0
   m_Name: pfRevujenator
   m_TagString: Untagged
@@ -66,12 +66,25 @@ MonoBehaviour:
   bCanBeCollected: 0
   colDefault: 3
   overwritePriority: 4
-  arAbilUsed: 000000000400000000000000000000000000000000000000
+  arAbilUsed:
+  - abil: 0
+    nPriority: 0
+  - abil: 4
+    nPriority: 1
+  - abil: 5
+    nPriority: 4
+  - abil: 0
+    nPriority: 0
+  - abil: 0
+    nPriority: 0
+  - abil: 0
+    nPriority: 0
+  arPriorities: 000000000000000000000000000000000000000000000000
   nMaxHealth: 3
   nCurHealth: 3
   collectionPriority: 3
-  abilityselector: {fileID: 908828917803316645}
---- !u!114 &908828917803316645
+  abilityselector: {fileID: 4490685457920608987}
+--- !u!114 &4490685457920608987
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -80,7 +93,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 266452498698718418}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ba6190a2981dd1a4a82713e9e90e77ae, type: 3}
+  m_Script: {fileID: 11500000, guid: 7c73cf3ac9a22e14399cf55955e2a312, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   owner: {fileID: 0}

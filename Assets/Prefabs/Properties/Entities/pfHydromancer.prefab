@@ -90,6 +90,7 @@ GameObject:
   - component: {fileID: 6441733981323531025}
   - component: {fileID: 6441733981323531024}
   - component: {fileID: 1593379429675219252}
+  - component: {fileID: -4491899412011960518}
   m_Layer: 0
   m_Name: pfHydromancer
   m_TagString: Untagged
@@ -144,8 +145,35 @@ MonoBehaviour:
   bCanBeCollected: 0
   colDefault: 1
   overwritePriority: 0
-  arAbilUsed: 000000000400000000000000000000000000000000000000
+  arAbilUsed:
+  - abil: 0
+    nPriority: 0
+  - abil: 4
+    nPriority: 1
+  - abil: 2
+    nPriority: 5
+  - abil: 0
+    nPriority: 0
+  - abil: 0
+    nPriority: 0
+  - abil: 0
+    nPriority: 0
+  arPriorities: 000000000000000000000000000000000000000000000000
   nMaxHealth: 1
   nCurHealth: 1
   collectionPriority: 3
-  abilityselector: {fileID: 0}
+  abilityselector: {fileID: -4491899412011960518}
+--- !u!114 &-4491899412011960518
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6441733981323531031}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c73cf3ac9a22e14399cf55955e2a312, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  owner: {fileID: 0}
+  entTarget: {fileID: 0}

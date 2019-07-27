@@ -32,7 +32,7 @@ public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour {
 
         } else {
             inst = gameObject.GetComponent<T>();
-            Debug.Log("init inst for type " + GetType().ToString());
+            //Debug.Log("init inst for type " + GetType().ToString());
         }
 
 

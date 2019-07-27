@@ -7,8 +7,15 @@ public class Entity : Property {
     public const int NUMABILSLOTS = 6;
     public enum ABILSLOT { PASS, MOVEMENT, ABIL1, ABIL2, ABIL3, ABIL4 };
 
-    public AbilityController.ABIL[] arAbilUsed = new AbilityController.ABIL[NUMABILSLOTS];
+    [System.Serializable]
+    public struct AbilUsing {
+        public AbilityController.ABIL abil;
+        public int nPriority;
+    }
+
+    public AbilUsing[] arAbilUsed = new AbilUsing[NUMABILSLOTS];
     public Ability[] arAbilities = new Ability[NUMABILSLOTS];
+    public int[] arPriorities = new int[NUMABILSLOTS];
 
     public int nMaxHealth;
     public int nCurHealth;
@@ -41,13 +48,14 @@ public class Entity : Property {
     }
 
     public void InitStandardAbilities() {
-        arAbilUsed[(int)ABILSLOT.MOVEMENT] = AbilityController.ABIL.MOVE;
-        arAbilUsed[(int)ABILSLOT.PASS] = AbilityController.ABIL.PASS;
+        arAbilUsed[(int)ABILSLOT.MOVEMENT] = new AbilUsing { abil = AbilityController.ABIL.MOVE, nPriority = 0 };
+        arAbilUsed[(int)ABILSLOT.PASS] = new AbilUsing { abil = AbilityController.ABIL.PASS, nPriority = 0 };
     }
     
     public void UpdateAbility(ABILSLOT abilslot) {
         //Using the selection information in arAbilUsed, fetch the instance of that type from AbilityController
-        arAbilities[(int)abilslot] = AbilityController.Get().AbilityInstance(arAbilUsed[(int)abilslot]);
+        arAbilities[(int)abilslot] = AbilityController.Get().AbilityInstance(arAbilUsed[(int)abilslot].abil);
+        arPriorities[(int)abilslot] = arAbilUsed[(int)abilslot].nPriority;
     }
 
     public void UpdateAllAbilities() {

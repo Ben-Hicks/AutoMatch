@@ -145,7 +145,19 @@ MonoBehaviour:
   bCanBeCollected: 0
   colDefault: 0
   overwritePriority: 5
-  arAbilUsed: 000000000400000000000000000000000000000000000000
+  arAbilUsed:
+  - abil: 0
+    nPriority: 0
+  - abil: 4
+    nPriority: 1
+  - abil: 3
+    nPriority: 1
+  - abil: 1
+    nPriority: 1
+  - abil: 6
+    nPriority: 1
+  - abil: 2
+    nPriority: 1
   nMaxHealth: 5
   nCurHealth: 5
   collectionPriority: 5

@@ -91,9 +91,9 @@ public class PropertyController : Singleton<PropertyController> {
 
         float fRand = Random.Range(0, 100);
 
-        if(fRand < 1 && dirOffScreen != Direction.Dir.NONE) {
+        if(fRand < 0 && dirOffScreen != Direction.Dir.NONE) {
             PlaceProperty("Stabber", tile);
-        }else if (fRand < 2 && dirOffScreen != Direction.Dir.NONE) {
+        }else if (fRand < 0 && dirOffScreen != Direction.Dir.NONE) {
             PlaceProperty("Rejuvenator", tile);
         } else if(fRand < 85) {
             PlaceProperty("Gold", tile);

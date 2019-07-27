@@ -22,6 +22,14 @@ public class Position {
         j = _other.j;
     }
 
+    public static Position operator +(Position a, Position b) {
+        return new Position(a.i + b.i, a.j + b.j);
+    }
+
+    public static Position operator -(Position a, Position b) {
+        return new Position(a.i - b.i, a.j - b.j);
+    }
+
     public bool IsEqual(Position other) {
         return i == other.i && j == other.j;
     }

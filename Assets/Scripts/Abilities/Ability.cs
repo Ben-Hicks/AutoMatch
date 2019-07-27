@@ -7,6 +7,9 @@ public abstract class Ability {
     public int nMaxRange;
     public int nMinRange;
 
+    public enum TargetType { RELATIVE, ABSOLUTE };
+    public TargetType tarType;
+
     public Ability() {
         InitProperties();
     }

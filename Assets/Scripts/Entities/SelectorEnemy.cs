@@ -11,30 +11,28 @@ public abstract class SelectorEnemy : AbilitySelector {
     public Entity entTarget;
 
     public class Intended {
-        public enum IntendType { DIRECTION, POSITION };
-        public IntendType intendType;
+        public Ability.TargetType intendType;
 
         public Entity owner;
         public Ability abil;
         public Direction.Dir dir;
         public Position pos;
 
-        public Intended(Ability _abil, Entity _owner, Direction.Dir _dir) {
+        public Intended(Ability _abil, Entity _owner, Ability.TargetType tarType, Position _pos) {
             owner = _owner;
-            intendType = IntendType.DIRECTION;
+            intendType = tarType;
             abil = _abil;
-            dir = _dir;
-        }
 
-        public Intended(Ability _abil, Entity _owner, Position _pos) {
-            owner = _owner;
-            intendType = IntendType.POSITION;
-            abil = _abil;
-            pos = _pos;
+            if (tarType == Ability.TargetType.RELATIVE) {
+                pos = _pos - owner.tile.pos;
+            } else {
+                pos = _pos;
+            }
+           
         }
 
         public Tile GetIntended() {
-            if(intendType == IntendType.DIRECTION) {
+            if(intendType == Ability.TargetType.RELATIVE) {
                 return Board.Get().At(owner.tile.pos.PosInDir(dir));
             } else {
                 return Board.Get().At(pos);
@@ -59,6 +57,12 @@ public abstract class SelectorEnemy : AbilitySelector {
 
         SetTarget(GameController.Get().entHero);
 
+    }
+
+    public void PlanBasicMove(Tile tileTarget) {
+        //TODO:: Should plan to make matches if we can
+
+        PlanMoveTowardTarget(tileTarget);
     }
 
     public void PlanMoveTowardTarget(Tile tileTarget) {
@@ -100,10 +104,10 @@ public abstract class SelectorEnemy : AbilitySelector {
 
         //If there's a direction we can move in (even if it's not necessarily closer), we'll plan to move in that direction
         if (dirCurrentBest != Direction.Dir.NONE) {
-            intended = new Intended(owner.arAbilities[(int)Entity.ABILSLOT.MOVEMENT], owner, dirCurrentBest);
+            intended = new Intended(owner.arAbilities[(int)Entity.ABILSLOT.MOVEMENT], owner, Ability.TargetType.RELATIVE, owner.tile.pos.PosInDir(dirCurrentBest));
         } else {
             //Otherwise, if we can't move towards the target in a good way, just pass
-            intended = new Intended(owner.arAbilities[(int)Entity.ABILSLOT.PASS], owner, Direction.Dir.NONE);
+            intended = new Intended(owner.arAbilities[(int)Entity.ABILSLOT.PASS], owner, Ability.TargetType.RELATIVE, owner.tile.pos);
         }
 
         //Debug.Log("Planning to use " + intended.abil + " with " + intended.intendType + " and dir: " + intended.dir + " and pos: " + intended.pos);
@@ -149,10 +153,10 @@ public abstract class SelectorEnemy : AbilitySelector {
 
         //If there's a direction we can move in (even if it's not necessarily farther), we'll plan to move in that direction
         if (dirCurrentBest != Direction.Dir.NONE) {
-            intended = new Intended(owner.arAbilities[(int)Entity.ABILSLOT.MOVEMENT], owner, dirCurrentBest);
+            intended = new Intended(owner.arAbilities[(int)Entity.ABILSLOT.MOVEMENT], owner, Ability.TargetType.RELATIVE, owner.tile.pos.PosInDir(dirCurrentBest));
         } else {
             //Otherwise, if we can't move away from the target in a good way, just pass
-            intended = new Intended(owner.arAbilities[(int)Entity.ABILSLOT.PASS], owner, Direction.Dir.NONE);
+            intended = new Intended(owner.arAbilities[(int)Entity.ABILSLOT.PASS], owner, Ability.TargetType.RELATIVE, owner.tile.pos);
         }
 
         //Debug.Log("Planning to use " + intended.abil + " with " + intended.intendType + " and dir: " + intended.dir + " and pos: " + intended.pos);
@@ -180,6 +184,7 @@ public abstract class SelectorEnemy : AbilitySelector {
     public void PlanNextAbility() {
 
         if (Board.Get().ActiveTile(owner.tile.pos) == false) {
+            Debug.Log("We're offscreen so we should move towards the player");
             //If we aren't active, then move toward the player so we reach the board
             SetTarget(GameController.Get().entHero);
             PlanMoveTowardTarget(entTarget.tile);
