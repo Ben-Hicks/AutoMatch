@@ -63,3 +63,8 @@ MonoBehaviour:
   - sName: Rejuvenator
     goProperty: {fileID: 266452498698718418, guid: effe251d81fe4c5458083c8345a828e4,
       type: 3}
+  - sName: Water
+    goProperty: {fileID: 4239750176051232527, guid: e2e6a8bb3766bfb4b8ed9fb352b01835,
+      type: 3}
+  - sName: Hydromancer
+    goProperty: {fileID: 0}
