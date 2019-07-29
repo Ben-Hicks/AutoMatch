@@ -94,7 +94,7 @@ public class PropertyController : Singleton<PropertyController> {
         if(fRand < 1 && dirOffScreen != Direction.Dir.NONE) {
             PlaceProperty("Stabber", tile);
         }else if (fRand < 3 && dirOffScreen != Direction.Dir.NONE) {
-            PlaceProperty("Hydromancer", tile);
+            PlaceProperty("Disengager", tile);
         } else if(fRand < 85) {
             PlaceProperty("Gold", tile);
         } else {

@@ -508,18 +508,24 @@ PrefabInstance:
     - target: {fileID: 5492675459445591168, guid: 78d6d242c2f680842966a8c1760422e7,
         type: 3}
       propertyPath: arPropertyEntries.Array.size
-      value: 7
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 5492675459445591168, guid: 78d6d242c2f680842966a8c1760422e7,
         type: 3}
-      propertyPath: arPropertyEntries.Array.data[6].sName
-      value: Water
-      objectReference: {fileID: 0}
-    - target: {fileID: 5492675459445591168, guid: 78d6d242c2f680842966a8c1760422e7,
-        type: 3}
-      propertyPath: arPropertyEntries.Array.data[6].goProperty
+      propertyPath: arPropertyEntries.Array.data[7].goProperty
       value: 
-      objectReference: {fileID: 4239750176051232527, guid: e2e6a8bb3766bfb4b8ed9fb352b01835,
+      objectReference: {fileID: 6441733981323531031, guid: f6b749b5028819a459d1b1607ef0c4da,
+        type: 3}
+    - target: {fileID: 5492675459445591168, guid: 78d6d242c2f680842966a8c1760422e7,
+        type: 3}
+      propertyPath: arPropertyEntries.Array.data[8].sName
+      value: Disengager
+      objectReference: {fileID: 0}
+    - target: {fileID: 5492675459445591168, guid: 78d6d242c2f680842966a8c1760422e7,
+        type: 3}
+      propertyPath: arPropertyEntries.Array.data[8].goProperty
+      value: 
+      objectReference: {fileID: 7632382679538008785, guid: 30926fa570ad9ab43a0f49f6c7f3bec1,
         type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 78d6d242c2f680842966a8c1760422e7, type: 3}

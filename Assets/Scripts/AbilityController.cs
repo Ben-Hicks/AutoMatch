@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class AbilityController : Singleton<AbilityController> {
 
-    public enum ABIL { PASS, DASH, GEYSER, ICICLEWAVE, MOVE, REJUVENATE, STAB };
+    public enum ABIL { PASS, DASH, GEYSER, ICICLEWAVE, MOVE,
+        REJUVENATE, STAB, DISENGAGE
+    };
 
     public List<Ability> lstAbil = new List<Ability>();
 
@@ -17,6 +19,7 @@ public class AbilityController : Singleton<AbilityController> {
         lstAbil.Add(new AbilityMove());
         lstAbil.Add(new AbilityRejuvenate());
         lstAbil.Add(new AbilityStab());
+        lstAbil.Add(new AbilityDisengage());
     }
 
     //Return the single instance of the ability that is requested through an enum interface

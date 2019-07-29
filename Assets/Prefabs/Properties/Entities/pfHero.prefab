@@ -156,8 +156,9 @@ MonoBehaviour:
     nPriority: 1
   - abil: 6
     nPriority: 1
-  - abil: 2
+  - abil: 7
     nPriority: 1
+  arPriorities: 000000000000000000000000000000000000000000000000
   nMaxHealth: 5
   nCurHealth: 5
   collectionPriority: 5
