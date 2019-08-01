@@ -25,6 +25,7 @@ public class Board : Singleton<Board> {
     public Tile tilePlayer;
 
     public GameObject pfTile;
+    public GameObject pfCollectionParticles;
 
     public bool bStartWithMatches;
 
@@ -83,8 +84,6 @@ public class Board : Singleton<Board> {
             } 
 
             tile.prop.OnCollect(tile.toCollectBy);
-
-            tile.toCollectBy = null;
         }
         
     }
@@ -159,6 +158,8 @@ public class Board : Singleton<Board> {
         CollectFlaggedTiles();
 
         yield return AnimateMatchedTiles();
+
+        yield return AnimateCollections();
 
         GenerateColoursForDeleted();
         SetAllStablePosForDeleted();
@@ -653,6 +654,27 @@ public class Board : Singleton<Board> {
             }
         }
         
+    }
+
+    public IEnumerator AnimateCollections() {
+
+        //Initially, spawn a particle on each tile that's set to be cleared
+        foreach (Tile tile in setFlaggedToClear) {
+
+            GameObject go = Instantiate(pfCollectionParticles, tile.transform.position, Quaternion.identity, this.transform);
+            CollectionParticle collectParticle = go.GetComponent<CollectionParticle>();
+            Debug.Assert(collectParticle != null);
+
+            //Start each tile's movement coroutine
+            StartCoroutine(collectParticle.MoveToDestination(tile));
+        }
+
+        //Wait while the animation happens
+        yield return new WaitForSeconds(1.5f);
+
+        //We'll assume each collectionparticle is responsible for destroying itself 
+        // after it is finished its animation
+
     }
 
     public void RealignPlayer() {

@@ -12,4 +12,5 @@ public class Collection : MonoBehaviour {
     void Start() {
         entity = GetComponent<Entity>();
     }
+    
 }

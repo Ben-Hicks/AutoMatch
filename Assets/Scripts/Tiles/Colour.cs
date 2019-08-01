@@ -21,6 +21,7 @@ public class Colour : MonoBehaviour {
     
 
     public Col col;
+    public Color colorSet;
 
     public SpriteRenderer rendBackground;
 
@@ -98,6 +99,7 @@ public class Colour : MonoBehaviour {
                 break;
         }
 
+        colorSet = colToSet;
         rendBackground.color = colToSet;
     }
 
