@@ -172,7 +172,7 @@ public abstract class SelectorEnemy : AbilitySelector {
             intended.SetPass();
         }
 
-        Debug.Log("intended.GetIntended is " + intended.GetIntendedPos());
+        //Debug.Log("intended.GetIntended is " + intended.GetIntendedPos());
 
         //Use the valid ability
         yield return intended.abil.UseWithTarget(intended.owner, intended.GetIntendedPos());

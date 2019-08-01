@@ -22,7 +22,8 @@ public class Colour : MonoBehaviour {
 
     public Col col;
     public Color colorSet;
-
+    
+    public CloudParticle cloudParticle;
     public SpriteRenderer rendBackground;
 
     public bool CanMatch(Colour other) {
@@ -101,6 +102,7 @@ public class Colour : MonoBehaviour {
 
         colorSet = colToSet;
         rendBackground.color = colToSet;
+        cloudParticle.SetStartColour(colToSet);
     }
 
     public void SetCol(Col _col) {

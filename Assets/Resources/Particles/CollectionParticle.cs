@@ -21,8 +21,7 @@ public class CollectionParticle : MonoBehaviour {
     }
 
     public void SetStartColour(Color color) {
-        //ParticleSystem.MainModule mainmod = partSys.main;
-        // mainmod.startColor = color;
+
         ParticleSystem.MainModule settings = GetComponent<ParticleSystem>().main;
         settings.startColor = new ParticleSystem.MinMaxGradient(color);
     }
