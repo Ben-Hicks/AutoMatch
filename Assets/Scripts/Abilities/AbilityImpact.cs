@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AbilityDisengage : Ability {
+public class AbilityImpact : Ability {
 
     public const int nAttackDist = 1;
-    public const int nJumpbackDist = 2;
+    public const int nKnockbackDist = 2;
 
     public override void InitProperties() {
         nMinRange = 1;
@@ -36,7 +36,7 @@ public class AbilityDisengage : Ability {
         Position.DirDist dirDist = owner.tile.pos.DirDistTo(posTarget);
 
         Direction.Dir dirAttack = dirDist.dir;
-        Direction.Dir dirJumpback = Direction.Negate(dirAttack);
+        Direction.Dir dirKnockback = dirAttack;
 
         Position posCur = owner.tile.pos.PosInDir(dirAttack);
         int nCurDist = 1;

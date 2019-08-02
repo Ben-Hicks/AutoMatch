@@ -8,6 +8,8 @@ public abstract class Property : MonoBehaviour {
     
     public Tile tile;
     public bool bBlocksMovement;
+    public bool bTakesDamage;
+    public bool bTakesHealing;
 
     public bool bCanBeCollected;
     
@@ -58,12 +60,32 @@ public abstract class Property : MonoBehaviour {
         tile = _tile;
     }
 
-    public virtual void TakeHealing(int nAmount=1) {
-        //By default, do nothing when trying to heal a standard tile
+    public virtual bool CanTakeHealing() {
+        return bTakesHealing;
     }
 
-    public virtual void TakeDamage(int nAmount=1) {
-       //By default, do nothing when trying to damage a standard tile
+    public virtual bool CanTakeDamge() {
+        return bTakesDamage;
+    }
+
+    public void TakeHealing(int nAmount = 1) {
+        if (CanTakeHealing()) {
+            OnHealing(nAmount);
+        }
+    }
+
+    public void TakeDamage(int nAmount = 1) {
+        if (CanTakeDamge()) {
+            OnDamage(nAmount);
+        }
+    }
+    
+    public virtual void OnHealing(int nAmount) {
+        //By default, do nothing when trying to damage a standard tile
+    }
+
+    public virtual void OnDamage(int nAmount) {
+        //By default, do nothing when trying to damage a standard tile
     }
 
     public abstract void OnCollect(Collection collection);

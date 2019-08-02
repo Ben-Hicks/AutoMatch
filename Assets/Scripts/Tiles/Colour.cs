@@ -101,7 +101,7 @@ public class Colour : MonoBehaviour {
         }
 
         colorSet = colToSet;
-        rendBackground.color = colToSet;
+        //rendBackground.color = colToSet;
         cloudParticle.SetStartColour(colToSet);
     }
 

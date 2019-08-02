@@ -29,7 +29,7 @@ public class AbilityGeyser : Ability {
 
         foreach (Direction.Dir dir in Direction.lstAllDirs) {
             Board.Get().StartCoroutine(Board.Get().At(posTarget.PosInDir(dir)).AnimateSwell());
-            Board.Get().At(posTarget.PosInDir(dir)).prop.TakeDamage();
+            Board.Get().At(posTarget.PosInDir(dir)).prop.OnDamage();
             PropertyController.Get().PlaceProperty("Water", Board.Get().At(posTarget.PosInDir(dir)));
         }
 

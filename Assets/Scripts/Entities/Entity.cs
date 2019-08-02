@@ -64,12 +64,12 @@ public class Entity : Property {
         }
     }
 
-    public override void TakeHealing(int nAmount=1) {
+    public override void OnHealing(int nAmount=1) {
         Debug.Assert(nAmount > 0);
         nCurHealth = Mathf.Min(nMaxHealth, nCurHealth + nAmount);
     }
 
-    public override void TakeDamage(int nAmount=1) {
+    public override void OnDamage(int nAmount=1) {
         Debug.Assert(nAmount > 0);
         nCurHealth = Mathf.Max(0, nCurHealth - nAmount);
 
