@@ -5,7 +5,7 @@ using UnityEngine;
 public class AbilityController : Singleton<AbilityController> {
 
     public enum ABIL { PASS, DASH, GEYSER, ICICLEWAVE, MOVE,
-        REJUVENATE, STAB, DISENGAGE, BLINK, TWIRL, BARRIER
+        REJUVENATE, STAB, DISENGAGE, BLINK, TWIRL, BARRIER, IMPACT
     };
 
     public List<Ability> lstAbil = new List<Ability>();
@@ -23,6 +23,7 @@ public class AbilityController : Singleton<AbilityController> {
         lstAbil.Add(new AbilityBlink());
         lstAbil.Add(new AbilityTwirl());
         lstAbil.Add(new AbilityBarrier());
+        lstAbil.Add(new AbilityImpact());
     }
 
     //Return the single instance of the ability that is requested through an enum interface

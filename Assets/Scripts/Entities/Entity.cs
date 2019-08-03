@@ -64,6 +64,14 @@ public class Entity : Property {
         }
     }
 
+    public override bool CanTakeDamage() {
+        return true;
+    }
+
+    public override bool CanTakeHealing() {
+        return true;
+    }
+
     public override void OnHealing(int nAmount=1) {
         Debug.Assert(nAmount > 0);
         nCurHealth = Mathf.Min(nMaxHealth, nCurHealth + nAmount);

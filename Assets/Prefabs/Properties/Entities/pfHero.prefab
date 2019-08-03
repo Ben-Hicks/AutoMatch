@@ -142,6 +142,8 @@ MonoBehaviour:
   go: {fileID: 5623294479343024117}
   tile: {fileID: 0}
   bBlocksMovement: 1
+  bTakesDamage: 0
+  bTakesHealing: 0
   bCanBeCollected: 0
   colDefault: 0
   overwritePriority: 5
@@ -156,7 +158,7 @@ MonoBehaviour:
     nPriority: 1
   - abil: 6
     nPriority: 1
-  - abil: 7
+  - abil: 11
     nPriority: 1
   arPriorities: 000000000000000000000000000000000000000000000000
   nMaxHealth: 5

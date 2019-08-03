@@ -39,6 +39,11 @@ public class AbilityIcicleWave : Ability {
             Board.Get().StartCoroutine(Board.Get().At(posCur).AnimateSwell());
             yield return new WaitForSeconds(owner.GetAnimTime(0.1f));
 
+            if (Board.Get().At(posCur).prop.CanTakeDamage()) {
+                Board.Get().At(posCur).prop.TakeDamage();
+                break;
+            }
+
             posCur = posCur.PosInDir(dirDist.dir);
         }
 

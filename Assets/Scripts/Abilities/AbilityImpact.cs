@@ -35,68 +35,45 @@ public class AbilityImpact : Ability {
 
         Position.DirDist dirDist = owner.tile.pos.DirDistTo(posTarget);
 
-        Direction.Dir dirAttack = dirDist.dir;
-        Direction.Dir dirKnockback = dirAttack;
+        Position posCur = owner.tile.pos.PosInDir(dirDist.dir);
 
-        Position posCur = owner.tile.pos.PosInDir(dirAttack);
-        int nCurDist = 1;
 
-        while (Board.Get().ActiveTile(posCur) && nCurDist <= nAttackDist) {
+        Board.Get().StartCoroutine(Board.Get().At(posCur).AnimateSwell());
+        yield return new WaitForSeconds(owner.GetAnimTime(0.3f));
 
-            Board.Get().StartCoroutine(Board.Get().At(posCur).AnimateSwell());
-            Board.Get().At(posCur).prop.OnDamage();
+        Tile tileTarget = Board.Get().At(posCur);
 
-            yield return new WaitForSeconds(owner.GetAnimTime(0.05f));
+        if (tileTarget.prop.CanTakeDamage()) {
+            tileTarget.prop.TakeDamage();
 
-            posCur = posCur.PosInDir(dirDist.dir);
-            nCurDist++;
+            //If we successfully hit a target that can take damage, then knock them back
+            Direction.Dir dirKnockback = dirDist.dir;
+
+            int nCurDist = 0;
+
+            while (nCurDist < nKnockbackDist && Board.Get().ActiveTile(tileTarget.pos.PosInDir(dirKnockback)) &&
+                Board.Get().At(tileTarget.pos.PosInDir(dirKnockback)).prop.bBlocksMovement == false) {
+                Board.Get().MoveTile(tileTarget, dirKnockback);
+                nCurDist++;
+            }
+
+            yield return Board.Get().AnimateMovingTiles(owner.GetAnimTime(Board.Get().fStandardAnimTime));
         }
 
-        nCurDist = 0;
-
-        while (nCurDist < nJumpbackDist && Board.Get().ActiveTile(owner.tile.pos.PosInDir(dirJumpback)) &&
-            Board.Get().At(owner.tile.pos.PosInDir(dirJumpback)).prop.bBlocksMovement == false) {
-            Board.Get().MoveTile(owner.tile, dirJumpback);
-            nCurDist++;
-        }
-
-        yield return Board.Get().AnimateMovingTiles(owner.GetAnimTime(Board.Get().fStandardAnimTime));
+        
 
     }
 
     protected override List<Telegraph.TeleTileInfo> GenListTelegraphTiles(Entity owner, Position posToTarget) {
-        List<Telegraph.TeleTileInfo> lstTeleTarget = new List<Telegraph.TeleTileInfo>();
-
         Position.DirDist dirDist = owner.tile.pos.DirDistTo(posToTarget);
 
-        Direction.Dir dirAttack = dirDist.dir;
-        Direction.Dir dirJumpback = Direction.Negate(dirAttack);
-
-        Position posCur = owner.tile.pos;
-
-        //Include each tile in a line in the targetted direction (up to the maximum dist away)
-        for (int i = 0; i < nAttackDist; i++) {
-            posCur = posCur.PosInDir(dirAttack);
-
-            lstTeleTarget.Add(new Telegraph.TeleTileInfo {
-                pos = posCur,
-                telegraphType = Telegraph.TelegraphType.Harmful
-            });
-        }
-
-        //Reset posCur to our current position so we can telegraph the movement
-        posCur = owner.tile.pos;
-
-        //Include each tile in a line in the opposite direction (up to the maximum dist away)
-        for (int i = 0; i < nJumpbackDist; i++) {
-            posCur = posCur.PosInDir(dirJumpback);
-
-            lstTeleTarget.Add(new Telegraph.TeleTileInfo {
-                pos = posCur,
-                telegraphType = Telegraph.TelegraphType.Movement
-            });
-        }
-
-        return lstTeleTarget;
+        return new List<Telegraph.TeleTileInfo>() {
+            new Telegraph.TeleTileInfo {
+                pos = owner.tile.pos.PosInDir(dirDist.dir),
+                telegraphType = Telegraph.TelegraphType.Harmful,
+                markerType = Telegraph.MarkerType.Direction,
+                dir = Direction.Dir.NONE
+            }
+        };
     }
 }

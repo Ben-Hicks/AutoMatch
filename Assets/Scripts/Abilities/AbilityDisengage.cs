@@ -44,7 +44,7 @@ public class AbilityDisengage : Ability {
         while (Board.Get().ActiveTile(posCur) && nCurDist <= nAttackDist) {
 
             Board.Get().StartCoroutine(Board.Get().At(posCur).AnimateSwell());
-            Board.Get().At(posCur).prop.OnDamage();
+            Board.Get().At(posCur).prop.TakeDamage();
 
             yield return new WaitForSeconds(owner.GetAnimTime(0.05f));
 

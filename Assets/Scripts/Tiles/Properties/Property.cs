@@ -64,7 +64,7 @@ public abstract class Property : MonoBehaviour {
         return bTakesHealing;
     }
 
-    public virtual bool CanTakeDamge() {
+    public virtual bool CanTakeDamage() {
         return bTakesDamage;
     }
 
@@ -75,7 +75,7 @@ public abstract class Property : MonoBehaviour {
     }
 
     public void TakeDamage(int nAmount = 1) {
-        if (CanTakeDamge()) {
+        if (CanTakeDamage()) {
             OnDamage(nAmount);
         }
     }

@@ -27,10 +27,10 @@ public class AbilityRejuvenate : Ability {
 
         foreach(Direction.Dir dir in Direction.lstAllDirs) {
             Board.Get().StartCoroutine(Board.Get().At(owner.tile.pos.PosInDir(dir)).AnimateSwell());
-            Board.Get().At(owner.tile.pos.PosInDir(dir)).prop.OnHealing();
+            Board.Get().At(owner.tile.pos.PosInDir(dir)).prop.TakeHealing();
         }
 
-        Board.Get().At(owner.tile.pos).prop.OnDamage();
+        Board.Get().At(owner.tile.pos).prop.TakeDamage();
 
         yield return new WaitForSeconds(owner.GetAnimTime(0.1f));
 
